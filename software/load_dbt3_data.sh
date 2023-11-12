@@ -1,12 +1,12 @@
 #!/bin/bash
-#for ip in  56 57; do printf '*******************************************************\n IP: 192.168.4.%s\n************************\n' "${ip}"; ./load_dbt3_data.sh 192.168.4.${ip} /datapath schemaname ;done
+#for ip in  56 57; do printf '*******************************************************\n IP: 192.168.4.%s\n************************\n' "${ip}"; ./load_dbt3_data.sh 192.168.4.${ip} schemaname /datapath  ;done
 
     host=${1:- "192.168.4.55"}
     data_path=${3:-`pwd`}
     schema=${2:- "dbt3"}
     user="dba"
     dryrun=0;
-    dataversion=data2
+    dataversion=data
 
 echo $data_path/$dataversion
 
@@ -49,7 +49,7 @@ echo $data_path/$dataversion
         fi
     done;
 
-    for table in $TABLES;do echo "ANALYZE $table";mysql --defaults-file=$data_path/loaddata.cnf -udbt3  -h  ${host} -D ${schema}  -e "ANALYZE TABLE ${table};";done 
+    for table in $TABLES;do echo "ANALYZE $table";mysql --defaults-file=$data_path/loaddata.cnf  -h  ${host} -D ${schema}  -e "ANALYZE TABLE ${table};";done 
 
 #    ALTER TABLE  lineitem  ADD  INDEX `i_l_shipdate`  (`l_shipdate`),ADD  INDEX `i_l_suppkey_partkey`  (l_partkey, l_suppkey), ADD  INDEX `i_l_partkey` (l_partkey),ADD INDEX `i_l_suppkey`  (l_suppkey),ADD INDEX `i_l_receiptdate`  (l_receiptdate,l_commitdate),ADD  INDEX `i_l_orderkey`  (l_orderkey),ADD INDEX `i_l_orderkey_quantity` (l_orderkey, l_quantity),ADD INDEX `i_l_commitdate`  (l_commitdate), ALGORITHM=INPLACE, LOCK=NONE;
 
