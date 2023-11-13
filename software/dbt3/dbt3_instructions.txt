@@ -1,0 +1,60 @@
+How to use DBT3 and original TPC-H software
+=================================================
+
+Download original TPC-H toolkit from (https://www.tpc.org/TPC_Documents_Current_Versions/download_programs/tools-download-request5.asp?bm_type=TPC-H&bm_vers=3.0.1&mode=CURRENT-ONLY)
+Or use the one provided with these instructions.
+
+Download DBT3 from https://github.com/osdldbt/dbt3/tree/main
+Or use the queries provide in this package 
+
+Install software:
+make
+gcc
+g++ 
+cmake
+bc
+mysql_config and libs
+patch
+
+
+How to install
+=======================================================
+Clone dbt3
+
+unzip Tpc-h tools inside dbt3
+
+make -f Makefile.cmake release
+cd build/release
+make install release
+
+Run :
+dbt3-build-dbgen  --patch-dir=/usr/local/share/dbt3/patches/  --query-dir=/usr/local/share/dbt3/queries/  pgsql "TPC-H V3.0.1"
+Now we need to delete dbgen and qgen and replace queries with MySQL stuff:
+ rm -f dbgen qgen
+ 
+Now build for MySQL:
+ make -f Makefile.mysql
+
+Assign environment variables as:
+DSS_PATH=/opt/dbt3/ - Absolute path in which to build flat files.
+DSS_QUERY=/opt/tools/benchmarktools/software/TPC-H-V3.0.1/dbgen/queries/mysql - Absolute path in which to find query templates.
+DSS_CONFIG=/opt/tools/benchmarktools/software/TPC-H-V3.0.1/dbgen - Directory in which to find dbgen configuration files.
+
+export DSS_PATH=/opt/dbt3/data
+export DSS_QUERY=/opt/tools/dbt3/queries/mysql/
+export DSS_CONFIG=/opt/tools/TPC-H/dbgen
+
+Now build the queries:
+
+
+
+ 
+
+
+from dbt3 root:  patch -p1 < patches/dbt3-TPC-H_v3.0.1-mysql.diff
+
+
+
+
+
+

@@ -1,7 +1,7 @@
--- Create Dbt3Schema 
+-- Create dbt3Schema 
 
-USE Ddbt3;
-
+USE dbt3;
+DROP table if exists customer;
 CREATE TABLE customer (
 	c_custkey INTEGER,
 	c_name VARCHAR(25),
@@ -13,6 +13,7 @@ CREATE TABLE customer (
 	c_comment VARCHAR(117)
 );
 
+DROP table if exists lineitem;
 CREATE TABLE lineitem (
 	l_orderkey INTEGER,
 	l_partkey INTEGER,
@@ -32,6 +33,7 @@ CREATE TABLE lineitem (
 	l_comment VARCHAR(44)
 );
 
+DROP table if exists nation;
 CREATE TABLE nation (
 	n_nationkey INTEGER,
 	n_name CHAR(25),
@@ -39,6 +41,7 @@ CREATE TABLE nation (
 	n_comment VARCHAR(152)
 );
 
+DROP table if exists orders;
 CREATE TABLE orders (
 	o_orderkey INTEGER,
 	o_custkey INTEGER,
@@ -51,6 +54,7 @@ CREATE TABLE orders (
 	o_comment VARCHAR(79)
 );
 
+DROP table if exists part;
 CREATE TABLE part (
 	p_partkey INTEGER,
 	p_name VARCHAR(55),
@@ -63,6 +67,7 @@ CREATE TABLE part (
 	p_comment VARCHAR(23)
 );
 
+DROP table if exists partsupp;
 CREATE TABLE partsupp (
 	ps_partkey INTEGER,
 	ps_suppkey INTEGER,
@@ -71,12 +76,14 @@ CREATE TABLE partsupp (
 	ps_comment VARCHAR(199)
 );
 
+DROP table if exists region;
 CREATE TABLE region (
 	r_regionkey INTEGER,
 	r_name CHAR(25),
 	r_comment VARCHAR(152)
 );
 
+DROP table if exists supplier;
 CREATE TABLE supplier (
 	s_suppkey  INTEGER,
 	s_name CHAR(25),
@@ -87,12 +94,15 @@ CREATE TABLE supplier (
 	s_comment VARCHAR(101)
 );
 
+DROP table if exists time_statistics;
 CREATE TABLE time_statistics (
 	task_name VARCHAR(40),
 	s_time TIMESTAMP default current_timestamp,
 	e_time TIMESTAMP,
 	int_time INTEGER);
 
+
+DROP table if exists dataset;
 CREATE TABLE dataset (
 	id INTEGER NOT NULL,
 	count INTEGER NOT NULL,
