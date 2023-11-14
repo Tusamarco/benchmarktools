@@ -1,0 +1,5 @@
+[client]
+user=dba
+password=dba
+local_infile=1 
+port=3307

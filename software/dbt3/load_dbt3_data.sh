@@ -11,7 +11,7 @@
 echo $data_path/$dataversion
 
     mysql --defaults-file=$data_path/loaddata.cnf -u${user} -h ${host} < $data_path/create_tablesH.sql    
-    CHUNK=50;
+    CHUNK=100;
 	export TABLE_DEF_customer="c_custkey,c_name ,c_address ,c_nationkey,c_phone,c_acctbal,c_mktsegment,c_comment "
     export TABLE_DEF_lineitem="l_orderkey,l_partkey,l_suppkey,l_linenumber,l_quantity,l_extendedprice,l_discount,l_tax,l_returnflag,l_linestatus,l_shipDATE,l_commitDATE,l_receiptDATE,l_shipinstruct,l_shipmode,l_comment"
     export TABLE_DEF_nation="n_nationkey,n_name,n_regionkey,n_comment"
@@ -49,7 +49,7 @@ echo $data_path/$dataversion
         fi
     done;
 
-    for table in $TABLES;do echo "ANALYZE $table";mysql --defaults-file=$data_path/loaddata.cnf  -h  ${host} -D ${schema}  -e "ANALYZE TABLE ${table};";done 
+    for table in $TABLES;do echo "ANALYZE $table";mysql --defaults-file=$data_path/loaddata.cnf -u${user} -h  ${host} -D ${schema}  -e "ANALYZE TABLE ${table};";done 
 
 #    ALTER TABLE  lineitem  ADD  INDEX `i_l_shipdate`  (`l_shipdate`),ADD  INDEX `i_l_suppkey_partkey`  (l_partkey, l_suppkey), ADD  INDEX `i_l_partkey` (l_partkey),ADD INDEX `i_l_suppkey`  (l_suppkey),ADD INDEX `i_l_receiptdate`  (l_receiptdate,l_commitdate),ADD  INDEX `i_l_orderkey`  (l_orderkey),ADD INDEX `i_l_orderkey_quantity` (l_orderkey, l_quantity),ADD INDEX `i_l_commitdate`  (l_commitdate), ALGORITHM=INPLACE, LOCK=NONE;
 
