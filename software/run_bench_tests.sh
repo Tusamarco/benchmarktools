@@ -151,6 +151,7 @@ if [ "$debug" = true ]; then
         echo "Key: $key Value: ${tpcc_tests[$key]}"
     done
 fi
+
 if [ "$command_list" = true ]; then 
     for key in "${!ingest_tests[@]}"; do
         echo "Sub Test: $key "
@@ -164,6 +165,7 @@ if [ "$command_list" = true ]; then
     for key in "${!tpcc_tests[@]}"; do
         echo "Sub Test: $key "
     done
+fi
 exit
 
 
@@ -233,7 +235,7 @@ if [ $test == "tpcc" ] ;
 fi
 
 
-gram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
+ --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
                 echo "======================================" >> "${LOGFILE}"
                 echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
                 echo "======================================" 
