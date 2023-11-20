@@ -154,19 +154,19 @@ fi
 
 if [ "$command_list" = true ]; then 
     echo "-- Ingest --"
-    sorted=`echo ${!ingest_tests[@]} |sort`
-    for sorted in "${!ingest_tests[@]}"; do
+    sorted=`echo ${!ingest_tests[@]}|sort`
+    for key in $sorted; do
         echo "Sub Test: $key "
     done
 
     echo "-- Sysbench --"
     sorted=`echo ${!sysbench_tests[@]} |sort`
-    for sorted in "${!sysbench_tests[@]}"; do
+    for sorted in $sorted; do
         echo "Sub Test: $key "
     done
     echo "-- Tpcc --"
     sorted=`echo ${!tpcc_tests[@]} |sort`
-    for key in "${!sorted[@]}"; do
+    for key in $sorted; do
         echo "Sub Test: $key "
     done
 fi
@@ -235,6 +235,11 @@ if [ $test == "tpcc" ] ;
 
         done;
         echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >>  "${LOGFILE}" ;
+    cd /opt/tools
+fi
+
+
+>>  "${LOGFILE}" ;
     cd /opt/tools
 fi
 
