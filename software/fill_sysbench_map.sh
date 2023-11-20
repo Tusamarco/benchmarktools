@@ -49,6 +49,4 @@ fill_sysbench_map(){
 #Read and Write with range selects
     sysbench_tests["run_rw_with_range_100"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${user} --mysql-password=${password} --mysql-db=${dbname} --db-driver=mysql --tables=${tables} --skip_trx=on --report-interval=1 --mysql-ignore-errors=none --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable --rate=100 --time=${time}  --threads=${threads} --rand-type=uniform --point_selects=1 --range_size=100"
     sysbench_tests["run_rw_with_range_1000"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${user} --mysql-password=${password} --mysql-db=${dbname} --db-driver=mysql --tables=${tables} --skip_trx=on --report-interval=1 --mysql-ignore-errors=none --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable --rate=100 --time=${time}  --threads=${threads} --rand-type=uniform --point_selects=1 --range_size=1000"
-   
-
-}}
+}
