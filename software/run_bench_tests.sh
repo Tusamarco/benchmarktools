@@ -37,7 +37,7 @@ SYSBENCH_LUA="/opt/tools/sysbench"
 TPCC_LUA="/opt/tools/sysbench-tpcc"
 
 
-Parse command line arguments
+#Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --test)
@@ -233,7 +233,7 @@ if [ $test == "tpcc" ] ;
 fi
 
 
-ogram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
+gram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
                 echo "======================================" >> "${LOGFILE}"
                 echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
                 echo "======================================" 
