@@ -155,18 +155,18 @@ fi
 if [ "$command_list" = true ]; then 
     echo "-- Ingest --"
     sorted=`echo ${!ingest_tests[@]}|sort`
-    for key in $sorted; do
+    for key in "${sorted}"; do
         echo "Sub Test: $key "
     done
 
     echo "-- Sysbench --"
-    sorted=`echo ${!sysbench_tests[@]} |sort`
-    for sorted in $sorted; do
+    sorted=`echo ${!sysbench_tests[@]}|sort`
+    for key in "${sorted}"; do
         echo "Sub Test: $key "
     done
     echo "-- Tpcc --"
-    sorted=`echo ${!tpcc_tests[@]} |sort`
-    for key in $sorted; do
+    sorted=`echo ${!tpcc_tests[@]}|sort`
+    for key in "${sorted}"; do
         echo "Sub Test: $key "
     done
 fi
