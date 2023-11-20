@@ -153,16 +153,20 @@ if [ "$debug" = true ]; then
 fi
 
 if [ "$command_list" = true ]; then 
-    for key in "${!ingest_tests[@]}"; do
+    echo "-- Ingest --"
+    sorted=`echo ${!ingest_tests[@]} |sort`
+    for sorted in "${!ingest_tests[@]}"; do
         echo "Sub Test: $key "
     done
 
-
-    for key in "${!sysbench_tests[@]}"; do
+    echo "-- Sysbench --"
+    sorted=`echo ${!sysbench_tests[@]} |sort`
+    for sorted in "${!sysbench_tests[@]}"; do
         echo "Sub Test: $key "
     done
-
-    for key in "${!tpcc_tests[@]}"; do
+    echo "-- Tpcc --"
+    sorted=`echo ${!tpcc_tests[@]} |sort`
+    for key in "${!sorted[@]}"; do
         echo "Sub Test: $key "
     done
 fi
@@ -235,9 +239,7 @@ if [ $test == "tpcc" ] ;
 fi
 
 
- --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
-                echo "======================================" >> "${LOGFILE}"
-                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
+"RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
                 echo "======================================" 
                 echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
 
