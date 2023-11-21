@@ -7,31 +7,35 @@ declare -A ingest_tests
 declare -A tpcc_tests 
 
 #setting defaults
-test="testXYZ"
-testname="sysbench"
+command="run"
+debug=false
+dryrun=false
+engine="innodb"
+help=false
 host="127.0.0.1"
 port=3306
-subtest="all"
 schemaname="windmills_small"
-engine="innodb"
+subtest_list=false
+subtest="all"
 tablename="mills"
-debug=false
-command_list=false
+test="testXYZ"
+testname="sysbench"
+
 
 #constants
-RESULTS=/opt/results
-#TIME=60
-TIME=1200
-TABLES_SMALL=20
-ROWS_SMALL=10000000
-TABLES_LARGE=5
-ROWS_SMALL=30000000
-WHAREHOUSES=100
-TPCc_TABLES=10
-#THREADS="32 64 92"
-THREADS="1 2 4 8 16 32 64 128 256 512 1024 2056"
-USER="app_test"
 PW="test"
+RESULTS=/opt/results
+ROWS_SMALL=10000000
+ROWS_SMALL=30000000
+TABLES_LARGE=5
+TABLES_SMALL=20
+THREADS="1 2 4 8 16 32 64 128 256 512 1024 2056"
+#THREADS="32 64 92"
+#TIME=1200
+TIME=60
+TPCc_TABLES=10
+USER="app_test"
+WHAREHOUSES=100
 
 SYSBENCH_LUA="/opt/tools/sysbench"
 TPCC_LUA="/opt/tools/sysbench-tpcc"
@@ -40,6 +44,14 @@ TPCC_LUA="/opt/tools/sysbench-tpcc"
 #Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --command)
+            command="$2"
+            shift 2
+            ;;
+        --dryrun)
+            dryrun=true
+            shift 2
+            ;;
         --test)
             test="$2"
             shift 2
@@ -76,17 +88,44 @@ while [[ $# -gt 0 ]]; do
             debug=true
             shift
             ;;
-        --command_list)
-            command_list=true
+        --subtest_list)
+            subtest_list=true
             shift
             ;;            
+        --help)
+            help=true
+            shift
+            ;;                        
         *)
             echo "Unknown argument: $1"
-                        echo "Usage: $0 --test <test Identifier> --testname <sysbench|tpcc|ingest> --subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --command_list]"
+                        echo "Usage: $0 --test <test Identifier> --testname <sysbench|tpcc|ingest> --subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list]"
             exit 1
             ;;
     esac
 done;
+
+. $(dirname "$0")/fill_ingest_map.sh
+. $(dirname "$0")/fill_sysbench_map.sh
+. $(dirname "$0")/fill_tpcc_map.sh
+. $(dirname "$0")/help.sh
+
+
+
+#local functions
+#========================================
+print_date_time(){
+ echo "$(date +'%Y-%m-%d_%H_%M_%S')"
+}
+
+
+
+#========================================
+
+
+if [ "$help" = true ]; then
+	help
+fi
+
 
 LOGFILE=$RESULTS/${testname}/${test}_${subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
 if [ ! -d "$RESULTS/${testname}" ]; then
@@ -113,9 +152,7 @@ echo "============= TPC-C ============="
 echo "Warehouses:  $WHAREHOUSES"
 echo "Tables: $TPCc_TABLES"
 
-print_date_time(){
- echo "$(date +'%Y-%m-%d_%H_%M_%S')"
-}
+
 
 nc -w 1 -z $host $port
 if [ $? -ne 0 ] ; then
@@ -127,17 +164,64 @@ else
   echo "[OK] Mysql running correctly" >> "${LOGFILE}"
 fi
 
-. $(dirname "$0")/fill_ingest_map.sh
-. $(dirname "$0")/fill_sysbench_map.sh
-. $(dirname "$0")/fill_tpcc_map.sh
-
-
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
 
-if [ "$debug" = true ]; then 
 
+print_subtest_key(){
+sorted="$1"
+
+	if [ "$command" == "cleanup" ] || [ "$command" == "prepare" ] || [ "$command" == "all" ]; then
+		echo "-- cleanup prepare --"
+		for key in ${sorted}; do
+			if [[ "$key" =~ "clean" ]];then
+				echo "   $key "
+			fi
+		done
+	fi
+	if [ "$command" == "run" ] || [ "$command" == "all" ]; then	
+		echo "-- run --"
+		for key in ${sorted}; do
+			if ! [[ "$key" =~ "clean" ]];then
+				echo "   $key "
+			fi
+		done
+	fi	
+}
+
+
+get_sub_test(){
+	if [ "$debug" == true ]; then
+		echo $command
+		echo $testname
+	fi
+
+    if [ "$testname" == "ingest" ] || [ "$testname" == "all" ]; then 
+		echo "-- Ingest --"
+		echo "SubTests:"
+		sorted=`echo ${!ingest_tests[@]}|tr ' ' '\012' | sort| tr '\012' ' '`
+		print_subtest_key "$sorted"
+	fi	
+
+    if [ "$testname" == "sysbench" ] || [ "$testname" == "all" ]; then 
+		echo "-- Sysbench --"
+		echo "SubTests:"
+		sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
+		print_subtest_key "$sorted"
+
+    fi 
+
+    if [ "$testname" == "tpcc" ] || [ "$testname" == "all" ]; then 
+		echo "-- Tpcc --"
+		echo "SubTests:"
+		sorted=`echo ${!tpcc_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
+		print_subtest_key "$sorted"
+    fi
+
+if [ "$debug" == true ]; then 
+    echo "Full map value below (with commands)"
+    echo "=========================================="
     for key in "${!ingest_tests[@]}"; do
         echo "Key: $key Value: ${ingest_tests[$key]}"
     done
@@ -150,24 +234,39 @@ if [ "$debug" = true ]; then
     for key in "${!tpcc_tests[@]}"; do
         echo "Key: $key Value: ${tpcc_tests[$key]}"
     done
+    echo "=========================================="
 fi
 
-if [ "$command_list" = true ]; then 
-    echo "-- Ingest --"
-    sorted=`echo ${!ingest_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
-    for key in "${sorted}"; do
-        echo "Sub Test: $key "
-    done
+}
 
-    echo "-- Sysbench --"
-    sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
-    for key in "${sorted}"; do
-        echo "Sub Test: $key "
-    done
-    echo "-- Tpcc --"
-    sorted=`echo ${!tpcc_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
-    for key in "${sorted}"; do
-        echo "Sub Test: $key "
-    done
+
+if [ "$subtest_list" = true ]; then
+    get_sub_test 
 fi
+
 exit
+
+#=========================
+# Run Tests 
+#=========================
+
+if [ $test == "sysbench" ] ;
+ then
+        echo "     Testing  $test $(print_date_time) [START]" >> "${LOGFILE}"
+    cd /opt/tools/sysbench
+
+        for threads in $THREADS;do
+                echo "======================================" 
+                echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
+
+                echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
+                echo "======================================" >>  "${LOGFILE}"
+                sysbench /opt/tools/sysbench/src/lua/padding/oltp_read.lua  --mysql-host=$host --mysql-port=$port --mysql-user=$USER --mysql-password=$PW --mysql-db=$schemaname --db-driver=mysql --tables=$TABLES --table_size=$ROWS  --time=$TIME  --rand-type=zipfian --rand-zipfian-exp=0 --skip_trx=on  --report-interval=1 --mysql-ignore-errors=none  --auto_inc=off --histogram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
+                echo "======================================" >> "${LOGFILE}"
+                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
+                echo "======================================" 
+                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
+        done;
+    cd /opt/tools
+        echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
+fi
