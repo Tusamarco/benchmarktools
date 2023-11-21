@@ -11,6 +11,7 @@ command="run"
 debug=false
 dryrun=false
 engine="innodb"
+filter_subtest="none"
 help=false
 host="127.0.0.1"
 port=3306
@@ -39,6 +40,9 @@ WHAREHOUSES=100
 
 SYSBENCH_LUA="/opt/tools/sysbench"
 TPCC_LUA="/opt/tools/sysbench-tpcc"
+
+#operative variables
+subtest_execute="";
 
 
 #Parse command line arguments
@@ -90,6 +94,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --subtest_list)
             subtest_list=true
+            shift
+            ;;            
+        --filter_subtest)
+            filter_subtest="$2"
             shift
             ;;            
         --help)
@@ -168,89 +176,29 @@ fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
 
-
-print_subtest_key(){
-sorted="$1"
-
-	if [ "$command" == "cleanup" ] || [ "$command" == "prepare" ] || [ "$command" == "all" ]; then
-		echo "-- cleanup prepare --"
-		for key in ${sorted}; do
-			if [[ "$key" =~ "clean" ]];then
-				echo "   $key "
-			fi
-		done
-	fi
-	if [ "$command" == "run" ] || [ "$command" == "all" ]; then	
-		echo "-- run --"
-		for key in ${sorted}; do
-			if ! [[ "$key" =~ "clean" ]];then
-				echo "   $key "
-			fi
-		done
-	fi	
-}
-
-
-get_sub_test(){
-	if [ "$debug" == true ]; then
-		echo $command
-		echo $testname
-	fi
-
-    if [ "$testname" == "ingest" ] || [ "$testname" == "all" ]; then 
-		echo "-- Ingest --"
-		echo "SubTests:"
-		sorted=`echo ${!ingest_tests[@]}|tr ' ' '\012' | sort| tr '\012' ' '`
-		print_subtest_key "$sorted"
-	fi	
-
-    if [ "$testname" == "sysbench" ] || [ "$testname" == "all" ]; then 
-		echo "-- Sysbench --"
-		echo "SubTests:"
-		sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
-		print_subtest_key "$sorted"
-
-    fi 
-
-    if [ "$testname" == "tpcc" ] || [ "$testname" == "all" ]; then 
-		echo "-- Tpcc --"
-		echo "SubTests:"
-		sorted=`echo ${!tpcc_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
-		print_subtest_key "$sorted"
-    fi
-
-if [ "$debug" == true ]; then 
-    echo "Full map value below (with commands)"
-    echo "=========================================="
-    for key in "${!ingest_tests[@]}"; do
-        echo "Key: $key Value: ${ingest_tests[$key]}"
-    done
-
-
-    for key in "${!sysbench_tests[@]}"; do
-        echo "Key: $key Value: ${sysbench_tests[$key]}"
-    done
-
-    for key in "${!tpcc_tests[@]}"; do
-        echo "Key: $key Value: ${tpcc_tests[$key]}"
-    done
-    echo "=========================================="
-fi
-
-}
-
-
 if [ "$subtest_list" = true ]; then
-    get_sub_test 
+    get_sub_test_txt 
 fi
 
-exit
 
 #=========================
 # Run Tests 
 #=========================
 
-if [ $test == "sysbench" ] ;
+#get list of subtests to run (and commands)
+
+
+if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
+     get_sub_test
+     exit;
+ elif [ ! "$subtest" == "all" ] && [ "$testname" == "all" ]; then
+      echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
+	  exit;
+ else
+      	  
+fi
+
+if [ $testname == "sysbench" ] ;
  then
         echo "     Testing  $test $(print_date_time) [START]" >> "${LOGFILE}"
     cd /opt/tools/sysbench
