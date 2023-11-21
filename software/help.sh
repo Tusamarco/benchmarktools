@@ -1,4 +1,4 @@
-help(){
+helptext(){
 
 cat << EOF
 

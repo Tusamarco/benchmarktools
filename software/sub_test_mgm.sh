@@ -1,15 +1,15 @@
 print_subtest_key(){
 sorted="$1"
-$subtest=""
+$subtest_execute=""
 	if [ "$command" == "cleanup" ] || [ "$command" == "prepare" ] || [ "$command" == "all" ]; then
 		for key in ${sorted}; do
 			if [[ "$key" =~ "clean" ]];then
-			    if [[ ! "$filter_subtest" == "none"]];then
+			    if [[ ! "$filter_subtest" == "none" ]];then
 					if [[ "$key" =~ "$filter_subtest" ]];then
-						$subtest+="$key "
+						$subtest_execute+="$key "
 					fi
 					else
-					 $subtest+="$key "	
+					 $subtest_execute+="$key "	
 				fi
 			fi
 		done
@@ -17,17 +17,18 @@ $subtest=""
 	if [ "$command" == "run" ] || [ "$command" == "all" ]; then	
 		for key in ${sorted}; do
 			if ! [[ "$key" =~ "clean" ]];then
-			    if [[ ! "$filter_subtest" == "none"]];then
+			    if [[ ! "$filter_subtest" == "none" ]];then
 					if [[ "$key" =~ "$filter_subtest" ]];then
-						$subtest+="$key "
+						$subtest_execute+="$key "
 					fi
 					else
-					 $subtest+="$key "	
+					 $subtest_execute+="$key "	
 				fi
 			fi
 		done
 	fi	
 }
+
 print_subtest_key_txt(){
 sorted="$1"
 

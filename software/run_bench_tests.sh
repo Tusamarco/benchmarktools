@@ -106,7 +106,7 @@ while [[ $# -gt 0 ]]; do
             ;;                        
         *)
             echo "Unknown argument: $1"
-                        echo "Usage: $0 --test <test Identifier> --testname <sysbench|tpcc|ingest> --subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list]"
+			helptext
             exit 1
             ;;
     esac
@@ -115,6 +115,7 @@ done;
 . $(dirname "$0")/fill_ingest_map.sh
 . $(dirname "$0")/fill_sysbench_map.sh
 . $(dirname "$0")/fill_tpcc_map.sh
+. $(dirname "$0")/sub_test_mgm.sh
 . $(dirname "$0")/help.sh
 
 
@@ -131,7 +132,7 @@ print_date_time(){
 
 
 if [ "$help" = true ]; then
-	help
+	helptext
 fi
 
 
@@ -178,6 +179,7 @@ fill_tpcc_map
 
 if [ "$subtest_list" = true ]; then
     get_sub_test_txt 
+    exit;
 fi
 
 
@@ -190,12 +192,13 @@ fi
 
 if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
      get_sub_test
+     echo "$subtest_execute"
      exit;
  elif [ ! "$subtest" == "all" ] && [ "$testname" == "all" ]; then
       echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
 	  exit;
  else
-      	  
+      	echo "You need to pick eiter a set of subtests or"  
 fi
 
 if [ $testname == "sysbench" ] ;
