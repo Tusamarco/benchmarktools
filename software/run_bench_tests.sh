@@ -86,7 +86,7 @@ while [[ $# -gt 0 ]]; do
             exit 1
             ;;
     esac
-
+done;
 
 LOGFILE=$RESULTS/${testname}/${test}_${subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
 if [ ! -d "$RESULTS/${testname}" ]; then
@@ -154,18 +154,18 @@ fi
 
 if [ "$command_list" = true ]; then 
     echo "-- Ingest --"
-    sorted=`echo ${!ingest_tests[@]}|sort`
+    sorted=`echo ${!ingest_tests[@]}tr ' ' '\012' | sort | tr '\012' ' '`
     for key in "${sorted}"; do
         echo "Sub Test: $key "
     done
 
     echo "-- Sysbench --"
-    sorted=`echo ${!sysbench_tests[@]}|sort`
+    sorted=`echo ${!sysbench_tests[@]}tr ' ' '\012' | sort | tr '\012' ' '`
     for key in "${sorted}"; do
         echo "Sub Test: $key "
     done
     echo "-- Tpcc --"
-    sorted=`echo ${!tpcc_tests[@]}|sort`
+    sorted=`echo ${!tpcc_tests[@]}tr ' ' '\012' | sort | tr '\012' ' '`
     for key in "${sorted}"; do
         echo "Sub Test: $key "
     done
