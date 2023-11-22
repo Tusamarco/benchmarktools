@@ -1,10 +1,13 @@
 #!/bin/bash
 #./run_bench_tests.sh runPS8034 sysbench 127.0.0.1 point_select windmills_large  
 
+. $(dirname "$0")/help.sh
+
 #globals
 declare -A sysbench_tests
 declare -A ingest_tests 
 declare -A tpcc_tests 
+declare -A execute_map
 
 #setting defaults
 command="run"
@@ -40,6 +43,8 @@ WHAREHOUSES=100
 
 SYSBENCH_LUA="/opt/tools/sysbench"
 TPCC_LUA="/opt/tools/sysbench-tpcc"
+LOCAL_PATH="`pwd`"
+
 
 #operative variables
 subtest_execute="";
@@ -50,10 +55,6 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --command)
             command="$2"
-            shift 2
-            ;;
-        --dryrun)
-            dryrun=true
             shift 2
             ;;
         --test)
@@ -68,6 +69,11 @@ while [[ $# -gt 0 ]]; do
             subtest="$2"
             shift 2
             ;;
+       --filter_subtest)
+            filter_subtest="$2"
+            shift 2
+            ;;
+
         --schemaname)
             schemaname="$2"
             shift 2
@@ -96,14 +102,14 @@ while [[ $# -gt 0 ]]; do
             subtest_list=true
             shift
             ;;            
-        --filter_subtest)
-            filter_subtest="$2"
-            shift
-            ;;            
         --help)
             help=true
             shift
             ;;                        
+        --dryrun)
+            dryrun=true
+            shift 
+            ;;
         *)
             echo "Unknown argument: $1"
 			helptext
@@ -116,7 +122,7 @@ done;
 . $(dirname "$0")/fill_sysbench_map.sh
 . $(dirname "$0")/fill_tpcc_map.sh
 . $(dirname "$0")/sub_test_mgm.sh
-. $(dirname "$0")/help.sh
+
 
 
 
@@ -141,7 +147,8 @@ if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
 
-
+echo "Current path: $LOCAL_PATH"
+echo "Dry run: ${dryrun}"
 echo "Running Test: $test"
 echo "Running Testname: $testname"
 echo "Running Sub Test: $subtest"
@@ -182,6 +189,27 @@ if [ "$subtest_list" = true ]; then
     exit;
 fi
 
+get_execute_map(){
+if [ $testname == "sysbench" ]; then
+	for subtest_run in $subtest_execute;do	
+		execute_map["$subtest_run"]="${sysbench_tests[$subtest_run]}"
+	done;
+fi
+
+if [ $testname == "ingest" ]; then
+	for subtest_run in $subtest_execute;do	
+		execute_map["$subtest_run"]="${ingest_tests[$subtest_run]}"
+	done;
+fi
+
+if [ $testname == "sysbench" ]; then
+	for subtest_run in $subtest_execute;do	
+		execute_map["$subtest_run"]="${tpcc_tests[$subtest_run]}"
+	done;
+fi
+
+}
+
 
 #=========================
 # Run Tests 
@@ -193,13 +221,39 @@ fi
 if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
      get_sub_test
      echo "$subtest_execute"
-     exit;
+
  elif [ ! "$subtest" == "all" ] && [ "$testname" == "all" ]; then
       echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
 	  exit;
  else
       	echo "You need to pick eiter a set of subtests or"  
 fi
+
+if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
+    cd $SYSBENCH_LUA
+  elif [ $testname == "ingest" ]; then   
+    cd $SYSBENCH_LUA
+  elif [ $testname == "tpcc" ]; then 
+    cd $TPCC_LUA  
+  else 
+    cd $LOCAL_PATH  
+fi
+
+#get the final execute_map
+get_execute_map
+
+for subtest_run in $subtest_execute;do
+	if [ "$dryrun" == "true" ]; then
+       #echo "${subtest_run}" 
+       echo "${execute_map[$subtest_run]}" 
+     else
+       echo "nothing to do"
+    fi
+
+done 
+
+exit
+
 
 if [ $testname == "sysbench" ] ;
  then
