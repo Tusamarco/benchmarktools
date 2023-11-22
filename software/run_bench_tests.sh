@@ -155,11 +155,11 @@ if [ "$help" = true ]; then
 fi
 
 if [ "$sysbench_test_dimension" == "small" ]; then
-    sysbench_tables="$TABLES_SMALL"
-    sysbench_rows="$ROWS_SMALL"
+    sysbench_tables="$SYSNBENCH_TABLES_SMALL"
+    sysbench_rows="$SYSNBENCH_ROWS_SMALL"
  else
-    sysbench_tables="$TABLES_LARGE"
-    sysbench_rows="$ROWS_LARGE"
+    sysbench_tables="$SYSNBENCH_TABLES_LARGE"
+    sysbench_rows="$SYSNBENCH_ROWS_LARGE"
 fi
 
 
@@ -185,10 +185,10 @@ echo "Running TIME: $TIME"
 echo "Running Thread set: $THREADS"
 
 echo "============= SysBench ============="
-echo "Rows Small: $ROWS_SMALL"
-echo "Tables Small: $TABLES_SMALL"
-echo "Rows Large: $ROWS_LARGE"
-echo "Tables Large: $TABLES_LARGE"
+echo "Rows Small: $SYSNBENCH_ROWS_SMALL"
+echo "Tables Small: $SYSNBENCH_TABLES_SMALL"
+echo "Rows Large: $SYSNBENCH_ROWS_LARGE"
+echo "Tables Large: $SYSNBENCH_TABLES_LARGE"
 echo "Using: ${sysbench_test_dimension}"
 echo "Tables: ${sysbench_tables}"
 echo "Rows:   ${sysbench_rows}"
