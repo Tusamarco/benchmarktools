@@ -290,13 +290,13 @@ fi
 
 if [ ! "$dryrun" == "true" ]; then 
 	if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
-		`cd $SYSBENCH_LUA`
+		cd $SYSBENCH_LUA
 	  elif [ $testname == "ingest" ]; then   
-		`cd $SYSBENCH_LUA`
+		cd $SYSBENCH_LUA
 	  elif [ $testname == "tpcc" ]; then 
-		`cd $TPCC_LUA`  
+		cd $TPCC_LUA  
 	  else 
-		`cd $LOCAL_PATH`  
+		cd $LOCAL_PATH  
 	fi
 fi
 
@@ -319,7 +319,8 @@ if [ $testname == "tpcc" ]; then
 	done;
 fi
 
-
+#reset path
+cd $LOCAL_PATH
 exit
 
 
