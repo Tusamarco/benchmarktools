@@ -21,7 +21,7 @@ port=3306
 schemaname="windmills_small"
 subtest_list=false
 subtest="all"
-tablename="mills"
+table_name="mills"
 test="testXYZ"
 testname="sysbench"
 
@@ -89,7 +89,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --tablename)
-            tablename="$2"
+            table_name="$2"
             shift 2
             ;;
         --host)
@@ -163,7 +163,7 @@ echo "Running Host: $host"
 echo "Running Port: $port"
 echo "Running Engine: $engine"
 echo "Running Schemaname: $schemaname"
-echo "Running Table: $tablename"
+echo "Running Table: $table_name"
 echo "Running TIME: $TIME"
 echo "Running Thread set: $THREADS"
 
@@ -212,10 +212,48 @@ run_tests(){
 
  if [ "$dryrun" == "true" ]; then
       echo "Label: $label"
-      echo "Command: $commandtxt"
+      echo "Command: ${commandtxt}  --time=$TIME  --threads=${THREADS} $command "
  	else
  	 echo "nothing to do"
  fi
+
+
+if [ $testname == "sysbench" ] ;
+ then
+        echo "     Testing  $test $(print_date_time) [START]" >> "${LOGFILE}"
+    cd /opt/tools/sysbench
+
+        for threads in $THREADS;do
+                echo "======================================" 
+                echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
+
+                echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
+                echo "======================================" >>  "${LOGFILE}"
+                sysbench /opt/tools/sysbench/src/lua/padding/oltp_read.lua  --mysql-host=$host --mysql-port=$port --mysql-user=$USER --mysql-password=$PW --mysql-db=$schemaname --db-driver=mysql --tables=$TABLES --table_size=$ROWS  --time=$TIME  --rand-type=zipfian --rand-zipfian-exp=0 --skip_trx=on  --report-interval=1 --mysql-ignore-errors=none  --auto_inc=off --histogram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
+                echo "======================================" >> "${LOGFILE}"
+                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
+                echo "======================================" 
+                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
+        done;
+    cd /opt/tools
+        echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
@@ -265,23 +303,3 @@ exit
 
 
 
-if [ $testname == "sysbench" ] ;
- then
-        echo "     Testing  $test $(print_date_time) [START]" >> "${LOGFILE}"
-    cd /opt/tools/sysbench
-
-        for threads in $THREADS;do
-                echo "======================================" 
-                echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
-
-                echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
-                echo "======================================" >>  "${LOGFILE}"
-                sysbench /opt/tools/sysbench/src/lua/padding/oltp_read.lua  --mysql-host=$host --mysql-port=$port --mysql-user=$USER --mysql-password=$PW --mysql-db=$schemaname --db-driver=mysql --tables=$TABLES --table_size=$ROWS  --time=$TIME  --rand-type=zipfian --rand-zipfian-exp=0 --skip_trx=on  --report-interval=1 --mysql-ignore-errors=none  --auto_inc=off --histogram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
-                echo "======================================" >> "${LOGFILE}"
-                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
-                echo "======================================" 
-                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
-        done;
-    cd /opt/tools
-        echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
-fi
