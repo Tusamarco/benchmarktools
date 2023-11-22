@@ -218,26 +218,26 @@ run_tests(){
  fi
 
 
-if [ $testname == "sysbench" ] ;
- then
-        echo "     Testing  $test $(print_date_time) [START]" >> "${LOGFILE}"
-    cd /opt/tools/sysbench
-
-        for threads in $THREADS;do
-                echo "======================================" 
-                echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
-
-                echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
-                echo "======================================" >>  "${LOGFILE}"
-                sysbench /opt/tools/sysbench/src/lua/padding/oltp_read.lua  --mysql-host=$host --mysql-port=$port --mysql-user=$USER --mysql-password=$PW --mysql-db=$schemaname --db-driver=mysql --tables=$TABLES --table_size=$ROWS  --time=$TIME  --rand-type=zipfian --rand-zipfian-exp=0 --skip_trx=on  --report-interval=1 --mysql-ignore-errors=none  --auto_inc=off --histogram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
-                echo "======================================" >> "${LOGFILE}"
-                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
-                echo "======================================" 
-                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
-        done;
-    cd /opt/tools
-        echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
-fi
+# if [ $testname == "sysbench" ] ;
+#  then
+#         echo "     Testing  $test $(print_date_time) [START]" >> "${LOGFILE}"
+#     cd /opt/tools/sysbench
+# 
+#         for threads in $THREADS;do
+#                 echo "======================================" 
+#                 echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
+# 
+#                 echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
+#                 echo "======================================" >>  "${LOGFILE}"
+#                 sysbench /opt/tools/sysbench/src/lua/padding/oltp_read.lua  --mysql-host=$host --mysql-port=$port --mysql-user=$USER --mysql-password=$PW --mysql-db=$schemaname --db-driver=mysql --tables=$TABLES --table_size=$ROWS  --time=$TIME  --rand-type=zipfian --rand-zipfian-exp=0 --skip_trx=on  --report-interval=1 --mysql-ignore-errors=none  --auto_inc=off --histogram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
+#                 echo "======================================" >> "${LOGFILE}"
+#                 echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
+#                 echo "======================================" 
+#                 echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
+#         done;
+#     cd /opt/tools
+#         echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
+# fi
 
 
 
