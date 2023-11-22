@@ -182,13 +182,13 @@ echo "Tables: $TPCc_TABLES"
 nc -w 1 -z $host $port
 if [ $? -ne 0 ] ; then
     echo "[ERROR] Mysql did not start correctly ($host : $port)"
-    if [ "$dryrun" == "true" ]; then
+    if [ ! "$dryrun" == "true" ]; then
 	    echo "[ERROR] Mysql did not start correctly ($host : $port)" >> "${LOGFILE}"
 	fi
 #  exit 1
 else
   echo "[OK] Mysql running correctly" 
-  if [ "$dryrun" == "true" ]; then
+  if [ ! "$dryrun" == "true" ]; then
 	  echo "[OK] Mysql running correctly" >> "${LOGFILE}"
   fi
 fi
