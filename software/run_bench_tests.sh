@@ -18,21 +18,24 @@ filter_subtest="none"
 help=false
 host="127.0.0.1"
 port=3306
-schemaname="windmills_small"
+schemaname="windmills_"
 subtest_list=false
 subtest="all"
 table_name="mills"
 test="testXYZ"
 testname="sysbench"
+sysbench_test_dimension="small"
+sysbench_tables=""
+sysbench_rows=""
 
 
 #constants
 PW="test"
 RESULTS=/opt/results
-ROWS_SMALL=10000000
-ROWS_SMALL=30000000
-TABLES_LARGE=5
-TABLES_SMALL=20
+SYSNBENCH_ROWS_SMALL=10000000
+SYSNBENCH_ROWS_LARGE=30000000
+SYSNBENCH_TABLES_LARGE=5
+SYSNBENCH_TABLES_SMALL=20
 THREADS="1 2"
 #THREADS="1 2 4 8 16 32 64 128 256 512 1024 2056"
 TIME=60
@@ -98,9 +101,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         --port)
             port=$2
-            shift
+            shift 2
             ;;
-            
+        --sysbench_test_dimension)
+            sysbench_test_dimension="$2"
+            shift 2
+            ;;             
         --debug)
             debug=true
             shift
@@ -148,6 +154,17 @@ if [ "$help" = true ]; then
 	helptext
 fi
 
+if [ "$sysbench_test_dimension" == "small" ]; then
+    sysbench_tables="$TABLES_SMALL"
+    sysbench_rows="$ROWS_SMALL"
+ else
+    sysbench_tables="$TABLES_LARGE"
+    sysbench_rows="$ROWS_LARGE"
+fi
+
+
+
+
 
 LOGFILE=$RESULTS/${testname}/${test}_${command}_${subtest}_${filter_subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
 if [ ! -d "$RESULTS/${testname}" ]; then
@@ -172,7 +189,9 @@ echo "Rows Small: $ROWS_SMALL"
 echo "Tables Small: $TABLES_SMALL"
 echo "Rows Large: $ROWS_LARGE"
 echo "Tables Large: $TABLES_LARGE"
-
+echo "Using: ${sysbench_test_dimension}"
+echo "Tables: ${sysbench_tables}"
+echo "Rows:   ${sysbench_rows}"
 echo "============= TPC-C ============="
 echo "Warehouses:  $WHAREHOUSES"
 echo "Tables: $TPCc_TABLES"
@@ -282,7 +301,7 @@ fi
 #get the final execute_map
 if [ $testname == "sysbench" ]; then
 	for subtest_run in $subtest_execute;do	
-        run_tests "${subtest_run}" "${sysbench_tests[$subtest_run]}"
+        run_tests "${subtest_run}" "${sysbench_tests[$subtest_run]} --tables=${sysbench_tables} --table_size=${sysbench_rows} "
 	done;
 fi
 

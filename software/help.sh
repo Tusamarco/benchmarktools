@@ -8,21 +8,27 @@ script: $0
 
 Parameters:
         --command: The action to perform cleanup|prepare|run
+        --debug: extended output to standard out
         --dryrun: Printout the commands that will run without executing them
-        --test: The ID for the current test set IE PS8034
-        --testname: The testname you want to run [ingest|sysbench|tpcc]
-        --subtest: The specific subtest you want to run OR all (see output of --subtest_list)
-        --filter_subtest: Text to filter the subtest list. IE: "select" for sysbench will only return the select tests
-        --schemaname: Schema name 
         --engine: Engine to use default Innodb [innodb|myrocks]
-        --tablename: Table name for sysbench and Ingest 
+        --filter_subtest: Text to filter the subtest list. IE: "select" for sysbench will only return the select tests
+        --help: this help                        
         --host: MySQL host
         --port: MySQL poer
-        --debug: extended output to standard out
+        --schemaname: Schema name 
         --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)
-        --TIME: the execution time for the tests in seconds IE 600
+        --subtest: The specific subtest you want to run OR all (see output of --subtest_list)
+        --sysbench_test_dimension: we have 2 standard dimension small and large. Default is small:
+								SYSNBENCH_ROWS_LARGE=30000000
+								SYSNBENCH_ROWS_SMALL=10000000
+								SYSNBENCH_TABLES_LARGE=5
+								SYSNBENCH_TABLES_SMALL=20
+			So small has smaller tables but more of them, large is more about few tables and more rows.
+        --tablename: Table name for sysbench and Ingest 
+        --test: The ID for the current test set IE PS8034
+        --testname: The testname you want to run [ingest|sysbench|tpcc]
         --THREADS: the set of threads to use to run the tests use double quote as "2 4 8 16"
-        --help: this help                        
+        --TIME: the execution time for the tests in seconds IE 600
 
 Sub Tests
 	To visualize the subtests lists:
