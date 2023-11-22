@@ -33,9 +33,8 @@ ROWS_SMALL=10000000
 ROWS_SMALL=30000000
 TABLES_LARGE=5
 TABLES_SMALL=20
-THREADS="1 2 4 8 16 32 64 128 256 512 1024 2056"
-#THREADS="32 64 92"
-#TIME=1200
+THREADS="1 2"
+#THREADS="1 2 4 8 16 32 64 128 256 512 1024 2056"
 TIME=60
 TPCc_TABLES=10
 USER="app_test"
@@ -150,7 +149,7 @@ if [ "$help" = true ]; then
 fi
 
 
-LOGFILE=$RESULTS/${testname}/${test}_${subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
+LOGFILE=$RESULTS/${testname}/${test}_${command}_${subtest}_${filter_subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
