@@ -150,7 +150,7 @@ print_date_time(){
 #========================================
 
 
-if [ "$help" = true ]; then
+if [ "$help" == true ]; then
 	helptext
 fi
 
@@ -288,14 +288,16 @@ if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
       	echo "You need to pick eiter a set of subtests or"  
 fi
 
-if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
-    cd $SYSBENCH_LUA
-  elif [ $testname == "ingest" ]; then   
-    cd $SYSBENCH_LUA
-  elif [ $testname == "tpcc" ]; then 
-    cd $TPCC_LUA  
-  else 
-    cd $LOCAL_PATH  
+if [ ! "$dryrun" == "true" ]; then 
+	if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
+		`cd $SYSBENCH_LUA`
+	  elif [ $testname == "ingest" ]; then   
+		`cd $SYSBENCH_LUA`
+	  elif [ $testname == "tpcc" ]; then 
+		`cd $TPCC_LUA`  
+	  else 
+		`cd $LOCAL_PATH`  
+	fi
 fi
 
 #get the final execute_map
