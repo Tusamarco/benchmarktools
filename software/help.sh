@@ -19,7 +19,9 @@ Parameters:
         --host: MySQL host
         --port: MySQL poer
         --debug: extended output to standard out
-        --subtest_list: List of all sub test 
+        --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)
+        --TIME: the execution time for the tests in seconds IE 600
+        --THREADS: the set of threads to use to run the tests use double quote as "2 4 8 16"
         --help: this help                        
 
 Sub Tests

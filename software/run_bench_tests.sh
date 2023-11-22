@@ -7,7 +7,7 @@
 declare -A sysbench_tests
 declare -A ingest_tests 
 declare -A tpcc_tests 
-declare -A execute_map
+declare -a execute_map
 
 #setting defaults
 command="run"
@@ -73,7 +73,14 @@ while [[ $# -gt 0 ]]; do
             filter_subtest="$2"
             shift 2
             ;;
-
+        --TIME)
+            TIME="$2"
+            shift 2
+            ;;
+        --THREADS)
+            THREADS="$2"
+            shift 2
+            ;;            
         --schemaname)
             schemaname="$2"
             shift 2
@@ -94,6 +101,7 @@ while [[ $# -gt 0 ]]; do
             port=$2
             shift
             ;;
+            
         --debug)
             debug=true
             shift
@@ -189,38 +197,29 @@ if [ "$subtest_list" = true ]; then
     exit;
 fi
 
-get_execute_map(){
-if [ $testname == "sysbench" ]; then
-	for subtest_run in $subtest_execute;do	
-		execute_map["$subtest_run"]="${sysbench_tests[$subtest_run]}"
-	done;
-fi
 
-if [ $testname == "ingest" ]; then
-	for subtest_run in $subtest_execute;do	
-		execute_map["$subtest_run"]="${ingest_tests[$subtest_run]}"
-	done;
-fi
-
-if [ $testname == "sysbench" ]; then
-	for subtest_run in $subtest_execute;do	
-		execute_map["$subtest_run"]="${tpcc_tests[$subtest_run]}"
-	done;
-fi
-
-}
 
 
 #=========================
 # Run Tests 
 #=========================
+run_tests(){
+ label="$1"
+ commandtxt="$2"
+
+ if [ "$dryrun" == "true" ]; then
+      echo "Label: $label"
+      echo "Command: $commandtxt"
+ 	else
+ 	 echo "nothing to do"
+ fi
+
+}
 
 #get list of subtests to run (and commands)
-
-
 if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
      get_sub_test
-     echo "$subtest_execute"
+    # echo "$subtest_execute"
 
  elif [ ! "$subtest" == "all" ] && [ "$testname" == "all" ]; then
       echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
@@ -240,19 +239,27 @@ if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
 fi
 
 #get the final execute_map
-get_execute_map
+if [ $testname == "sysbench" ]; then
+	for subtest_run in $subtest_execute;do	
+        run_tests "${subtest_run}" "${sysbench_tests[$subtest_run]}"
+	done;
+fi
 
-for subtest_run in $subtest_execute;do
-	if [ "$dryrun" == "true" ]; then
-       #echo "${subtest_run}" 
-       echo "${execute_map[$subtest_run]}" 
-     else
-       echo "nothing to do"
-    fi
+if [ $testname == "ingest" ]; then
+	for subtest_run in $subtest_execute;do	
+		 run_tests "$subtest_run" "${ingest_tests[$subtest_run]}"
+	done;
+fi
 
-done 
+if [ $testname == "tpcc" ]; then
+	for subtest_run in $subtest_execute;do	
+		run_tests "$subtest_run" "${tpcc_tests[$subtest_run]}"
+	done;
+fi
+
 
 exit
+
 
 
 if [ $testname == "sysbench" ] ;
