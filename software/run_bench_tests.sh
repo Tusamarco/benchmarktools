@@ -235,7 +235,7 @@ run_tests(){
 
 #                echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
 #                echo "======================================" >>  "${LOGFILE}"
-				 echo "Command: ${commandtxt}  --time=$TIME  --threads=${THREADS} $command " 
+				 echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} $command " 
 #                echo "======================================" >> "${LOGFILE}"
 #                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
                 echo "======================================" 
