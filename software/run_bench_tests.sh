@@ -166,7 +166,7 @@ echo "Running Engine: $engine"
 echo "Running Schemaname: $schemaname"
 echo "Running Table: $tablename"
 echo "Running TIME: $TIME"
-echo "Running Thread set: $TREADS"
+echo "Running Thread set: $THREADS"
 
 echo "============= SysBench ============="
 echo "Rows Small: $ROWS_SMALL"
