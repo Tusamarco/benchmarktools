@@ -162,10 +162,6 @@ if [ "$sysbench_test_dimension" == "small" ]; then
     sysbench_rows="$SYSNBENCH_ROWS_LARGE"
 fi
 
-
-
-
-
 LOGFILE=$RESULTS/${testname}/${test}_${command}_${subtest}_${filter_subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
@@ -233,7 +229,19 @@ run_tests(){
       echo "Label: $label"
       echo "Command: ${commandtxt}  --time=$TIME  --threads=${THREADS} $command "
  	else
- 	 echo "nothing to do"
+        for threads in $THREADS;do
+                echo "======================================" 
+                echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
+
+#                echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
+#                echo "======================================" >>  "${LOGFILE}"
+				 echo "Command: ${commandtxt}  --time=$TIME  --threads=${THREADS} $command " 
+#                echo "======================================" >> "${LOGFILE}"
+#                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
+                echo "======================================" 
+                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
+        done;
+#        echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
  fi
 
 
