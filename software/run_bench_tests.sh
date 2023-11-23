@@ -18,10 +18,10 @@ filter_subtest="none"
 help=false
 host="127.0.0.1"
 port=3306
-schemaname="windmills_"
+schemaname="windmills_small"
 subtest_list=false
 subtest="all"
-table_name="mills"
+table_name="mill"
 test="testXYZ"
 testname="sysbench"
 sysbench_test_dimension="small"
@@ -227,21 +227,21 @@ run_tests(){
 
  if [ "$dryrun" == "true" ]; then
       echo "Label: $label"
-      echo "Command: ${commandtxt}  --time=$TIME  --threads=${THREADS} $command "
+      echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
  	else
         for threads in $THREADS;do
                 echo "======================================" 
-                echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
+ #               echo "RUNNING Test $test $testname $subtest Thread=$threads [Start] $(print_date_time) "
 
-#                echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
-#                echo "======================================" >>  "${LOGFILE}"
-				 echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} $command " 
-#                echo "======================================" >> "${LOGFILE}"
-#                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
+                echo "RUNNING Test $test $testname $subtest Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
+                echo "======================================" | tee -a  "${LOGFILE}"
+			    ${commandtxt}  --time=$TIME  --threads=${threads} $command   | tee -a "${LOGFILE}"
+                echo "======================================" | tee -a "${LOGFILE}"
+                echo "RUNNING Test $test $testname $subtest Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
                 echo "======================================" 
-                echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
+#                echo "RUNNING Test $test $testname $subtest Thread=$threads [END] $(print_date_time) "
         done;
-#        echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
+        echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
  fi
 
 
@@ -310,6 +310,7 @@ fi
 
 #get the final execute_map
 if [ $testname == "sysbench" ]; then
+    
 	for subtest_run in $subtest_execute;do	
         run_tests "${subtest_run}" "${sysbench_tests[$subtest_run]} --tables=${sysbench_tables} --table_size=${sysbench_rows} "
 	done;
