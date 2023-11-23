@@ -201,7 +201,7 @@ echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
 nc -w 1 -z $host $port
 if [ $? -ne 0 ] ; then
      echo "[ERROR] Mysql did not start correctly ($host : $port)" >> "${LOGFILE}"  | tee -a $LOGFILE
-#  exit 1
+     exit 1
 else
      echo "[OK] Mysql running correctly" >> "${LOGFILE}"  | tee -a $LOGFILE
 fi
