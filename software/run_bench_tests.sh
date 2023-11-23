@@ -229,17 +229,17 @@ run_tests(){
  	else
         for threads in $THREADS;do
                 echo "======================================" 
- #               echo "RUNNING Test $test $testname $subtest (filter: ${filter_subtest}) Thread=$threads [Start] $(print_date_time) "
+ #               echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [Start] $(print_date_time) "
 
-                echo "RUNNING Test $test $testname $subtest (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
+                echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
                 echo "======================================" | tee -a  "${LOGFILE}"
 			    ${commandtxt}  --time=$TIME  --threads=${threads} $command   | tee -a "${LOGFILE}"
                 echo "======================================" | tee -a "${LOGFILE}"
-                echo "RUNNING Test $test $testname $subtest (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
+                echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
                 echo "======================================" 
-#                echo "RUNNING Test $test $testname $subtest (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) "
+#                echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) "
         done;
-        echo "Test $test $testname $subtest (filter: ${filter_subtest}) Thread=$threads $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
+        echo "Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
  fi
 }
 
