@@ -167,45 +167,43 @@ if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
 
-echo "Current path: $LOCAL_PATH"
-echo "Dry run: ${dryrun}"
-echo "Running Test: $test"
-echo "Running Testname: $testname"
-echo "Running Sub Test: $subtest"
-echo "Running Host: $host"
-echo "Running Port: $port"
-echo "Running Engine: $engine"
-echo "Running Schemaname: $schemaname"
-echo "Running Table: $table_name"
-echo "Running TIME: $TIME"
-echo "Running Thread set: $THREADS"
+if [ "$dryrun" == "true" ]; then
+   LOGFILE=/dev/null 
+fi
 
-echo "============= SysBench ============="
-echo "Rows Small: $SYSNBENCH_ROWS_SMALL"
-echo "Tables Small: $SYSNBENCH_TABLES_SMALL"
-echo "Rows Large: $SYSNBENCH_ROWS_LARGE"
-echo "Tables Large: $SYSNBENCH_TABLES_LARGE"
-echo "Using: ${sysbench_test_dimension}"
-echo "Tables: ${sysbench_tables}"
-echo "Rows:   ${sysbench_rows}"
-echo "============= TPC-C ============="
-echo "Warehouses:  $WHAREHOUSES"
-echo "Tables: $TPCc_TABLES"
+echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
+echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
+echo "Running Test: $test"  | tee -a $LOGFILE
+echo "Running Testname: $testname"  | tee -a $LOGFILE
+echo "Running Sub Test: $subtest"  | tee -a $LOGFILE
+echo "Running Host: $host"  | tee -a $LOGFILE
+echo "Running Port: $port"  | tee -a $LOGFILE
+echo "Running Engine: $engine"  | tee -a $LOGFILE
+echo "Running Schemaname: $schemaname"  | tee -a $LOGFILE
+echo "Running Table: $table_name"  | tee -a $LOGFILE
+echo "Running TIME: $TIME"  | tee -a $LOGFILE
+echo "Running Thread set: $THREADS"  | tee -a $LOGFILE
+
+echo "============= SysBench ============="  | tee -a $LOGFILE
+echo "Rows Small: $SYSNBENCH_ROWS_SMALL"  | tee -a $LOGFILE
+echo "Tables Small: $SYSNBENCH_TABLES_SMALL"  | tee -a $LOGFILE
+echo "Rows Large: $SYSNBENCH_ROWS_LARGE"  | tee -a $LOGFILE
+echo "Tables Large: $SYSNBENCH_TABLES_LARGE"  | tee -a $LOGFILE
+echo "Using: ${sysbench_test_dimension}"  | tee -a $LOGFILE
+echo "Tables: ${sysbench_tables}"  | tee -a $LOGFILE
+echo "Rows:   ${sysbench_rows}"  | tee -a $LOGFILE
+echo "============= TPC-C ============="  | tee -a $LOGFILE
+echo "Warehouses:  $WHAREHOUSES"  | tee -a $LOGFILE
+echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
 
 
 
 nc -w 1 -z $host $port
 if [ $? -ne 0 ] ; then
-    echo "[ERROR] Mysql did not start correctly ($host : $port)"
-    if [ ! "$dryrun" == "true" ]; then
-	    echo "[ERROR] Mysql did not start correctly ($host : $port)" >> "${LOGFILE}"
-	fi
+     echo "[ERROR] Mysql did not start correctly ($host : $port)" >> "${LOGFILE}"  | tee -a $LOGFILE
 #  exit 1
 else
-  echo "[OK] Mysql running correctly" 
-  if [ ! "$dryrun" == "true" ]; then
-	  echo "[OK] Mysql running correctly" >> "${LOGFILE}"
-  fi
+     echo "[OK] Mysql running correctly" >> "${LOGFILE}"  | tee -a $LOGFILE
 fi
 
 fill_ingest_map
@@ -243,45 +241,6 @@ run_tests(){
         done;
         echo "Test $test $testname $subtest (filter: ${filter_subtest}) Thread=$threads $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
  fi
-
-
-# if [ $testname == "sysbench" ] ;
-#  then
-#         echo "     Testing  $test $(print_date_time) [START]" >> "${LOGFILE}"
-#     cd /opt/tools/sysbench
-# 
-#         for threads in $THREADS;do
-#                 echo "======================================" 
-#                 echo "RUNNING Test $test Thread=$threads [Start] $(print_date_time) "
-# 
-#                 echo "RUNNING Test $test READ ONLY Thread=$threads [START] $(print_date_time) " >> "${LOGFILE}"
-#                 echo "======================================" >>  "${LOGFILE}"
-#                 sysbench /opt/tools/sysbench/src/lua/padding/oltp_read.lua  --mysql-host=$host --mysql-port=$port --mysql-user=$USER --mysql-password=$PW --mysql-db=$schemaname --db-driver=mysql --tables=$TABLES --table_size=$ROWS  --time=$TIME  --rand-type=zipfian --rand-zipfian-exp=0 --skip_trx=on  --report-interval=1 --mysql-ignore-errors=none  --auto_inc=off --histogram --table_name=$tablename  --stats_format=csv --db-ps-mode=disable --threads=$threads run >> "${LOGFILE}"
-#                 echo "======================================" >> "${LOGFILE}"
-#                 echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) " >> "${LOGFILE}"
-#                 echo "======================================" 
-#                 echo "RUNNING Test $test Thread=$threads [END] $(print_date_time) "
-#         done;
-#     cd /opt/tools
-#         echo "Testing  $test $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
-# fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 #get list of subtests to run (and commands)
