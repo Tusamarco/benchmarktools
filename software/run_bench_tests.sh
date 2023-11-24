@@ -223,24 +223,25 @@ run_tests(){
  label="$1"
  commandtxt="$2"
 
- if [ "$dryrun" == "true" ]; then
-      echo "Label: $label"
-      echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
- 	else
-        for threads in $THREADS;do
-                echo "======================================" 
- #               echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [Start] $(print_date_time) "
-
-                echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
-                echo "======================================" | tee -a  "${LOGFILE}"
-			    ${commandtxt}  --time=$TIME  --threads=${threads} $command   | tee -a "${LOGFILE}"
-                echo "======================================" | tee -a "${LOGFILE}"
-                echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
-                echo "======================================" 
-#                echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) "
-        done;
-        echo "Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads $(date +'%Y-%m-%d_%H_%M_%S') [END]" >> "${LOGFILE}";
- fi
+	echo "*****************************************" | tee -a  "${LOGFILE}";
+	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
+	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
+	for threads in $THREADS;do
+			echo "======================================" 
+			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
+			echo "======================================" | tee -a  "${LOGFILE}"
+		   if [ "$dryrun" == "true" ]; then
+			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
+			else 
+			  ${commandtxt}  --time=$TIME  --threads=${threads} $command   | tee -a "${LOGFILE}"
+		   fi   
+			echo "======================================" | tee -a "${LOGFILE}"
+			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
+			echo "======================================" 
+	done;
+	echo "BLOCK: [END] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a  "${LOGFILE}";
+	echo "*****************************************" | tee -a  "${LOGFILE}";
+	echo "" | tee -a  "${LOGFILE}";
 }
 
 #get list of subtests to run (and commands)
