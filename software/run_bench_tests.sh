@@ -172,6 +172,7 @@ if [ "$dryrun" == "true" ]; then
 fi
 
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
+echo "Execution time: $(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
 echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
 echo "Running Test: $test"  | tee -a $LOGFILE
 echo "Running Testname: $testname"  | tee -a $LOGFILE
@@ -227,7 +228,8 @@ run_tests(){
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
 	for threads in $THREADS;do
-			echo "======================================" 
+			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
+			echo "======================================"  | tee -a  "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
