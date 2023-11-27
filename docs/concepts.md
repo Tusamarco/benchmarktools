@@ -191,4 +191,4 @@ Given so it is acceptable to use one of the major distribution (by family of OS)
 
 ## Implementations
 
-[MySQL Plan of Action](https://www.notion.so/MySQL-Plan-of-action-648bd9c25ad64b7288f2bbb18827852d?pvs=21)
+[MySQL Plan of Action](plan.md)
