@@ -62,8 +62,15 @@ drwxr-x---  7 mysql mysql 4096 Nov 23 17:13 test-sysbench-my834
 drwxr-x---  6 mysql mysql 4096 Nov 23 16:27 test-tpcc-ps834
 ```
 That contains already few MySQL instances ready to go. 
+To use them, COPY the content inside the `/opt/mysql_instance/` directory.
+To do so will have 2 positive effects:
+1. You will keep an original copy of the data, tha will allow you to perform multiple tests starting always from the same consistent point. 
+2. The test will be executed running locally and not from an EBS.
+
+Inside each directory you will find a `./start & ./stop` command, use them to start/stop the instance.  
 
 ### Testing code
+
 We have three main tests:
 - Ingest
 - Sysbench 
