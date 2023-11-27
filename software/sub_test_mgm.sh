@@ -36,7 +36,13 @@ sorted="$1"
 		echo "-- cleanup prepare --"
 		for key in ${sorted}; do
 			if [[ "$key" =~ "clean" ]];then
-				echo "   $key "
+			    if [[ ! "$filter_subtest" == "none" ]];then
+					if [[ "$key" =~ "$filter_subtest" ]];then
+						echo "   $key "
+					fi
+					else
+						echo "   $key "
+				fi
 			fi
 		done
 	fi
@@ -44,7 +50,13 @@ sorted="$1"
 		echo "-- run --"
 		for key in ${sorted}; do
 			if ! [[ "$key" =~ "clean" ]];then
-				echo "   $key "
+			    if [[ ! "$filter_subtest" == "none" ]];then
+					if [[ "$key" =~ "$filter_subtest" ]];then
+						echo "   $key "
+					fi
+					else
+						echo "   $key "
+				fi
 			fi
 		done
 	fi	
