@@ -1,5 +1,23 @@
 #! /bin/bash 
 #
+#----------------------------------------------------
+# Script logic
+# 1) given a file FILETOPARSE
+# 2) create directory as filename 
+# 3) identify subtest SUBTEST: XXX
+# 4) identify running threads 
+# 5) for all data between Threads started! and Latency histogram (values are in milliseconds) send the data to file FILETOPARSE_subtest_threads_data.csv 
+# 6) for all data between Latency histogram (values are in milliseconds) and Empty line send the data to FILETOPARSE_subtest_histogram_threads.txt
+# 7) FIND TEST SUMMARY: line if CURRENT threads = 0, then:
+#     - FILETOPARSE_subtest_summary_threads.csv 
+#     - print next 2 lines else skip one line and print second
+# 8) FIND BLOCK: [END] 
+#     - set subtest to none
+#     - reset threads
+#     - reset workingfile to ""
+# execution example: bash read_from_file.sh testXYZ_run_all_select_innodb_2023-11-24_13_59.txt /opt/results/
+#----------------------------------------------------
+
 FILETOPARSE=$1
 LOCPATH=$2
 WRITE=0
@@ -23,7 +41,7 @@ is_number="no"
             echo ".. Calculating the number of line to process:";
             NUMBEROFLINES=$(wc -l ${LOCPATH}/${FILETOPARSE} |awk -F' ' '{print $1}')
             ORIGFILEOUTNAME=${LOCPATH}/$FILEOUTNAME/$FILEOUTNAME
-            mkdir -p ${LOCPATH}/$FILEOUTNAME/
+            mkdir -p ${LOCPATH}/$FILEOUTNAME/data
 		else 
 			echo " File ${LOCPATH}/${FILETOPARSE} does not exists";
 			exit 1;
@@ -74,52 +92,39 @@ exract_file(){
 	fi
 
     if [[ $LINE =~ "THREADS" ]] && [ ! "$SUBTEST" == "none" ]; then
-#        echo $LINE
 	    THREADS=$(echo $LINE|sed -e 's/ //gi'|awk -F'=' '{print $2}')
-#	    echo "DEBUG THREADS: ${THREADS}"
 	fi
     
     if [[ $LINE =~ "Threads started" ]] && [ $THREADS > 0 ]; then
        type_of_output="data"
        WRITE=1 
-       workingfile=${ORIGFILEOUTNAME}_${SUBTEST}_${THREADS}_${type_of_output}.csv
+       workingfile="${ORIGFILEOUTNAME}_${SUBTEST}_${THREADS}_${type_of_output}.csv"
        #we go ahead one empty line to go for next series of data
        read -r LINE2
        read -r LINE3
        LINE=${LINE3} 
-       echo "DEBUG DATA |$LINE|$LINE2|"
     fi    
-
-# 	if  [ $WRITE -eq 1 ] &&  [[ $LINE =~ $STOPDELIMITER ]]
-# 	then
-# 		WRITE=0
-#         if  [ $SPLIT -eq 1 ] 
-#         then
-#             ((SPLITCOUNTER=$SPLITCOUNTER+1))
-#             FILEOUTNAME=${ORIGFILEOUTNAME}_${SPLITCOUNTER}_data.txt
-#         fi
-# 	fi
 
 
    if [[ $LINE =~ "Latency" ]]; then
        type_of_output="histogram"
        WRITE=1 
-       workingfile=${ORIGFILEOUTNAME}_${SUBTEST}_${type_of_output}.txt
+       workingfile=${ORIGFILEOUTNAME}_${type_of_output}.txt
+       echo "------- ${SUBTEST} -------"  >> ${workingfile}
    fi
 
    if [[ $LINE =~ "TEST SUMMARY" ]]; then
        type_of_output="summary"
        WRITE=0 
-       workingfile=${ORIGFILEOUTNAME}_${SUBTEST}_${type_of_output}.csv
+       workingfile=${ORIGFILEOUTNAME}_${type_of_output}.csv
        read -r LINE2 
        if [ $SUMMARYLINE1 == true ];then
-           echo $LINE2 >> ${workingfile}
+           echo "" >> ${workingfile}
+           echo "subtest,${LINE2}" >> ${workingfile}
            SUMMARYLINE1=false
        fi
        read -r LINE3
-#       echo "DEBUG summary |$LINE|$LINE2|$LINE3|"
-       echo $LINE3 >> ${workingfile}
-       #workingfile=""
+       echo "${SUBTEST},${LINE3}" >> ${workingfile}
    fi
 #   echo "DEBUG: ${type_of_output}"
    if [[ $LINE =~ "BLOCK: [END]" ]]; then
@@ -130,7 +135,7 @@ exract_file(){
     fi
    
 	if [ $WRITE == 1 ]; then
-	    echo "WRITE IS ON"
+	    #echo "WRITE IS ON"
 		if [ "${type_of_output}" == "data" ]; then
 	  	    to_check=$(echo $LINE|awk -F',' '{print $1}')
             #we check if the line has numbers of any text because error in the last case we stop writing 
@@ -140,17 +145,18 @@ exract_file(){
 		  	else
 		  		WRITE=0
 		  		type_of_output=""
-		  		#workingfile=""
 		  	fi
 		else
-		  	echo $LINE >> ${workingfile}
+		    to_write=$(echo "$LINE"| sed -e 's/[* ]//g') 
+		  	echo $to_write >> ${workingfile}
 	  	fi
 	fi
 	
 	((i=i+1))
 	
-	if [ $i > 1000000 ]
+	if [ $i -gt 500 ]
 	then
+         echo "At ${COUNTER} Line"
  	     ((COUNTER=COUNTER+i))
 	     i=0
 	 fi
@@ -171,6 +177,7 @@ case $FILETOPARSE in
       echo "Running extract"
       ask_confirmation
       exract_file
+      mv ${ORIGFILEOUTNAME}_*_data.csv ${LOCPATH}/$FILEOUTNAME/data 
       ;;
   esac 	
 	 
