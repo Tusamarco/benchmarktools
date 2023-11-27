@@ -56,6 +56,9 @@ get_sub_test_txt(){
 		echo $command
 		echo $testname
 	fi
+	
+    echo ""
+    echo "------ SubTests list ------"  
 
     if [ "$testname" == "ingest" ] || [ "$testname" == "all" ]; then 
 		echo "-- Ingest --"
