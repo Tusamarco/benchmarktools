@@ -197,25 +197,23 @@ echo "============= TPC-C ============="  | tee -a $LOGFILE
 echo "Warehouses:  $WHAREHOUSES"  | tee -a $LOGFILE
 echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
 
-
-
-nc -w 1 -z $host $port
-if [ $? -ne 0 ] ; then
-     echo "[ERROR] Mysql did not start correctly ($host : $port)" >> "${LOGFILE}"  | tee -a $LOGFILE
-     exit 1
-else
-     echo "[OK] Mysql running correctly" >> "${LOGFILE}"  | tee -a $LOGFILE
-fi
-
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
 
-if [ "$subtest_list" = true ]; then
-    get_sub_test_txt 
-    exit;
-fi
 
+if [ ! "$subtest_list" == "true" ]; then
+	nc -w 1 -z $host $port
+	if [ $? -ne 0 ]; then
+		 echo "[ERROR] Mysql did not start correctly ($host : $port)" | tee -a $LOGFILE
+		 exit 1
+	else
+		 echo "[OK] Mysql running correctly" | tee -a $LOGFILE
+	fi
+  else
+      get_sub_test_txt 
+      exit;
+fi
 
 #=========================
 # Run Tests 
