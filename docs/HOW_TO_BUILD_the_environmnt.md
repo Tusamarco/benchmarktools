@@ -70,7 +70,6 @@ To do so will have 2 positive effects:
 Inside each directory you will find a `./start & ./stop` command, use them to start/stop the instance.  
 
 ### Testing code
-
 We have three main tests:
 - Ingest
 - Sysbench 
@@ -86,6 +85,12 @@ The above script is managing the sysbench and TPC-c tests.
 While to transform the  logs `read_and_get_from_file.sh` is the one, again `--help` to discover how to use it. 
 
 DBt3 has a separate set of scripts inside the `dbt3` directory.
+
+To run the Sysbench tests, you must use the version from my repository. It has some modifications that I have inserted to facilitate the benchmarking execution and output. Nothing there is changing the performance behaviour or impacting on the internals. 
+Sysbench (https://github.com/Tusamarco/sysbench/tree/percona-testing)
+sysbench tpcc (https://github.com/Tusamarco/sysbench-tpcc) 
+
+dbt-3 Additional software, configs and tools from (https://github.com/Tusamarco/benchmarktools/software/dbt3) 
 
 
 
