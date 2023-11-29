@@ -1,7 +1,7 @@
 # How to prepare the Benchmark environment
 
 ## Overview
-Before you even start you suggest you to read [this page with concepts](concepts.md) and example of [action plan](plan.md)
+Before you even start I suggest you to read [this page with concepts](concepts.md) and example of [action plan](plan.md)
 
 
 The benchmarking environment is compose by 2 main components:
