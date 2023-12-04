@@ -155,7 +155,7 @@ exract_file(){
 #    printf "\b${sp:spin++%${#sp}:1}"
 	
 	
-	if [ $i -gt 1000 ]
+	if [ $i -gt 200 ]
 	then
 	      ProgressBar ${COUNTER} ${NUMBEROFLINES}
  #        printf "At ${COUNTER} Line        "
