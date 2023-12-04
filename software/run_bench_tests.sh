@@ -27,7 +27,9 @@ testname="sysbench"
 sysbench_test_dimension="small"
 sysbench_tables=""
 sysbench_rows=""
-
+rate=""
+error_ignore="all"
+testrun=false
 
 #constants
 PW="test"
@@ -106,7 +108,11 @@ while [[ $# -gt 0 ]]; do
         --sysbench_test_dimension)
             sysbench_test_dimension="$2"
             shift 2
-            ;;             
+            ;;
+        --error_ignore)
+            error_ignore="$2"
+            shift 2
+            ;;                 
         --debug)
             debug=true
             shift
@@ -123,6 +129,10 @@ while [[ $# -gt 0 ]]; do
             dryrun=true
             shift 
             ;;
+        --testrun)
+            testrun=true
+            shift
+            ;;    
         *)
             echo "Unknown argument: $1"
 			helptext
@@ -161,6 +171,10 @@ if [ "$sysbench_test_dimension" == "small" ]; then
     sysbench_tables="$SYSNBENCH_TABLES_LARGE"
     sysbench_rows="$SYSNBENCH_ROWS_LARGE"
 fi
+
+if [ "$testrun" == "true" ];then
+    testname="${testname}_TESTRUN"
+fi 
 
 LOGFILE=$RESULTS/${testname}/${test}_${command}_${subtest}_${filter_subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
 if [ ! -d "$RESULTS/${testname}" ]; then
@@ -221,10 +235,23 @@ fi
 run_tests(){
  label="$1"
  commandtxt="$2"
-
+ max_threads=0
+ 
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
+	
+	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
+        	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
+        	max_threads=$sysbench_tables
+        	echo "NOTE: launcher_threads_override detected, threads adjusted to number of tables THREADS=$THREADS" | tee -a  "${LOGFILE}"
+	fi
+	
+	if [ "$testrun" == "true" ];then
+        THREADS="1"
+        TIME=5	
+	fi
+	
 	for threads in $THREADS;do
 			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "======================================"  | tee -a  "${LOGFILE}"
@@ -232,8 +259,12 @@ run_tests(){
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
 			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
-			else 
-			  ${commandtxt}  --time=$TIME  --threads=${threads} $command   | tee -a "${LOGFILE}"
+			else
+			  if [ $max_threads -gt 0 ] && [ $thread -gt $max_threads ]; then
+			     continue; 
+			   else 
+			     ${commandtxt}  --time=$TIME  --threads=${threads} $command --mysql-ignore-errors=${error_ignore} ${rate} | tee -a "${LOGFILE}"
+			  fi
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
