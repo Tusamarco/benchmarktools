@@ -11,6 +11,7 @@ Parameters:
         --debug: extended output to standard out
         --dryrun: Printout the commands that will run without executing them
         --engine: Engine to use default Innodb [innodb|myrocks]
+        --error_ignore: Set the level for the option --mysql-ignore-errors. Default none
         --filter_subtest: Text to filter the subtest list. IE: "select" for sysbench will only return the select tests
         --help: this help                        
         --host: MySQL host
@@ -27,8 +28,10 @@ Parameters:
         --tablename: Table name for sysbench and Ingest 
         --test: The ID for the current test set IE PS8034
         --testname: The testname you want to run [ingest|sysbench|tpcc]
+        --testrun: Run the tests with  thread and only for 10 seconds, just to check if they may work
         --THREADS: the set of threads to use to run the tests use double quote as "2 4 8 16"
         --TIME: the execution time for the tests in seconds IE 600
+
 
 Sub Tests
 	To visualize the subtests lists:

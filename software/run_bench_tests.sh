@@ -28,7 +28,7 @@ sysbench_test_dimension="small"
 sysbench_tables=""
 sysbench_rows=""
 rate=""
-error_ignore="all"
+error_ignore="none"
 testrun=false
 
 #constants
