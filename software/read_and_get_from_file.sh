@@ -18,35 +18,6 @@
 # execution example: bash read_from_file.sh testXYZ_run_all_select_innodb_2023-11-24_13_59.txt /opt/results/
 #----------------------------------------------------
 
-FILETOPARSE=$1
-LOCPATH=$2
-WRITE=0
-FILEOUTNAME=$(echo $FILETOPARSE |awk -F'.' '{print $1}')
-#FILEOUTNAME="${FILEOUTNAME}"
-NUMBEROFLINES=0
-SPLIT=0
-THREADS=0
-SUBTEST="none"
-ORIGFILEOUTNAME=""
-is_number="no"
-
-	if [ "X${LOCPATH}" = "X" ] 
-	then
-		LOCPATH=`pwd`;
-	fi 
-
-	if [ -f "${LOCPATH}/${FILETOPARSE}" ] 
-	then 
-			echo "File ${LOCPATH}/${FILETOPARSE} OK";  
-            echo ".. Calculating the number of line to process:";
-            NUMBEROFLINES=$(wc -l ${LOCPATH}/${FILETOPARSE} |awk -F' ' '{print $1}')
-            ORIGFILEOUTNAME=${LOCPATH}/$FILEOUTNAME/$FILEOUTNAME
-            mkdir -p ${LOCPATH}/$FILEOUTNAME/data
-		else 
-			echo " File ${LOCPATH}/${FILETOPARSE} does not exists";
-			exit 1;
-	fi
-
 
 ask_confirmation(){
   echo "============================================="
@@ -54,9 +25,14 @@ ask_confirmation(){
   echo "Number of lines ${NUMBEROFLINES}"
   echo "Local Path  ${LOCPATH}"
   echo "Resulting filename HEAD ${FILEOUTNAME}"
+  echo "Output dir/file ${ORIGFILEOUTNAME}"
   echo "============================================="
 
-  read -p "Should continue? [y/n] " -n 1 -r
+  if [ "$NOASK" == "false" ]; then
+	  read -p "Should continue? [y/n] " -n 1 -r
+	else
+	  REPLY="y"
+  fi 	  
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
@@ -75,6 +51,23 @@ if [[ $1 =~ ^[0-9]+$ ]]; then
 fi
 }
 
+function ProgressBar {
+# Process data
+    let _progress=(${1}*100/${2}*100)/100
+    let _done=(${_progress}*4)/10
+    let _left=40-$_done
+# Build progressbar string lengths
+    _fill=$(printf "%${_done}s")
+    _empty=$(printf "%${_left}s")
+
+# 1.2 Build progressbar strings and print the ProgressBar line
+# 1.2.1 Output example:                           
+# 1.2.1.1 Progress : [########################################] 100%
+printf "\rProgress : [${_fill// /#}${_empty// /-}] ${_progress}%%"
+
+}
+
+
 exract_file(){
 	
 	local type_of_output=""
@@ -83,6 +76,11 @@ exract_file(){
 	OLDDATE="NEW"
 	COUNTER=0
 	SUMMARYLINE1=false
+	spin=0
+    sp="/-\|"
+
+
+
 
 	while read -r LINE
 	do
@@ -154,20 +152,42 @@ exract_file(){
 	
 	((i=i+1))
 	
-	if [ $i -gt 500 ]
+#    printf "\b${sp:spin++%${#sp}:1}"
+	
+	
+	if [ $i -gt 1000 ]
 	then
-         echo "At ${COUNTER} Line"
+	      ProgressBar ${COUNTER} ${NUMBEROFLINES}
+ #        printf "At ${COUNTER} Line        "
  	     ((COUNTER=COUNTER+i))
 	     i=0
 	 fi
 	done < ${LOCPATH}/${FILETOPARSE}
+	echo ""
 }
 
 print_help(){
 
-echo " read_and_get_from_file.sh <FILE_name> <PATH> "
-
+echo " read_and_get_from_file.sh <FILE_name> <PATH> <DESTINATION PATH> "
+echo "IE:  export PARSEPATH="/opt/results/sysbench/"; for file in `ls ${PARSEPATH}|grep -e 'small'|grep -v '_2_'`;do  ./read_and_get_from_file.sh $file $PARSEPATH /opt/results/processed --noask;done"
+echo "Optionally you can add as 4th params --noask. The program will not ask for confirmation each time." 
+exit 0
 }
+
+
+FILETOPARSE=$1
+LOCPATH=$2
+DESTPATH=$3
+NOASK=${4:-"false"}
+WRITE=0
+FILEOUTNAME=$(echo $FILETOPARSE |awk -F'.' '{print $1}')
+#FILEOUTNAME="${FILEOUTNAME}"
+NUMBEROFLINES=0
+SPLIT=0
+THREADS=0
+SUBTEST="none"
+ORIGFILEOUTNAME=""
+is_number="no"
 
 case $FILETOPARSE in
     -h|--help)
@@ -175,9 +195,33 @@ case $FILETOPARSE in
       ;;
     *)
       echo "Running extract"
-      ask_confirmation
-      exract_file
-      mv ${ORIGFILEOUTNAME}_*_data.csv ${LOCPATH}/$FILEOUTNAME/data 
       ;;
-  esac 	
+esac 	
 	 
+if [ "X${LOCPATH}" = "X" ] 
+then
+	LOCPATH=`pwd`;
+fi 
+
+if [ -f "${LOCPATH}/${FILETOPARSE}" ] 
+then 
+		echo "File ${LOCPATH}/${FILETOPARSE} OK";  
+		echo ".. Calculating the number of line to process:";
+		NUMBEROFLINES=$(wc -l ${LOCPATH}/${FILETOPARSE} |awk -F' ' '{print $1}')
+		if [ "$DESTPATH" == "" ]; then
+		    echo "Invalid destination path |${DESTPATH}|"
+		    exit 1
+		fi
+		ORIGFILEOUTNAME=${DESTPATH}/$FILEOUTNAME/$FILEOUTNAME
+		mkdir -p ${DESTPATH}/$FILEOUTNAME/data
+	else 
+		echo " File ${LOCPATH}/${FILETOPARSE} does not exists";
+		exit 1;
+fi
+
+ask_confirmation
+exract_file
+mv ${DESTPATH}/$FILEOUTNAME/*_data.csv ${DESTPATH}/$FILEOUTNAME/data 
+
+
+
