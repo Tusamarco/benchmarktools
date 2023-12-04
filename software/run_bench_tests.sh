@@ -253,6 +253,10 @@ run_tests(){
 	fi
 	
 	for threads in $THREADS;do
+	  if [ $max_threads -gt 0 ] && [ $threads -gt $max_threads ]; then
+		    echo "max_threads hit we are skipping threads: $threads" | tee -a "${LOGFILE}" 
+		   continue; 
+	   else 
 			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "======================================"  | tee -a  "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
@@ -260,16 +264,12 @@ run_tests(){
 		   if [ "$dryrun" == "true" ]; then
 			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
 			else
-			  if [ $max_threads -gt 0 ] && [ $thread -gt $max_threads ]; then
-			     echo "max_threads hit we are skipping threads: $threads" | tee -a "${LOGFILE}" 
-			     continue; 
-			   else 
 			     ${commandtxt}  --time=$TIME  --threads=${threads} $command --mysql-ignore-errors=${error_ignore} ${rate} | tee -a "${LOGFILE}"
-			  fi
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
 			echo "======================================" 
+	  fi
 	done;
 	echo "BLOCK: [END] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a  "${LOGFILE}";
 	echo "*****************************************" | tee -a  "${LOGFILE}";
