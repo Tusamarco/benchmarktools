@@ -244,7 +244,7 @@ run_tests(){
 	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
         	max_threads=$sysbench_tables
-        	echo "NOTE: launcher_threads_override detected, threads adjusted to number of tables THREADS=$THREADS" | tee -a  "${LOGFILE}"
+        	echo "NOTE: launcher_threads_override detected, threads set to do not exceed: $max_threads" | tee -a  "${LOGFILE}"
 	fi
 	
 	if [ "$testrun" == "true" ];then
@@ -261,6 +261,7 @@ run_tests(){
 			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
 			else
 			  if [ $max_threads -gt 0 ] && [ $thread -gt $max_threads ]; then
+			     echo "max_threads hit we are skipping threads: $threads" | tee -a "${LOGFILE}" 
 			     continue; 
 			   else 
 			     ${commandtxt}  --time=$TIME  --threads=${threads} $command --mysql-ignore-errors=${error_ignore} ${rate} | tee -a "${LOGFILE}"
