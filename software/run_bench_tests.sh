@@ -188,28 +188,36 @@ fi
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
 echo "Execution time: $(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
 echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
-echo "Running Test: $test"  | tee -a $LOGFILE
-echo "Running Testname: $testname"  | tee -a $LOGFILE
-echo "Running Sub Test: $subtest"  | tee -a $LOGFILE
-echo "Running Host: $host"  | tee -a $LOGFILE
-echo "Running Port: $port"  | tee -a $LOGFILE
-echo "Running Engine: $engine"  | tee -a $LOGFILE
-echo "Running Schemaname: $schemaname"  | tee -a $LOGFILE
-echo "Running Table: $table_name"  | tee -a $LOGFILE
-echo "Running TIME: $TIME"  | tee -a $LOGFILE
-echo "Running Thread set: $THREADS"  | tee -a $LOGFILE
+echo "Test: $test"  | tee -a $LOGFILE
+echo "Testname: $testname"  | tee -a $LOGFILE
+echo "Sub Test: $subtest"  | tee -a $LOGFILE
+echo "Host: $host"  | tee -a $LOGFILE
+echo "Port: $port"  | tee -a $LOGFILE
+echo "Engine: $engine"  | tee -a $LOGFILE
+echo "Schemaname: $schemaname"  | tee -a $LOGFILE
+echo "Table: $table_name"  | tee -a $LOGFILE
+echo "TIME: $TIME"  | tee -a $LOGFILE
+echo "Thread set: $THREADS"  | tee -a $LOGFILE
+echo "Rate set: $rate"  | tee -a $LOGFILE
+echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
+echo "TESTRUN: $testrun"  | tee -a $LOGFILE
 
-echo "============= SysBench ============="  | tee -a $LOGFILE
-echo "Rows Small: $SYSNBENCH_ROWS_SMALL"  | tee -a $LOGFILE
-echo "Tables Small: $SYSNBENCH_TABLES_SMALL"  | tee -a $LOGFILE
-echo "Rows Large: $SYSNBENCH_ROWS_LARGE"  | tee -a $LOGFILE
-echo "Tables Large: $SYSNBENCH_TABLES_LARGE"  | tee -a $LOGFILE
-echo "Using: ${sysbench_test_dimension}"  | tee -a $LOGFILE
-echo "Tables: ${sysbench_tables}"  | tee -a $LOGFILE
-echo "Rows:   ${sysbench_rows}"  | tee -a $LOGFILE
-echo "============= TPC-C ============="  | tee -a $LOGFILE
-echo "Warehouses:  $WHAREHOUSES"  | tee -a $LOGFILE
-echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
+if [ $testname == "sysbench" ]; then
+	echo "============= SysBench ============="  | tee -a $LOGFILE
+	echo "Rows Small: $SYSNBENCH_ROWS_SMALL"  | tee -a $LOGFILE
+	echo "Tables Small: $SYSNBENCH_TABLES_SMALL"  | tee -a $LOGFILE
+	echo "Rows Large: $SYSNBENCH_ROWS_LARGE"  | tee -a $LOGFILE
+	echo "Tables Large: $SYSNBENCH_TABLES_LARGE"  | tee -a $LOGFILE
+	echo "Using: ${sysbench_test_dimension}"  | tee -a $LOGFILE
+	echo "Tables: ${sysbench_tables}"  | tee -a $LOGFILE
+	echo "Rows:   ${sysbench_rows}"  | tee -a $LOGFILE
+fi
+
+if [ $testname == "tpcc" ]; then
+	echo "============= TPC-C ============="  | tee -a $LOGFILE
+	echo "Warehouses:  $WHAREHOUSES"  | tee -a $LOGFILE
+	echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
+fi
 
 fill_ingest_map
 fill_sysbench_map 
@@ -264,6 +272,7 @@ run_tests(){
 		   if [ "$dryrun" == "true" ]; then
 			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
 			else
+			     echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} $command --mysql-ignore-errors=${error_ignore} ${rate}" | tee -a "${LOGFILE}"
 			     ${commandtxt}  --time=$TIME  --threads=${threads} $command --mysql-ignore-errors=${error_ignore} ${rate} | tee -a "${LOGFILE}"
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
