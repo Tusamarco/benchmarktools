@@ -300,20 +300,20 @@ if [ ! "$dryrun" == "true" ]; then
 fi
 
 #get the final execute_map
-if [ $testname == "sysbench" ] || [ $testname == "sysbench_TEST" ]; then
+if [ $testname == "sysbench" ] || [ $testname == "sysbench_TESTRUN" ]; then
     
 	for subtest_run in $subtest_execute;do	
         run_tests "${subtest_run}" "${sysbench_tests[$subtest_run]} --tables=${sysbench_tables} --table_size=${sysbench_rows} "
 	done;
 fi
 
-if [ $testname == "ingest" ] || [ $testname == "ingest_TEST" ]; then
+if [ $testname == "ingest" ] || [ $testname == "ingest_TESTRUN" ]; then
 	for subtest_run in $subtest_execute;do	
 		 run_tests "$subtest_run" "${ingest_tests[$subtest_run]}"
 	done;
 fi
 
-if [ $testname == "tpcc" ] || [ $testname == "tpcc_TEST" ]; then
+if [ $testname == "tpcc" ] || [ $testname == "tpcc_TESTRUN" ]; then
 	for subtest_run in $subtest_execute;do	
 		run_tests "$subtest_run" "${tpcc_tests[$subtest_run]}"
 	done;
