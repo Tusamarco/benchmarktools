@@ -15,7 +15,8 @@ Parameters:
         --filter_subtest: Text to filter the subtest list. IE: "select" for sysbench will only return the select tests
         --help: this help                        
         --host: MySQL host
-        --port: MySQL poer
+        --port: MySQL port
+        --reconnect: sysbench will reconnect after the indicated number of events. Default 0 - no reconnect
         --schemaname: Schema name 
         --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)
         --subtest: The specific subtest you want to run OR all (see output of --subtest_list)

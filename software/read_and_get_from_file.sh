@@ -167,10 +167,13 @@ exract_file(){
 }
 
 print_help(){
+cat << EOF
+$0 <FILE_name> <PATH> <DESTINATION PATH> 
+IE:  export PARSEPATH="/opt/results/sysbench/"; for file in `ls ${PARSEPATH}|grep -e 'small'|grep -v '_2_'`;do  ./read_and_get_from_file.sh $file $PARSEPATH /opt/results/processed --noask;done
+Optionally you can add as 4th params --noask. The program will not ask for confirmation each time.
 
-echo " read_and_get_from_file.sh <FILE_name> <PATH> <DESTINATION PATH> "
-echo "IE:  export PARSEPATH="/opt/results/sysbench/"; for file in `ls ${PARSEPATH}|grep -e 'small'|grep -v '_2_'`;do  ./read_and_get_from_file.sh $file $PARSEPATH /opt/results/processed --noask;done"
-echo "Optionally you can add as 4th params --noask. The program will not ask for confirmation each time." 
+
+EOF
 exit 0
 }
 
@@ -221,6 +224,12 @@ fi
 
 ask_confirmation
 exract_file
+cat << EOF
+---------------------------------------------
+Process complete $(date +'%Y-%m-%d_%H_%M_%S')
+=============================================
+
+EOF
 mv ${DESTPATH}/$FILEOUTNAME/*_data.csv ${DESTPATH}/$FILEOUTNAME/data 
 
 

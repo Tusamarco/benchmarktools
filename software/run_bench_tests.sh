@@ -30,6 +30,7 @@ sysbench_rows=""
 rate=""
 error_ignore="none"
 testrun=false
+reconnect="0"
 
 #constants
 PW="test"
@@ -97,6 +98,10 @@ while [[ $# -gt 0 ]]; do
             table_name="$2"
             shift 2
             ;;
+        --reconnect)
+            reconnect="$2"
+            shift 2
+            ;;    
         --host)
             host="$2"
             shift 2
@@ -272,8 +277,8 @@ run_tests(){
 		   if [ "$dryrun" == "true" ]; then
 			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
 			else
-			     echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} $command --mysql-ignore-errors=${error_ignore} ${rate}" | tee -a "${LOGFILE}"
-			     ${commandtxt}  --time=$TIME  --threads=${threads} $command --mysql-ignore-errors=${error_ignore} ${rate} | tee -a "${LOGFILE}"
+			     echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
+			     ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
