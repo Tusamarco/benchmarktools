@@ -143,15 +143,12 @@ Sub Tests
    	run_bench_tests.sh --subtest_list --testname ingest --command run
    	Will show only the subtests for Ingest and for the run command.
 ```
+To get the list of all existing tests:
+` sh run_bench_tests.sh --subtest_list --testname all --command all`
 
-
-
-
-
-
-
-
-
-
-
-     
+This command will return an extensive list of tests. From there you will be able to decide which ones to run and filter them.
+For instance if you want to run all the select tests in the __RUN__ command:
+```bash
+run_bench_tests.sh --test Hello_World  --testname sysbench --command run  --filter_subtest select  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME 200 --sysbench_test_dimension small  --host my_ip --port 3306 --schemaname my_schema
+```
+The `--filter_subtest select` will filter for you only the selects. Or you can use the same prameter to run only updates: --filter_subtest update. And so on. 
