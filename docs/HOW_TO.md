@@ -152,3 +152,117 @@ For instance if you want to run all the select tests in the __RUN__ command:
 run_bench_tests.sh --test Hello_World  --testname sysbench --command run  --filter_subtest select  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME 200 --sysbench_test_dimension small  --host my_ip --port 3306 --schemaname my_schema
 ```
 The `--filter_subtest select` will filter for you only the selects. Or you can use the same prameter to run only updates: --filter_subtest update. And so on. 
+
+A full example that will run all the select and write is:
+```bash
+ cat run_sysbench.sh 
+#!/bin/bash
+bin_path="/opt/tools/benchmarktools/software"
+    for dimension in small large; do
+        echo "Running dimension: ${dimension}"
+        for type in select write select;do
+            echo "Running type: ${type}"
+            for run in 1 ; do
+                echo "Running round: ${run}"
+                echo "RUNNING: $bin_path/run_bench_tests.sh --test MY8034_${dimension}_${type}_${run}  --testname sysbench --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME 200 --sysbench_test_dimension ${dimension}  --host 10.0.1.9 --port 3307 --schemaname windmills_${dimension}"
+
+                bash $bin_path/run_bench_tests.sh --test MY8034_${dimension}_${type}_${run}  --testname sysbench --command run  --filter_subtest ${type}  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME 200 --sysbench_test_dimension ${dimension}  --host 10.0.1.9 --port 3307 --schemaname windmills_${dimension}
+            done;
+        done;
+    done;
+```
+
+While running the tests we will also generate a lot of data in form of logs.
+By default the __logs__ are locate in the `/opt/results` directory, if you need to change it, just modify the `run_bench_test.sh` file when you see `RESULTS=/opt/results` with whatever fits you.
+In the log directory you will see something like this:
+```bash
+ ll /opt/results/sysbench
+total 19872
+-rw-r--r-- 1 root root 2786075 Dec 12 16:01 MY8034_large_select_1_run_all_select_innodb_2023-12-12_10_49.txt
+-rw-r--r-- 1 root root 2906304 Dec 13 08:29 MY8034_large_select_1_run_all_select_innodb_2023-12-13_03_15.txt
+-rw-r--r-- 1 root root 4692585 Dec 13 03:15 MY8034_large_write_1_run_all_write_innodb_2023-12-12_16_01.txt
+-rw-r--r-- 1 root root 2425458 Dec 11 18:31 MY8034_small_select_1_run_all_select_innodb_2023-12-11_13_34.txt
+-rw-r--r-- 1 root root 2882755 Dec 12 10:49 MY8034_small_select_1_run_all_select_innodb_2023-12-12_05_48.txt
+-rw-r--r-- 1 root root 4619160 Dec 12 05:48 MY8034_small_write_1_run_all_write_innodb_2023-12-11_18_31.txt
+```
+Please note the path /opt/results/__sysbench__, this is the __test type__ (--testname, I know is misleading) and we will have 3 of them: DBt3, Sysbench and TPCc. 
+
+Each file will contain the test label (--test, I know is misleading) in this case MY8034_${dimension}_${type}_${run} then the subtest name and finally date and time it starts. 
+
+Once you have all the Logs in place you can extract the information using the other script `read_and_get_from_file.sh`. 
+
+A good start is to do something like this:
+`export PARSEPATH="/opt/results/sysbench/"; for file in `ls ${PARSEPATH}`;do  ./read_and_get_from_file.sh $file $PARSEPATH /opt/results/processed --noask;done`
+
+Using the option `--noask` will skip the request at each iteration to approve the action and will extract all files by itself.
+You will see something like:
+```bash
+Running extract
+File /opt/results/sysbench//MY8034_small_write_1_run_all_write_innodb_2023-12-11_18_31.txt OK
+.. Calculating the number of line to process:
+=============================================
+FILE To Parse MY8034_small_write_1_run_all_write_innodb_2023-12-11_18_31.txt
+Number of lines 81331
+Local Path  /opt/results/sysbench/
+Resulting filename HEAD MY8034_small_write_1_run_all_write_innodb_2023-12-11_18_31
+Output dir/file /opt/results/processed/MY8034_small_write_1_run_all_write_innodb_2023-12-11_18_31/MY8034_small_write_1_run_all_write_innodb_2023-12-11_18_31
+=============================================
+
+OK ..
+Progress : [#######################################-] 98%
+---------------------------------------------
+Process complete 2023-12-13_14_18_36
+=============================================
+```
+For each log file in the output given directory you will see something like this:
+```bash
+ll /opt/results/processed/
+total 19588
+drwxr-xr-x 3 root root   20480 Dec 13 14:10 MY8034_large_select_1_run_all_select_innodb_2023-12-12_10_49
+drwxr-xr-x 3 root root   16384 Dec 13 14:11 MY8034_large_select_1_run_all_select_innodb_2023-12-13_03_15
+drwxr-xr-x 3 root root   36864 Dec 13 14:13 MY8034_large_write_1_run_all_write_innodb_2023-12-12_16_01
+drwxr-xr-x 3 root root   20480 Dec 13 14:15 MY8034_small_select_1_run_all_select_innodb_2023-12-11_13_34
+drwxr-xr-x 3 root root   20480 Dec 13 14:16 MY8034_small_select_1_run_all_select_innodb_2023-12-12_05_48
+drwxr-xr-x 3 root root   32768 Dec 13 14:18 MY8034_small_write_1_run_all_write_innodb_2023-12-11_18_31
+drwxr-xr-x 3 root root   16384 Dec 11 13:11 PS8035_large_select_1_run_all_select_innodb_2023-12-09_05_38
+drwxr-xr-x 3 root root   20480 Dec 11 13:13 PS8035_large_select_1_run_all_select_innodb_2023-12-09_18_27
+drwxr-xr-x 3 root root   28672 Dec 11 13:14 PS8035_large_write_1_run_all_write_innodb_2023-12-09_10_49
+drwxr-xr-x 3 root root   20480 Dec 11 13:15 PS8035_small_select_1_run_all_select_innodb_2023-12-08_08_54
+drwxr-xr-x 3 root root   16384 Dec 11 13:16 PS8035_small_select_1_run_all_select_innodb_2023-12-09_00_36
+drwxr-xr-x 3 root root   36864 Dec 11 13:19 PS8035_small_write_1_run_all_write_innodb_2023-12-08_13_51
+```
+Inside each directory:
+```bash
+ll /opt/results/processed/MY8034_large_select_1_run_all_select_innodb_2023-12-12_10_49
+total 340
+drwxr-xr-x 2 root root  20480 Dec 13 14:10 data
+-rw-r--r-- 1 root root 305404 Dec 13 14:10 MY8034_large_select_1_run_all_select_innodb_2023-12-12_10_49_histogram.txt
+-rw-r--r-- 1 root root  15590 Dec 13 14:10 MY8034_large_select_1_run_all_select_innodb_2023-12-12_10_49_summary.csv
+```
+Where `data` contains the details of each iteration per threads number.
+
+The `_histogram.txt` will contain the data about the latency as `4280.318|2` where `latency in ms|instaces`
+
+The `_summary.csv` contains the results of the tests and is what we will use to generate our images and statistics. 
+ie:
+```csv
+subtest,TotalTime,RunningThreads,totalEvents,Events/s,Tot Operations,operations/s,tot reads,reads/s,Tot writes,writes/s,oterOps/s,latencyPct95,Tot errors,errors/s,Tot reconnects,reconnects/s,Latency(ms) min, Latency(ms) max, Latency(ms) avg, Latency(ms) sum
+select_run_range_simple,200,1,91099.00,455.49,91099.00,455.49,91099.00,455.49,0.00,0.00,0.00,4.82,0.00,0.00,0.00,0.00,0.00,0.07,0.00,199.96
+select_run_range_simple,200,2,100657.00,503.27,100657.00,503.27,100657.00,503.27,0.00,0.00,0.00,12.08,0.00,0.00,0.00,0.00,0.00,0.09,0.00,399.95
+select_run_range_simple,200,4,148678.00,743.37,148678.00,743.37,148678.00,743.37,0.00,0.00,0.00,16.12,0.00,0.00,0.00,0.00,0.00,0.05,0.01,799.92
+select_run_range_simple,200,8,206023.00,1030.07,206023.00,1030.07,206023.00,1030.07,0.00,0.00,0.00,22.28,0.00,0.00,0.00,0.00,0.00,0.10,0.01,1599.86
+select_run_range_simple,200,16,270807.00,1353.95,270807.00,1353.95,270807.00,1353.95,0.00,0.00,0.00,25.74,0.00,0.00,0.00,0.00,0.00,0.25,0.01,3199.86
+select_run_range_simple,200,32,338080.00,1690.17,338080.00,1690.17,338080.00,1690.17,0.00,0.00,0.00,41.10,0.00,0.00,0.00,0.00,0.00,0.58,0.02,6400.10
+select_run_range_simple,200,64,373601.00,1867.59,373601.00,1867.59,373601.00,1867.59,0.00,0.00,0.00,71.83,0.00,0.00,0.00,0.00,0.00,1.73,0.03,12801.09
+select_run_range_simple,200,128,415928.00,2078.74,415928.00,2078.74,415928.00,2078.74,0.00,0.00,0.00,114.72,0.00,0.00,0.00,0.00,0.00,5.28,0.06,25605.35
+select_run_range_simple,200,256,427775.00,2137.25,427775.00,2137.25,427775.00,2137.25,0.00,0.00,0.00,397.39,0.00,0.00,0.00,0.00,0.00,1.20,0.12,51218.42
+select_run_range_simple,200,512,430027.00,2146.81,430027.00,2146.81,430027.00,2146.81,0.00,0.00,0.00,926.33,0.00,0.00,0.00,0.00,0.00,3.28,0.24,102478.40
+select_run_range_simple,201,1024,429330.00,2139.93,429330.00,2139.93,429330.00,2139.93,0.00,0.00,0.00,1708.63,0.00,0.00,0.00,0.00,0.00,5.14,0.48,205120.95
+```
+
+
+
+
+
+
+
