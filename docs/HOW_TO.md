@@ -1,4 +1,4 @@
-# How to prepare the Benchmark environment
+# How to: prepare the Benchmark environment
 
 ## Overview
 Before you even start I suggest you to read [this page with concepts](concepts.md) and example of [action plan](plan.md)
