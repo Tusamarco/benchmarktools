@@ -92,6 +92,10 @@ sysbench tpcc (https://github.com/Tusamarco/sysbench-tpcc)
 
 dbt-3 Additional software, configs and tools from (https://github.com/Tusamarco/benchmarktools/software/dbt3) 
 
+# How to: run tests 
+## Sysbench 
+Sysbench has many different tests, each one testing a particular aspect of the database. As such we cannot consider it a valid tool to mimic application load, however is very good to identify specific differences between MySQL versions. 
+In this benchmarking suite I have implemented a quite large number of tests (see here)[plan.md]
 
 
 
