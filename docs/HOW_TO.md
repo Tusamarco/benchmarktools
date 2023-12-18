@@ -95,7 +95,55 @@ dbt-3 Additional software, configs and tools from (https://github.com/Tusamarco/
 # How to: run tests 
 ## Sysbench 
 Sysbench has many different tests, each one testing a particular aspect of the database. As such we cannot consider it a valid tool to mimic application load, however is very good to identify specific differences between MySQL versions. 
-In this benchmarking suite I have implemented a quite large number of tests (see here)[plan.md]
+In this benchmarking suite I have implemented a quite large number of tests [see here](plan.md)
+
+The wrapper to make our life easier and run the different tests in a comfortable way is the script `run_bench_tests.sh` under the `software` directory.
+As usual the right way to start is to look in the `help`
+
+```bash
+ sh run_bench_tests.sh --help
+
+Command line: Usage: run_bench_tests.sh --command=run --test <test Identifier> --testname <sysbench|tpcc|ingest> --subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list --dryrun]
+
+script: run_bench_tests.sh 
+
+Parameters:
+        --command: The action to perform cleanup|prepare|run
+        --debug: extended output to standard out
+        --dryrun: Printout the commands that will run without executing them
+        --engine: Engine to use default Innodb [innodb|myrocks]
+        --error_ignore: Set the level for the option --mysql-ignore-errors. Default none
+        --filter_subtest: Text to filter the subtest list. IE: "select" for sysbench will only return the select tests
+        --help: this help                        
+        --host: MySQL host
+        --port: MySQL port
+        --reconnect: sysbench will reconnect after the indicated number of events. Default 0 - no reconnect
+        --schemaname: Schema name 
+        --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)
+        --subtest: The specific subtest you want to run OR all (see output of --subtest_list)
+        --sysbench_test_dimension: we have 2 standard dimension small and large. Default is small:
+								SYSNBENCH_ROWS_LARGE=30000000
+								SYSNBENCH_ROWS_SMALL=10000000
+								SYSNBENCH_TABLES_LARGE=5
+								SYSNBENCH_TABLES_SMALL=20
+			So small has smaller tables but more of them, large is more about few tables and more rows.
+        --tablename: Table name for sysbench and Ingest 
+        --test: The ID for the current test set IE PS8034
+        --testname: The testname you want to run [ingest|sysbench|tpcc]
+        --testrun: Run the tests with  thread and only for 10 seconds, just to check if they may work
+        --THREADS: the set of threads to use to run the tests use double quote as "2 4 8 16"
+        --TIME: the execution time for the tests in seconds IE 600
+
+
+Sub Tests
+	To visualize the subtests lists:
+	run_bench_tests.sh --subtest_list --testname all --command all
+	Will show all sub tests for all commands and type of tests
+    
+   	run_bench_tests.sh --subtest_list --testname ingest --command run
+   	Will show only the subtests for Ingest and for the run command.
+```
+
 
 
 
