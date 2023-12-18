@@ -241,7 +241,7 @@ drwxr-xr-x 2 root root  20480 Dec 13 14:10 data
 ```
 Where `data` contains the details of each iteration per threads number.
 
-The `_histogram.txt` will contain the data about the latency as `4280.318|2` where `latency in ms|instaces`
+The `_histogram.txt` will contain the data about the latency as `4280.318|2` where `latency in ms|instances`
 
 The `_summary.csv` contains the results of the tests and is what we will use to generate our images and statistics. 
 ie:
@@ -259,6 +259,11 @@ select_run_range_simple,200,256,427775.00,2137.25,427775.00,2137.25,427775.00,21
 select_run_range_simple,200,512,430027.00,2146.81,430027.00,2146.81,430027.00,2146.81,0.00,0.00,0.00,926.33,0.00,0.00,0.00,0.00,0.00,3.28,0.24,102478.40
 select_run_range_simple,201,1024,429330.00,2139.93,429330.00,2139.93,429330.00,2139.93,0.00,0.00,0.00,1708.63,0.00,0.00,0.00,0.00,0.00,5.14,0.48,205120.95
 ```
+An example of how to orgaize the stats is in the file benchmarking_sysbench_example.xlsm in software, however you need to have MS Excel to use it. 
+
+I will add a tool (working on it), that will generate all the graphs as done in the Excel file. 
+
+
 
 
 
