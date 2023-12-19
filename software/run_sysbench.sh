@@ -1,5 +1,5 @@
 #!/bin/bash
-testidentifyer=${$1:-"PS8035"}
+testidentifyer=${1:-"PS8035"}
  
 bin_path="/opt/tools/benchmarktools/software"
     for dimension in small large; do
