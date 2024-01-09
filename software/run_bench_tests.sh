@@ -298,8 +298,12 @@ if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
  elif [ ! "$subtest" == "all" ] && [ "$testname" == "all" ]; then
       echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
 	  exit;
+ elif [ ! "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
+     get_sub_test
+     # echo "$subtest_execute"
  else
-      	echo "You need to pick eiter a set of subtests or"  
+      	echo "You need to pick either a set of subtests or a testname  (ingest|sysbench|tpcc)"  
+      	exit; 
 fi
 
 if [ ! "$dryrun" == "true" ]; then 
