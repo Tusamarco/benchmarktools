@@ -31,6 +31,8 @@ rate=""
 error_ignore="none"
 testrun=false
 reconnect="0"
+havePMM=false
+pmmurl=""
 
 #constants
 PW="test"
@@ -117,7 +119,19 @@ while [[ $# -gt 0 ]]; do
         --error_ignore)
             error_ignore="$2"
             shift 2
-            ;;                 
+            ;;
+        --havePMM)
+            havePMM=true
+            shift
+            ;;
+        --pmm_url)
+            pmmurl="$2"
+            shift 2
+            ;;     
+        --pmm_node_name)
+            pmmnodename="$2"
+            shift 2
+            ;;                        
         --debug)
             debug=true
             shift
@@ -160,6 +174,25 @@ print_date_time(){
  echo "$(date +'%Y-%m-%d_%H_%M_%S')"
 }
 
+check_pmm(){
+
+pmmOK=`curl  -Is ${pmmurl}/graph |grep HTTP|awk -F " " '{print $2}'`
+
+if [ ! "$pmmOK" = "200"  ]; then
+  havePMM=false
+  echo "[WARNING] PMM is not correctly set, automatic notation disabled" | tee -a $LOGFILE
+ else 
+    test -x "$(which pmm-admin)"
+    if [ $? -ne 0 ]; then
+    	    echo "[WARNING] PMM client not installed. please add pmm2-client before trying to use it" | tee -a $LOGFILE
+    	    havePMM=false
+    	    echo "[WARNING] PMM is not correctly set, automatic notation disabled" | tee -a $LOGFILE
+    else
+	    echo "[INFO] PMM is correctly set, automatic notation enabled" | tee -a $LOGFILE
+    fi
+fi
+
+}
 
 
 #========================================
@@ -190,6 +223,8 @@ if [ "$dryrun" == "true" ]; then
    LOGFILE=/dev/null 
 fi
 
+check_pmm
+
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
 echo "Execution time: $(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
 echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
@@ -206,6 +241,7 @@ echo "Thread set: $THREADS"  | tee -a $LOGFILE
 echo "Rate set: $rate"  | tee -a $LOGFILE
 echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
 echo "TESTRUN: $testrun"  | tee -a $LOGFILE
+echo "Have PMM notation: $havePMM"  | tee -a $LOGFILE
 
 if [ $testname == "sysbench" ]; then
 	echo "============= SysBench ============="  | tee -a $LOGFILE
@@ -262,7 +298,18 @@ run_tests(){
 	
 	if [ "$testrun" == "true" ];then
         THREADS="1"
-        TIME=5	
+        TIME=5
+        havePMM=false	
+	fi
+	
+	if [ "$havePMM" = "true" ]; then
+	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags "$testname"
+	   	if [ $? -ne 0 ]; then
+			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 havePMM=false
+             echo "PMM notation disabled" | tee -a $LOGFILE 
+		fi
 	fi
 	
 	for threads in $THREADS;do
@@ -285,6 +332,16 @@ run_tests(){
 			echo "======================================" 
 	  fi
 	done;
+	if [ "$havePMM" = "true" ]; then
+	    pmm-admin annotate "[END] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags "$testname"
+	   	if [ $? -ne 0 ]; then
+			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 havePMM=false
+             echo "PMM notation disabled" | tee -a $LOGFILE 
+		fi
+	fi
+
 	echo "BLOCK: [END] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a  "${LOGFILE}";
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "" | tee -a  "${LOGFILE}";
