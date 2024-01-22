@@ -32,6 +32,12 @@ Parameters:
         --testrun: Run the tests with  thread and only for 10 seconds, just to check if they may work
         --THREADS: the set of threads to use to run the tests use double quote as "2 4 8 16"
         --TIME: the execution time for the tests in seconds IE 600
+  
+        --havePmm: If you have PMM and want to add notation about what test and when it is run, you can enable it here
+        --pmm_url: To enable PMM automatic notation, you need to pass the information to connect to the PMM server as "http://user:password@ip:port/"
+                   It is advisable you create a special user for such operations with limited privileges  
+        --pmm_node_name: The node name where you are running the benchmarking. The value of the name is the NODE name as reported in the PMM inventory.
+
 
 
 Sub Tests
