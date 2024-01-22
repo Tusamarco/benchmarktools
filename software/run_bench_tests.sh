@@ -332,6 +332,7 @@ run_tests(){
 			echo "======================================" 
 	  fi
 	done;
+
 	if [ "$havePMM" = "true" ]; then
 	    pmm-admin annotate "[END] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
