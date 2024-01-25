@@ -304,7 +304,6 @@ run_tests(){
 	
 	if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
         THREADS=$sysbench_tables
-        TIME=5
 	fi
 	
 	if [ "$havePMM" = "true" ]; then
@@ -329,8 +328,13 @@ run_tests(){
 		   if [ "$dryrun" == "true" ]; then
 			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
 			else
-			     echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
-			     ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
+				if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
+					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
+					 ${commandtxt} --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
+				else
+					 echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
+					 ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
+			    fi
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
