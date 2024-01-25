@@ -17,7 +17,7 @@ bin_path="/opt/tools/benchmarktools/software"
         echo "Warmup phase"
         echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer}_${dimension}_${type}_${run}  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --THREADS \"1\" --TIME 200 --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME"
 
-        bash $bin_path/run_bench_tests.sh --test ${testidentifyer}_${dimension}_${type}_${run}  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --THREADS "1" --TIME 200 --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME
+        bash $bin_path/run_bench_tests.sh --test ${testidentifyer}_${dimension}_${type}_${run}  --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --THREADS "1" --TIME 200 --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME
         
         for type in select write select; do
             echo "Running type: ${type}"
