@@ -50,10 +50,10 @@ fill_sysbench_map(){
     sysbench_tests["write_run_rw_with_range_1000"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --point_selects=1 --range_size=1000"
 
 #WARMUP action
-    sysbench_tests["warmup_run_select_scan"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_scan.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable  --events=1 --rand-type=uniform --launcher_threads_override"    
+    sysbench_tests["warmup_run_select_scan"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_scan.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable  --events=1 --rand-type=uniform --launcher_threads_override"    
 
 
 #Cleanup action
-    sysbench_tests["cleanup_run_select_scan"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_scan.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable  --events=1 --rand-type=uniform --launcher_threads_override"        
+    sysbench_tests["cleanup_run_select_scan"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_scan.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable  --events=1 --rand-type=uniform --launcher_threads_override"        
     
 }

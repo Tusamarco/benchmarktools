@@ -302,6 +302,13 @@ run_tests(){
         havePMM=false	
 	fi
 	
+	if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
+        THREADS=$sysbench_tables
+        TIME=5
+	fi
+	
+	
+	
 	if [ "$havePMM" = "true" ]; then
 	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
