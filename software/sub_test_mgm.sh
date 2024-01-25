@@ -27,6 +27,19 @@ subtest_execute=""
 			fi
 		done
 	fi	
+	if [ "$command" == "warmup" ] ; then	
+		for key in ${sorted}; do
+			if ! [[ "$key" =~ "clean" ]];then
+			    if [[ ! "$filter_subtest" == "none" ]];then
+					if [[ "$key" =~ "$filter_subtest" ]];then
+						subtest_execute+="$key "
+					fi
+					else
+					 subtest_execute+="$key "	
+				fi
+			fi
+		done
+	fi	
 }
 
 print_subtest_key_txt(){
@@ -59,7 +72,24 @@ sorted="$1"
 				fi
 			fi
 		done
-	fi	
+	fi
+	if [ "$command" == "warmup" ] || [ "$command" == "all" ]; then	
+		echo "-- warmup --"
+		for key in ${sorted}; do
+			if ! [[ "$key" =~ "clean" ]];then
+			    if [[ ! "$filter_subtest" == "none" ]];then
+					if [[ "$key" =~ "$filter_subtest" ]];then
+						echo "   $key "
+					fi
+					else
+						echo "   $key "
+				fi
+			fi
+		done
+	fi
+	
+	
+		
 }
 
 
