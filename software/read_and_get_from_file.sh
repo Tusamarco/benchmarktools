@@ -53,6 +53,7 @@ fi
 
 function ProgressBar {
 # Process data
+# ProgressBar ${COUNTER} ${NUMBEROFLINES}
     let _progress=(${1}*100/${2}*100)/100
     let _done=(${_progress}*4)/10
     let _left=40-$_done
@@ -76,6 +77,7 @@ exract_file(){
 	OLDDATE="NEW"
 	COUNTER=0
 	SUMMARYLINE1=false
+	META=""
 	spin=0
     sp="/-\|"
 
@@ -92,6 +94,10 @@ exract_file(){
     if [[ $LINE =~ "THREADS" ]] && [ ! "$SUBTEST" == "none" ]; then
 	    THREADS=$(echo $LINE|sed -e 's/ //gi'|awk -F'=' '{print $2}')
 	fi
+  
+    if [[ $LINE =~ "META" ]]; then
+      META=$LINE
+    fi
     
     if [[ $LINE =~ "Threads started" ]] && [ $THREADS > 0 ]; then
        type_of_output="data"
@@ -118,6 +124,8 @@ exract_file(){
        read -r LINE2 
        if [ $SUMMARYLINE1 == true ];then
            echo "" >> ${workingfile}
+           echo ${META} >> ${workingfile}
+           META=""
            echo "subtest,${LINE2}" >> ${workingfile}
            SUMMARYLINE1=false
        fi

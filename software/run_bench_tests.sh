@@ -33,6 +33,8 @@ testrun=false
 reconnect="0"
 havePMM=false
 pmmurl=""
+type=""
+run="1"
 
 #constants
 PW="test"
@@ -72,6 +74,14 @@ while [[ $# -gt 0 ]]; do
             testname="$2"
             shift 2
             ;;
+        --type)
+            type="$2"
+            shift 2
+            ;;
+        --run)
+            type="$2"
+            shift 2
+            ;;    
         --subtest)
             subtest="$2"
             shift 2
@@ -214,7 +224,8 @@ if [ "$testrun" == "true" ];then
     test="${test}_TESTRUN"
 fi 
 
-LOGFILE=$RESULTS/${testname}/${test}_${command}_${subtest}_${filter_subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
+RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
+LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_${run}_${command}_${subtest}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
@@ -226,7 +237,7 @@ fi
 check_pmm
 
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
-echo "Execution time: $(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
+echo "Execution time: ${RUNNINGDATE}" | tee -a $LOGFILE
 echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
 echo "Test: $test"  | tee -a $LOGFILE
 echo "Testname: $testname"  | tee -a $LOGFILE
@@ -289,7 +300,7 @@ run_tests(){
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
-	
+	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine}"
 	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
         	max_threads=$sysbench_tables
