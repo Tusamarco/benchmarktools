@@ -79,7 +79,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --run)
-            type="$2"
+            run="$2"
             shift 2
             ;;    
         --subtest)
@@ -300,7 +300,7 @@ run_tests(){
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
-	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine}"
+	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine}" | tee -a "${LOGFILE}";
 	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
         	max_threads=$sysbench_tables
