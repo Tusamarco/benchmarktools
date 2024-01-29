@@ -124,8 +124,11 @@ exract_file(){
        read -r LINE2 
        if [ $SUMMARYLINE1 == true ];then
            echo "" >> ${workingfile}
-           echo ${META} >> ${workingfile}
-           META=""
+           
+           if [ "$WITHMETA" == "true" ]; then
+	           echo ${META} >> ${workingfile}
+	           META=""
+           fi
            echo "subtest,${LINE2}" >> ${workingfile}
            SUMMARYLINE1=false
        fi
@@ -199,6 +202,8 @@ THREADS=0
 SUBTEST="none"
 ORIGFILEOUTNAME=""
 is_number="no"
+WITHMETA=${5:-"false"}
+
 
 case $FILETOPARSE in
     -h|--help)
