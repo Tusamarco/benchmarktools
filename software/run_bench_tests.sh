@@ -33,6 +33,7 @@ testrun=false
 reconnect="0"
 havePMM=false
 pmmurl=""
+pmmservicename=""
 type=""
 run="1"
 
@@ -141,7 +142,11 @@ while [[ $# -gt 0 ]]; do
         --pmm_node_name)
             pmmnodename="$2"
             shift 2
-            ;;                        
+            ;;
+        --pmm_service_name)
+            pmmservicename="$2"
+            shift 2
+            ;;                                    
         --debug)
             debug=true
             shift
@@ -318,13 +323,18 @@ run_tests(){
 	fi
 	
 	if [ "$havePMM" = "true" ]; then
-	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags "$testname"
+		if [ ! "$pmmservicename" == "" ]; then
+		     pmmservicename="--service_name=$pmmservicename"
+		fi
+	
+	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicename} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicename} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
+		
 	fi
 	
 	for threads in $THREADS;do
