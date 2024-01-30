@@ -324,7 +324,7 @@ run_tests(){
 	
 	if [ "$havePMM" = "true" ]; then
 		if [ ! "$pmmservicename" == "" ]; then
-		     pmmservicename="--service_name=$pmmservicename"
+		     pmmservicename="--service-name=$pmmservicename"
 		fi
 	
 	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicename} --server-url=${pmmurl}  --tags "$testname"
