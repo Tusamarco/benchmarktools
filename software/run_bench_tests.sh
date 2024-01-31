@@ -342,8 +342,8 @@ run_tests(){
 		    echo "max_threads hit we are skipping threads: $threads" | tee -a "${LOGFILE}" 
 		   continue; 
 	   else 
-			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "======================================"  | tee -a  "${LOGFILE}"
+			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
