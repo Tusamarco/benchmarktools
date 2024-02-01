@@ -327,10 +327,10 @@ run_tests(){
 		     pmmservicenameTag="--service-name=$pmmservicename"
 		fi
 	
-	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
+	    pmm-admin annotate "[START] Test: ${test} $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[START] $label Test: $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
@@ -364,10 +364,10 @@ run_tests(){
 	done;
 
 	if [ "$havePMM" = "true" ]; then
-	    pmm-admin annotate "[END] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
+	    pmm-admin annotate "[END] $test $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[END] $test $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
