@@ -258,7 +258,7 @@ echo "Rate set: $rate"  | tee -a $LOGFILE
 echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
 echo "TESTRUN: $testrun"  | tee -a $LOGFILE
 echo "Have PMM notation: $havePMM"  | tee -a $LOGFILE
-
+echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=$(RUNNINGDATE);engine=${engine}" | tee -a "${LOGFILE}";
 if [ $testname == "sysbench" ]; then
 	echo "============= SysBench ============="  | tee -a $LOGFILE
 	echo "Rows Small: $SYSNBENCH_ROWS_SMALL"  | tee -a $LOGFILE
@@ -328,10 +328,10 @@ run_tests(){
 		     pmmservicenameTag="--service-name=$pmmservicename"
 		fi
 	
-	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
+	    pmm-admin annotate "[START] Test: ${test} $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[START] $label Test: $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
@@ -343,8 +343,8 @@ run_tests(){
 		    echo "max_threads hit we are skipping threads: $threads" | tee -a "${LOGFILE}" 
 		   continue; 
 	   else 
-			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "======================================"  | tee -a  "${LOGFILE}"
+			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
@@ -365,10 +365,10 @@ run_tests(){
 	done;
 
 	if [ "$havePMM" = "true" ]; then
-	    pmm-admin annotate "[END] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
+	    pmm-admin annotate "[END] $test $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[END] $test $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
