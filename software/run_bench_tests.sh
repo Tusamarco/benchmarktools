@@ -276,6 +276,7 @@ if [ $testname == "tpcc" ]; then
 	echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
 fi
 
+echo "METACOLLECTION: startdate=${RUNNINGDATE}" | tee -a $LOGFILE
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
@@ -426,6 +427,8 @@ if [ $testname == "tpcc" ]; then
 	done;
 fi
 
+#push end time info
+echo "METACOLLECTION: enddate=$(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
 #reset path
 cd $LOCAL_PATH
 exit
