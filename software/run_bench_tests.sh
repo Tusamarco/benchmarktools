@@ -230,7 +230,7 @@ if [ "$testrun" == "true" ];then
 fi 
 
 RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
-LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_${run}_${command}_${subtest}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
+LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${subtest}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
