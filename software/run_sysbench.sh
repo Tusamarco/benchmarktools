@@ -23,7 +23,7 @@ helptext(){
 
 cat << EOF
 
-Command line: Usage: $0 
+Command line: Usage: $0  --testidentifyer MY8042_iron_ssd2 --HOST 10.0.0.23 --PORT 3307 --TIME 120 --LOOPS 3 --HAVEPMM --PMMURL "http://admin:admin@x.y.z.a/" --PMMNODENAME bench-2
 
 script: $0 
 
@@ -109,7 +109,7 @@ bin_path="/opt/tools/benchmarktools/software"
         
         for type in select write select; do
             echo "Running type: ${type}"
-            for run in {1..$LOOPS} ; do
+            for run in `seq 1 $LOOPS` ; do
                 echo "Running round: ${run}"
                 echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${run}  --testname sysbench --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
 

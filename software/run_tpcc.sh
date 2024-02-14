@@ -23,7 +23,7 @@ helptext(){
 
 cat << EOF
 
-Command line: Usage: $0 
+Command line: Usage: $0 --testidentifyer MY8042_iron_ssd2 --HOST 10.0.0.23 --PORT 3307 --TIME 120 --LOOPS 3 --HAVEPMM --PMMURL "http://admin:admin@x.y.z.a/" --PMMNODENAME
 
 script: $0 
 
@@ -102,7 +102,7 @@ fi
 bin_path="/opt/tools/benchmarktools/software"
 for type in run_tpcc_RepeatableRead run_tpcc_ReadCommitted ; do
 	echo "Running type: ${type}"
-    for run in {1..$LOOPS} ; do
+        for run in `seq 1 $LOOPS` ; do
 		echo "Running round: ${run}"
 		echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer}_${type}_${run}  --testname tpcc --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME $TIME  --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
 
