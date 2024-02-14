@@ -35,7 +35,8 @@ Parameters:
 --PMMURL "http://admin:admin@127.0.0.1"
 --HAVEPMM
 --PMMNODENAME "bench"
---PMMSERVICENAME "bench-mysql-service"   		 
+--PMMSERVICENAME "bench-mysql-service"   
+--LOOPS 1		 
 
 EOF
 exit
