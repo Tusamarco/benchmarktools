@@ -1,11 +1,93 @@
 #!/bin/bash
-testidentifyer=${1:-"PS8035"}
-HOST=${2:-"127.0.0.1"}
-PORT=${3:-"3306"}
-PMMURL=${4:-"http://admin:admin@127.0.0.1"}
-HAVEPMM=${5:-"false"}
-PMMNODENAME=${6:-"bench"}
-PMMSERVICENAME=${7:-""}
+testidentifyer="PS8035"
+HOST="127.0.0.1"
+PORT="3306"
+TIME="600"
+PMMURL="http://admin:admin@127.0.0.1"
+HAVEPMM="false"
+PMMNODENAME="bench"
+PMMSERVICENAME=""
+LOOPS=1
+
+
+# testidentifyer=${1:-"PS8035"}
+# HOST=${2:-"127.0.0.1"}
+# PORT=${3:-"3306"}
+# PMMURL=${4:-"http://admin:admin@127.0.0.1"}
+# HAVEPMM=${5:-"false"}
+# PMMNODENAME=${6:-"bench"}
+# PMMSERVICENAME=${7:-""}
+
+
+helptext(){
+
+cat << EOF
+
+Command line: Usage: $0 
+
+script: $0 
+
+Parameters:
+--testidentifyer "PS8035"
+--HOST "127.0.0.1"
+--PORT "3306"
+--TIME "600"
+--PMMURL "http://admin:admin@127.0.0.1"
+--HAVEPMM
+--PMMNODENAME "bench"
+--PMMSERVICENAME "bench-mysql-service"   		 
+
+EOF
+exit
+}
+
+
+#Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --testidentifyer)
+            testidentifyer="$2"
+            shift 2
+            ;;
+        --HOST)
+            HOST="$2"
+            shift 2
+            ;;
+        --PORT)
+            PORT="$2"
+            shift 2
+            ;;
+        --PMMURL)
+            PMMURL="$2"
+            shift 2
+            ;;
+        --HAVEPMM)
+            HAVEPMM="true"
+            shift 1
+            ;;    
+        --PMMNODENAME)
+            PMMNODENAME="$2"
+            shift 2
+            ;;
+       --PMMSERVICENAME)
+            PMMSERVICENAME="$2"
+            shift 2
+            ;;
+        --TIME)
+            TIME="$2"
+            shift 2
+            ;;
+        --LOOPS)
+            LOOPS="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown argument: $1"
+			helptext
+            exit 1
+            ;;
+    esac
+done;
 
 havePMM=""
 
@@ -26,11 +108,11 @@ bin_path="/opt/tools/benchmarktools/software"
         
         for type in select write select; do
             echo "Running type: ${type}"
-            for run in 1 ; do
+            for run in {1..$LOOPS} ; do
                 echo "Running round: ${run}"
-                echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${run}  --testname sysbench --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME 200 --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+                echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${run}  --testname sysbench --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
 
-                bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${run} --testname sysbench --command run  --filter_subtest ${type}  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME 200 --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+                bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${run} --testname sysbench --command run  --filter_subtest ${type}  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
             done;
         done;
     done;
