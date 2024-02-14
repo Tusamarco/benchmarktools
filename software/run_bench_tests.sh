@@ -33,6 +33,9 @@ testrun=false
 reconnect="0"
 havePMM=false
 pmmurl=""
+pmmservicename=""
+type=""
+run="1"
 
 #constants
 PW="test"
@@ -72,6 +75,14 @@ while [[ $# -gt 0 ]]; do
             testname="$2"
             shift 2
             ;;
+        --type)
+            type="$2"
+            shift 2
+            ;;
+        --run)
+            run="$2"
+            shift 2
+            ;;    
         --subtest)
             subtest="$2"
             shift 2
@@ -131,7 +142,11 @@ while [[ $# -gt 0 ]]; do
         --pmm_node_name)
             pmmnodename="$2"
             shift 2
-            ;;                        
+            ;;
+        --pmm_service_name)
+            pmmservicename="$2"
+            shift 2
+            ;;                                    
         --debug)
             debug=true
             shift
@@ -214,7 +229,8 @@ if [ "$testrun" == "true" ];then
     test="${test}_TESTRUN"
 fi 
 
-LOGFILE=$RESULTS/${testname}/${test}_${command}_${subtest}_${filter_subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
+RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
+LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${subtest}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
@@ -226,7 +242,7 @@ fi
 check_pmm
 
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
-echo "Execution time: $(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
+echo "Execution time: ${RUNNINGDATE}" | tee -a $LOGFILE
 echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
 echo "Test: $test"  | tee -a $LOGFILE
 echo "Testname: $testname"  | tee -a $LOGFILE
@@ -242,7 +258,7 @@ echo "Rate set: $rate"  | tee -a $LOGFILE
 echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
 echo "TESTRUN: $testrun"  | tee -a $LOGFILE
 echo "Have PMM notation: $havePMM"  | tee -a $LOGFILE
-
+echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=$(RUNNINGDATE);engine=${engine}" | tee -a "${LOGFILE}";
 if [ $testname == "sysbench" ]; then
 	echo "============= SysBench ============="  | tee -a $LOGFILE
 	echo "Rows Small: $SYSNBENCH_ROWS_SMALL"  | tee -a $LOGFILE
@@ -260,6 +276,7 @@ if [ $testname == "tpcc" ]; then
 	echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
 fi
 
+echo "METACOLLECTION: startdate=${RUNNINGDATE}" | tee -a $LOGFILE
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
@@ -289,7 +306,7 @@ run_tests(){
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
-	
+	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine}" | tee -a "${LOGFILE}";
 	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
         	max_threads=$sysbench_tables
@@ -307,13 +324,18 @@ run_tests(){
 	fi
 	
 	if [ "$havePMM" = "true" ]; then
-	    pmm-admin annotate "[START] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags "$testname"
+		if [ ! "$pmmservicename" == "" ]; then
+		     pmmservicenameTag="--service-name=$pmmservicename"
+		fi
+	
+	    pmm-admin annotate "[START] Test: ${test} $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[START] $label Test: $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
+		
 	fi
 	
 	for threads in $THREADS;do
@@ -321,8 +343,8 @@ run_tests(){
 		    echo "max_threads hit we are skipping threads: $threads" | tee -a "${LOGFILE}" 
 		   continue; 
 	   else 
-			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "======================================"  | tee -a  "${LOGFILE}"
+			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
@@ -343,10 +365,10 @@ run_tests(){
 	done;
 
 	if [ "$havePMM" = "true" ]; then
-	    pmm-admin annotate "[END] $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags "$testname"
+	    pmm-admin annotate "[END] $test $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[END] $test $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
@@ -405,6 +427,8 @@ if [ $testname == "tpcc" ]; then
 	done;
 fi
 
+#push end time info
+echo "METACOLLECTION: enddate=$(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
 #reset path
 cd $LOCAL_PATH
 exit

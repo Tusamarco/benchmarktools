@@ -37,6 +37,7 @@ Parameters:
         --pmm_url: To enable PMM automatic notation, you need to pass the information to connect to the PMM server as "http://user:password@ip:port/"
                    It is advisable you create a special user for such operations with limited privileges  
         --pmm_node_name: The node name where you are running the benchmarking. The value of the name is the NODE name as reported in the PMM inventory.
+        --pmm_service_name: The service name in case the node name and service name are different. The value of the name is the SERVICE name as reported in the PMM inventory.
 
 
 
