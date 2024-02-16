@@ -54,6 +54,8 @@ WHAREHOUSES=100
 SYSBENCH_LUA="/opt/tools/sysbench"
 TPCC_LUA="/opt/tools/sysbench-tpcc"
 LOCAL_PATH="`pwd`"
+MYSQL_VERSION=""
+MYSQL_COMMENT=""
 
 
 #operative variables
@@ -276,7 +278,7 @@ if [ $testname == "tpcc" ]; then
 	echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
 fi
 
-echo "METACOLLECTION: startdate=${RUNNINGDATE}" | tee -a $LOGFILE
+
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
@@ -284,16 +286,28 @@ fill_tpcc_map
 
 if [ ! "$subtest_list" == "true" ]; then
 	nc -w 1 -z $host $port
+	
 	if [ $? -ne 0 ]; then
 		 echo "[ERROR] Mysql did not start correctly ($host : $port)" | tee -a $LOGFILE
 		 exit 1
 	else
-		 echo "[OK] Mysql running correctly" | tee -a $LOGFILE
+	     mysql_version_comment=`mysql -u $USER -p$PW -h $host -P $port -BN -e "select concat(@@version_comment,\",\",@@version)" 2> /dev/null` 
+	     if [ ! "mysql_version_comment" == "" ]; then
+	         IFS=','
+	         read -ra mysql_var <<< "$mysql_version_comment"
+	         MYSQL_VERSION="mysqlversion=${mysql_var[1]}"
+	         MYSQL_COMMENT="mysqlproducer=${mysql_var[0]}"
+
+	         echo "MySQL Provider ${MYSQL_COMMENT} Version: ${MYSQL_VERSION}" 
+	     fi
+		 echo "[OK] Mysql running correctly  " | tee -a $LOGFILE
 	fi
   else
       get_sub_test_txt 
       exit;
 fi
+echo "METACOLLECTION: ${MYSQL_COMMENT};${MYSQL_VERSION};startdate=${RUNNINGDATE}" | tee -a $LOGFILE
+
 
 #=========================
 # Run Tests 
@@ -306,7 +320,7 @@ run_tests(){
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
-	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine}" | tee -a "${LOGFILE}";
+	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine};${MYSQL_COMMENT};${MYSQL_VERSION}" | tee -a "${LOGFILE}";
 	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
         	max_threads=$sysbench_tables
