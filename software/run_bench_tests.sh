@@ -297,8 +297,8 @@ if [ ! "$subtest_list" == "true" ]; then
 	         read -ra mysql_var <<< "$mysql_version_comment"
 	         MYSQL_VERSION="mysqlversion=${mysql_var[1]}"
 	         MYSQL_COMMENT="mysqlproducer=${mysql_var[0]}"
-
-	         echo "MySQL Provider ${MYSQL_COMMENT} Version: ${MYSQL_VERSION}" 
+             IFS=' ' 
+	         echo "MySQL Provider ${MYSQL_COMMENT} Version: ${MYSQL_VERSION}" | tee -a $LOGFILE
 	     fi
 		 echo "[OK] Mysql running correctly  " | tee -a $LOGFILE
 	fi
