@@ -306,7 +306,7 @@ if [ ! "$subtest_list" == "true" ]; then
       get_sub_test_txt 
       exit;
 fi
-echo "META: ${MYSQL_COMMENT};${MYSQL_VERSION};testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=$(RUNNINGDATE);engine=${engine}" | tee -a "${LOGFILE}";
+echo "META: ${MYSQL_COMMENT};${MYSQL_VERSION};testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
 
 
 #=========================
