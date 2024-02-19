@@ -260,7 +260,7 @@ echo "Rate set: $rate"  | tee -a $LOGFILE
 echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
 echo "TESTRUN: $testrun"  | tee -a $LOGFILE
 echo "Have PMM notation: $havePMM"  | tee -a $LOGFILE
-echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
+#echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
 if [ $testname == "sysbench" ]; then
 	echo "============= SysBench ============="  | tee -a $LOGFILE
 	echo "Rows Small: $SYSNBENCH_ROWS_SMALL"  | tee -a $LOGFILE
@@ -291,9 +291,9 @@ if [ ! "$subtest_list" == "true" ]; then
 		 echo "[ERROR] Mysql did not start correctly ($host : $port)" | tee -a $LOGFILE
 		 exit 1
 	else
-	     mysql_version_comment=`mysql -u $USER -p$PW -h $host -P $port -BN -e "select concat(@@version_comment,\",\",@@version)" 2> /dev/null` 
+	     mysql_version_comment=`mysql -u $USER -p$PW -h $host -P $port -BN -e "select concat(@@version_comment,\";\",@@version)" 2> /dev/null` 
 	     if [ ! "mysql_version_comment" == "" ]; then
-	         IFS=','
+	         IFS=';'
 	         read -ra mysql_var <<< "$mysql_version_comment"
 	         MYSQL_VERSION="mysqlversion=${mysql_var[1]}"
 	         MYSQL_COMMENT="mysqlproducer=${mysql_var[0]}"
