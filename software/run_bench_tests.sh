@@ -35,6 +35,7 @@ havePMM=false
 pmmurl=""
 pmmservicename=""
 type=""
+actionType=""
 run="1"
 
 #constants
@@ -231,6 +232,14 @@ if [ "$testrun" == "true" ];then
     test="${test}_TESTRUN"
 fi 
 
+if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
+	actionType=$type
+  elif [ $testname == "tpcc" ]; then 
+	actionType="read/write"
+  else 
+	actionType=$type
+fi
+
 RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
 LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${subtest}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
 if [ ! -d "$RESULTS/${testname}" ]; then
@@ -260,7 +269,7 @@ echo "Rate set: $rate"  | tee -a $LOGFILE
 echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
 echo "TESTRUN: $testrun"  | tee -a $LOGFILE
 echo "Have PMM notation: $havePMM"  | tee -a $LOGFILE
-#echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
+#echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${actionType};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
 if [ $testname == "sysbench" ]; then
 	echo "============= SysBench ============="  | tee -a $LOGFILE
 	echo "Rows Small: $SYSNBENCH_ROWS_SMALL"  | tee -a $LOGFILE
@@ -306,7 +315,7 @@ if [ ! "$subtest_list" == "true" ]; then
       get_sub_test_txt 
       exit;
 fi
-echo "META: ${MYSQL_COMMENT};${MYSQL_VERSION};testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
+echo "META: ${MYSQL_COMMENT};${MYSQL_VERSION};testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${actionType};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
 
 
 #=========================
@@ -320,7 +329,7 @@ run_tests(){
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
-	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${type};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine};${MYSQL_COMMENT};${MYSQL_VERSION}" | tee -a "${LOGFILE}";
+	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${actionType};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine};${MYSQL_COMMENT};${MYSQL_VERSION}" | tee -a "${LOGFILE}";
 	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
         	max_threads=$sysbench_tables
