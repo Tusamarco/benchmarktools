@@ -79,7 +79,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --LOOPS)
-        	LOOPS= "$2"    
+        	LOOPS="$2"    
         	shift 2
         	;;
         *)
@@ -104,8 +104,8 @@ for type in run_tpcc_RepeatableRead run_tpcc_ReadCommitted ; do
 	echo "Running type: ${type}"
         for loop in `seq 1 $LOOPS` ; do
 		echo "Running round: ${run}"
-		echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME $TIME  --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+		echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME $TIME  --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
 
-		bash $bin_path/run_bench_tests.sh --test ${testidentifyer}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME $TIME --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+		bash $bin_path/run_bench_tests.sh --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME $TIME --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
 	done;
 done;
