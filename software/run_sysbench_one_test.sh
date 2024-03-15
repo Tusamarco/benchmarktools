@@ -104,15 +104,21 @@ if [ "$HAVEPMM" = "true" ]; then
 	fi
 fi
 
+PREFIX="PS"
+if [ "$PORT" = "3308" ]; then
+	PREFIX="MY"
+fi
+
+
 bin_path="/opt/tools/benchmarktools/software"
     for dimension in small; do
         echo "Running dimension: ${dimension}"
         echo "Warmup phase"
-        echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --THREADS \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+        echo "RUNNING: $bin_path/run_bench_tests.sh --test ${PREFIX}_${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --THREADS \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
 
-        bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --THREADS "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+        bash $bin_path/run_bench_tests.sh --test ${PREFIX}_${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --THREADS "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
         
-        for type in select; do
+        for type in write; do
             echo "Running type: ${type}"
             for loop in `seq 1 $LOOPS` ; do
                 echo "Running round: ${run}"
