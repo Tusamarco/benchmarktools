@@ -16,6 +16,9 @@ Parameters:
         --help: this help                        
         --host: MySQL host
         --port: MySQL port
+        --user: user to use for connection
+        --password: password associated to user
+        --rate: average transactions rate. 0 for unlimited rate [0]
         --reconnect: sysbench will reconnect after the indicated number of events. Default 0 - no reconnect
         --schemaname: Schema name 
         --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)

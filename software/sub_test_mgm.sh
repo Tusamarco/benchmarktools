@@ -159,10 +159,10 @@ get_sub_test(){
 }
 
 get_full_map(){
+    echo ""
     echo "Full map value below (with commands)"
     echo "=========================================="
     if [ "$testname" == "ingest" ] || [ "$testname" == "all" ]; then 
-        echo ""
         echo "--------------- ingest -----------------"
 		for key in "${!ingest_tests[@]}"; do
 			echo "Key: $key Value: ${ingest_tests[$key]}"

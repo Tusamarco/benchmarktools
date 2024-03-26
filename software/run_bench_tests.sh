@@ -8,53 +8,52 @@ declare -A tpcc_tests
 declare -a execute_map
 
 #setting defaults
+actionType=""
 command="run"
 debug=false
 dryrun=false
 engine="innodb"
+error_ignore="none"
 filter_subtest="none"
+havePMM=false
 help=false
 host="127.0.0.1"
+pmmservicename=""
+pmmurl=""
 port=3306
+rate="0"
+reconnect="0"
+run="1"
 schemaname="windmills_small"
 subtest_list=false
 subtest="all"
+sysbench_rows=""
+sysbench_tables=""
+sysbench_test_dimension="small"
 table_name="mill"
 test="testXYZ"
 testname="sysbench"
-sysbench_test_dimension="small"
-sysbench_tables=""
-sysbench_rows=""
-rate=""
-error_ignore="none"
 testrun=false
-reconnect="0"
-havePMM=false
-pmmurl=""
-pmmservicename=""
 type=""
-actionType=""
-run="1"
 
 #constants
+LOCAL_PATH="`pwd`"
+MYSQL_COMMENT=""
+MYSQL_VERSION=""
 PW="test"
 RESULTS=/opt/results
-SYSNBENCH_ROWS_SMALL=10000000
+SYSBENCH_LUA="/opt/tools/sysbench"
 SYSNBENCH_ROWS_LARGE=30000000
+SYSNBENCH_ROWS_SMALL=10000000
 SYSNBENCH_TABLES_LARGE=5
 SYSNBENCH_TABLES_SMALL=20
-THREADS="1 2"
 #THREADS="1 2 4 8 16 32 64 128 256 512 1024 2056"
+THREADS="1 2"
 TIME=60
+TPCC_LUA="/opt/tools/sysbench-tpcc"
 TPCc_TABLES=10
 USER="app_test"
 WHAREHOUSES=100
-
-SYSBENCH_LUA="/opt/tools/sysbench"
-TPCC_LUA="/opt/tools/sysbench-tpcc"
-LOCAL_PATH="`pwd`"
-MYSQL_VERSION=""
-MYSQL_COMMENT=""
 
 #Import Help
 . $(dirname "$0")/help.sh
@@ -66,6 +65,18 @@ subtest_execute="";
 #Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --user)
+           USER="$2"
+           shift 2
+           ;;
+        --password)
+           PW="$2"
+           shift 2
+           ;;
+        --rate)
+           rate="$2"
+           shift 2
+           ;;
         --command)
             command="$2"
             shift 2
@@ -330,6 +341,10 @@ run_tests(){
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
         	max_threads=$sysbench_tables
         	echo "NOTE: launcher_threads_override detected, threads set to do not exceed: $max_threads" | tee -a  "${LOGFILE}"
+	fi
+	
+	if [ ! "$rate" == "0" ];then
+	   rate="rate=${rate}" 
 	fi
 	
 	if [ "$testrun" == "true" ];then
