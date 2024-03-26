@@ -88,6 +88,10 @@ while [[ $# -gt 0 ]]; do
             LOOPS="$2"
             shift 2
             ;;
+        --THREADS)
+            THREADS="$2"
+            shift 2
+            ;;	
         *)
             echo "Unknown argument: $1"
 			helptext
