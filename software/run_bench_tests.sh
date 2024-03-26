@@ -382,7 +382,7 @@ run_tests(){
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
-			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
+			  echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command "
 			else
 				if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
 					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
