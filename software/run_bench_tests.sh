@@ -21,7 +21,7 @@ host="127.0.0.1"
 pmmservicename=""
 pmmurl=""
 port=3306
-rate="0"
+rate=""
 reconnect="0"
 run="1"
 schemaname="windmills_small"
@@ -300,7 +300,7 @@ fill_sysbench_map
 fill_tpcc_map 
 
 #setting rate
-if [ ! "$rate" == "0" ];then
+if [ ! "$rate" == "" ];then
    rate="--rate=${rate}" 
 fi
 
