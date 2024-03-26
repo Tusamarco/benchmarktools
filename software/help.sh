@@ -32,8 +32,8 @@ Parameters:
         --test: The ID for the current test set IE PS8034
         --testname: The testname you want to run [ingest|sysbench|tpcc]
         --testrun: Run the tests with  thread and only for 10 seconds, just to check if they may work
-        --THREADS: the set of threads to use to run the tests use double quote as "2 4 8 16"
-        --TIME: the execution time for the tests in seconds IE 600
+        --threads: the set of threads to use to run the tests use double quote as "2 4 8 16"
+        --time: the execution time for the tests in seconds IE 600
   
         --havePmm: If you have PMM and want to add notation about what test and when it is run, you can enable it here
         --pmm_url: To enable PMM automatic notation, you need to pass the information to connect to the PMM server as "http://user:password@ip:port/"

@@ -101,11 +101,11 @@ while [[ $# -gt 0 ]]; do
             filter_subtest="$2"
             shift 2
             ;;
-        --TIME)
+        --time)
             TIME="$2"
             shift 2
             ;;
-        --THREADS)
+        --threads)
             THREADS="$2"
             shift 2
             ;;            
