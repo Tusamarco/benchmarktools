@@ -299,6 +299,11 @@ fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
 
+#setting rate
+if [ ! "$rate" == "0" ];then
+   rate="--rate=${rate}" 
+fi
+
 
 if [ ! "$subtest_list" == "true" ]; then
 	nc -w 1 -z $host $port
@@ -342,11 +347,7 @@ run_tests(){
         	max_threads=$sysbench_tables
         	echo "NOTE: launcher_threads_override detected, threads set to do not exceed: $max_threads" | tee -a  "${LOGFILE}"
 	fi
-	
-	if [ ! "$rate" == "0" ];then
-	   rate="--rate=${rate}" 
-	fi
-	
+
 	if [ "$testrun" == "true" ];then
         THREADS="1"
         TIME=5
