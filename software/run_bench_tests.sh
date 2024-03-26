@@ -86,10 +86,6 @@ while [[ $# -gt 0 ]]; do
             run="$2"
             shift 2
             ;;    
-        --subtest)
-            subtest="$2"
-            shift 2
-            ;;
        --filter_subtest)
             filter_subtest="$2"
             shift 2
@@ -241,7 +237,7 @@ if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
 fi
 
 RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
-LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${subtest}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
+LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
@@ -257,7 +253,7 @@ echo "Execution time: ${RUNNINGDATE}" | tee -a $LOGFILE
 echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
 echo "Test: $test"  | tee -a $LOGFILE
 echo "Testname: $testname"  | tee -a $LOGFILE
-echo "Sub Test: $subtest"  | tee -a $LOGFILE
+# echo "Sub Test: $subtest"  | tee -a $LOGFILE
 echo "Host: $host"  | tee -a $LOGFILE
 echo "Port: $port"  | tee -a $LOGFILE
 echo "Engine: $engine"  | tee -a $LOGFILE
@@ -403,14 +399,14 @@ run_tests(){
 }
 
 #get list of subtests to run (and commands)
-if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
+if [ ! "$testname" == "all" ]; then
      get_sub_test
     # echo "$subtest_execute"
 
- elif [ ! "$subtest" == "all" ] && [ "$testname" == "all" ]; then
+ elif [ ! "$subtest_list" == "true" ] && [ "$testname" == "all" ]; then
       echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
 	  exit;
- elif [ ! "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
+ elif [ "$subtest_list" == "true" ] && [ "$testname" == "all" ]; then
      get_sub_test
      # echo "$subtest_execute"
  else
