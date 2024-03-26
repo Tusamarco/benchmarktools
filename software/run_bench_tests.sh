@@ -344,7 +344,7 @@ run_tests(){
 	fi
 	
 	if [ ! "$rate" == "0" ];then
-	   rate="rate=${rate}" 
+	   rate="--rate=${rate}" 
 	fi
 	
 	if [ "$testrun" == "true" ];then
