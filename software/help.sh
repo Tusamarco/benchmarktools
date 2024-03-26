@@ -2,7 +2,7 @@ helptext(){
 
 cat << EOF
 
-Command line: Usage: $0 --command=run --test <test Identifier> --testname <sysbench|tpcc|ingest> --subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list --dryrun]
+Command line: Usage: $0 --command=run --test <test Identifier> --testname <sysbench|tpcc|ingest> --filter_subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list --dryrun]
 
 script: $0 
 
@@ -19,12 +19,11 @@ Parameters:
         --reconnect: sysbench will reconnect after the indicated number of events. Default 0 - no reconnect
         --schemaname: Schema name 
         --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)
-        --subtest: The specific subtest you want to run OR all (see output of --subtest_list)
         --sysbench_test_dimension: we have 2 standard dimension small and large. Default is small:
-								SYSNBENCH_ROWS_LARGE=30000000
-								SYSNBENCH_ROWS_SMALL=10000000
-								SYSNBENCH_TABLES_LARGE=5
-								SYSNBENCH_TABLES_SMALL=20
+								SYSNBENCH_ROWS_LARGE=${SYSNBENCH_ROWS_LARGE}
+								SYSNBENCH_ROWS_SMALL=${SYSNBENCH_ROWS_SMALL}
+								SYSNBENCH_TABLES_LARGE=${SYSNBENCH_TABLES_LARGE}
+								SYSNBENCH_TABLES_SMALL=${SYSNBENCH_TABLES_SMALL}
 			So small has smaller tables but more of them, large is more about few tables and more rows.
         --tablename: Table name for sysbench and Ingest 
         --test: The ID for the current test set IE PS8034

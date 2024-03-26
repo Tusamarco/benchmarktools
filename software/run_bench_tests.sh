@@ -1,8 +1,6 @@
 #!/bin/bash
 #./run_bench_tests.sh runPS8034 sysbench 127.0.0.1 point_select windmills_large  
 
-. $(dirname "$0")/help.sh
-
 #globals
 declare -A sysbench_tests
 declare -A ingest_tests 
@@ -58,6 +56,8 @@ LOCAL_PATH="`pwd`"
 MYSQL_VERSION=""
 MYSQL_COMMENT=""
 
+#Import Help
+. $(dirname "$0")/help.sh
 
 #operative variables
 subtest_execute="";
