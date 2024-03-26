@@ -162,21 +162,24 @@ get_full_map(){
     echo "Full map value below (with commands)"
     echo "=========================================="
     if [ "$testname" == "ingest" ] || [ "$testname" == "all" ]; then 
-        echo "\n--------------- ingest -----------------"
+        echo ""
+        echo "--------------- ingest -----------------"
 		for key in "${!ingest_tests[@]}"; do
 			echo "Key: $key Value: ${ingest_tests[$key]}"
 		done
     fi
 
     if [ "$testname" == "sysbench" ] || [ "$testname" == "all" ]; then 
-        echo "\n--------------- sysbench -----------------"
+        echo ""
+        echo "--------------- sysbench -----------------"
 		for key in "${!sysbench_tests[@]}"; do
 			echo "Key: $key Value: ${sysbench_tests[$key]}"
 		done
     fi
 
     if [ "$testname" == "tpcc" ] || [ "$testname" == "all" ]; then 
-        echo "\n--------------- tpcc -----------------"
+        echo ""
+        echo "--------------- tpcc -----------------"
 		for key in "${!tpcc_tests[@]}"; do
 			echo "Key: $key Value: ${tpcc_tests[$key]}"
 		done
