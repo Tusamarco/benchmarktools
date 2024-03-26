@@ -91,21 +91,26 @@ while [[ $# -gt 0 ]]; do
 done;
 
 havePMM=""
+dryRun=""
 
-if [ "$HAVEPMM" = "true" ]; then
+if [ "$HAVEPMM" == "true" ]; then
 	havePMM="--havePMM"
 	if [ ! "$PMMSERVICENAME" == "" ]; then
 	   PMMSERVICENAME="--pmm_service_name $PMMSERVICENAME"  
 	fi
 fi
+if [ "$DRYRUN" == "true" ]; then
+     dryRun="--dryrun"
+fi
+
 
 bin_path="/opt/tools/benchmarktools/software"
 for type in run_tpcc_RepeatableRead run_tpcc_ReadCommitted ; do
 	echo "Running type: ${type}"
         for loop in `seq 1 $LOOPS` ; do
 		echo "Running round: ${run}"
-		echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --threads \"${THREADS}\" --time $TIME  --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+		echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --threads \"${THREADS}\" --time $TIME  --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
 
-		bash $bin_path/run_bench_tests.sh --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --threads "${THREADS}" --time $TIME --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+		bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --threads "${THREADS}" --time $TIME --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
 	done;
 done;
