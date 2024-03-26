@@ -66,6 +66,10 @@ while [[ $# -gt 0 ]]; do
             HAVEPMM="true"
             shift 1
             ;;    
+        --DRYRUN)
+            DRYRUN="true"
+            shift 1
+            ;;    
         --PMMNODENAME)
             PMMNODENAME="$2"
             shift 2
