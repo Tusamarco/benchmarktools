@@ -427,12 +427,13 @@ run_tests(){
 	done;
 
 	if [ "$haveperf" == "true" ]; then
-			sudo kill -SIGINT  $(pgrep -x perf)    
-			perf script -i ${local_perf_report} > ${local_perf_report}.script    
-			${FLAMEGRAPHPATH}/stackcollapse-perf.pl ${local_perf_report}.script | ${FLAMEGRAPHPATH}/flamegraph.pl > ${local_perf_report}.svg
-			rm -f ${local_perf_report}
-			rm -f ${local_perf_report}.script
-			echo "Flame Graph for $label generated: ${local_perf_report}.svg"
+			sudo kill -SIGINT  $(pgrep -x perf) | tee -a "${LOGFILE}"    
+			sleep 5
+			perf script -i ${local_perf_report} > ${local_perf_report}.script  | tee -a "${LOGFILE}"   
+			${FLAMEGRAPHPATH}/stackcollapse-perf.pl ${local_perf_report}.script | ${FLAMEGRAPHPATH}/flamegraph.pl > ${local_perf_report}.svg 
+			rm -f ${local_perf_report} | tee -a "${LOGFILE}" 
+			rm -f ${local_perf_report}.script | tee -a "${LOGFILE}" 
+			echo "Flame Graph for $label generated: ${local_perf_report}.svg" | tee -a "${LOGFILE}" 
 	fi
 
 
