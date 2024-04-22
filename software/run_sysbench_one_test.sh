@@ -120,9 +120,9 @@ bin_path="/opt/tools/benchmarktools/software"
 			echo "Running filter_subtest: ${filter_subtest}"
 			for loop in `seq 1 $LOOPS` ; do
 				echo "Running round: ${run}"
-				echo "RUNNING: $bin_path/run_bench_tests.sh --test ${PREFIX}_${testidentifyer} --type ${type} --run ${loop}  --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads \"${THREADS}\" --TIME $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+				echo "RUNNING: $bin_path/run_bench_tests.sh --test ${PREFIX}_${testidentifyer} --type ${type} --run ${loop}  --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
 	
-				bash $bin_path/run_bench_tests.sh --test ${PREFIX}_${testidentifyer} --type ${type} --run ${loop} --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads "${THREADS}" --TIME $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+				bash $bin_path/run_bench_tests.sh --test ${PREFIX}_${testidentifyer} --type ${type} --run ${loop} --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
 			done;
 		done;	
     done;
