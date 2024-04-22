@@ -107,6 +107,7 @@ while [[ $# -gt 0 ]]; do
 done;
 
 havePMM=""
+havePerf=""
 
 if [ "$HAVEPMM" = "true" ]; then
 	havePMM="--havePMM"
@@ -119,29 +120,25 @@ fi
 
     for dimension in small large; do
 		if [ "$HAVEPERF" = "true" ]; then
-            reportName="perf_report_${perf_output_path}/${dimension}_${testidentifyer}_${filter_subtest}"
-            sudo perf record -a -F 99 -g -p $(pgrep -x mysqld) -o ${reportName} &
+             havePerf="--haveperf"
         fi
     
     
         for type in ${TYPE};do
 			echo "Running dimension: ${dimension}"
 	#        echo "Warmup phase"
-	#        echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --THREADS \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+	#        echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --THREADS \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" ${havePerf}
 	
-	#        bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --THREADS "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+	#        bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --THREADS "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf}
 			
 			echo "Running filter_subtest: ${filter_subtest}"
 			for loop in `seq 1 $LOOPS` ; do
 				echo "Running round: ${run}"
-				echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${loop}  --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+				echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${loop}  --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" ${havePerf}
 	
-				bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${loop} --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+				bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${loop} --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf}
 			done;
 		done;	
-		if [ "$HAVEPERF" = "true" ]; then
-			sudo kill -SIGINT  $(pgrep -x perf)        
-		fi
 		
 		
     done;

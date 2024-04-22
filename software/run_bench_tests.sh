@@ -16,6 +16,7 @@ engine="innodb"
 error_ignore="none"
 filter_subtest="none"
 havePMM=false
+haveperf="false"
 help=false
 host="127.0.0.1"
 pmmservicename=""
@@ -43,6 +44,7 @@ MYSQL_VERSION=""
 PW="test"
 RESULTS=/opt/results
 SYSBENCH_LUA="/opt/tools/sysbench"
+FLAMEGRAPHPATH="/opt/tools/FlameGraph/"
 SYSNBENCH_ROWS_LARGE=30000000
 SYSNBENCH_ROWS_SMALL=10000000
 SYSNBENCH_TABLES_LARGE=5
@@ -173,6 +175,10 @@ while [[ $# -gt 0 ]]; do
             dryrun=true
             shift 
             ;;
+        --haveperf)
+            haveperf=true
+            shift 
+            ;;
         --testrun)
             testrun=true
             shift
@@ -219,6 +225,17 @@ fi
 
 }
 
+check_flamegraph(){
+	if [ "$haveperf" == "true" ]; then
+		if [ -f "${FLAMEGRAPHPATH}/stackcollapse-perf.pl" ]; then
+			echo '[FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} exists.' | tee -a $LOGFILE
+		else
+			echo '[FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} does not exist. Wrong Path?'| tee -a $LOGFILE
+			exit 1
+		fi	
+	fi
+}
+
 
 #========================================
 
@@ -249,6 +266,8 @@ fi
 
 RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
 LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
+PERFREPORT=$RESULTS/${testname}/PERF_REPRT_${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_subtest}_${engine}
+
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
@@ -258,6 +277,7 @@ if [ "$dryrun" == "true" ]; then
 fi
 
 check_pmm
+check_flamegraph
 
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
 echo "Execution time: ${RUNNINGDATE}" | tee -a $LOGFILE
@@ -276,6 +296,7 @@ echo "Rate set: $rate"  | tee -a $LOGFILE
 echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
 echo "TESTRUN: $testrun"  | tee -a $LOGFILE
 echo "Have PMM notation: $havePMM"  | tee -a $LOGFILE
+echo "Use FlameGraph (collect perf report): $haveperf"  | tee -a $LOGFILE
 #echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${actionType};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
 if [ $testname == "sysbench" ]; then
 	echo "============= SysBench ============="  | tee -a $LOGFILE
@@ -337,6 +358,7 @@ run_tests(){
  label="$1"
  commandtxt="$2"
  max_threads=0
+ local_perf_report=""
  
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
@@ -358,7 +380,7 @@ run_tests(){
         THREADS=$sysbench_tables
 	fi
 	
-	if [ "$havePMM" = "true" ]; then
+	if [ "$havePMM" == "true" ]; then
 		if [ ! "$pmmservicename" == "" ]; then
 		     pmmservicenameTag="--service-name=$pmmservicename"
 		fi
@@ -371,6 +393,11 @@ run_tests(){
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
 		
+	fi
+	
+	if [ "$haveperf" == "true" ]; then
+	    local_perf_report="${PERFREPORT}_${label}_$(date +'%Y-%m-%d_%H_%M_%S')"
+		sudo perf record -a -F 99 -g -p $(pgrep -x mysqld) -o  ${local_perf_report} &
 	fi
 	
 	for threads in $THREADS;do
@@ -398,6 +425,16 @@ run_tests(){
 			echo "======================================" 
 	  fi
 	done;
+
+	if [ "$haveperf" == "true" ]; then
+			sudo kill -SIGINT  $(pgrep -x perf)    
+			perf script -i ${local_perf_report} > ${local_perf_report}.script    
+			${FLAMEGRAPHPATH}/stackcollapse-perf.pl ${local_perf_report}.script | ${FLAMEGRAPHPATH}/flamegraph.pl > ${local_perf_report}.svg
+			rm -f ${local_perf_report}
+			rm -f ${local_perf_report}.script
+			echo "Flame Graph for $label generated: ${local_perf_report}.svg"
+	fi
+
 
 	if [ "$havePMM" = "true" ]; then
 	    pmm-admin annotate "[END] $test $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
