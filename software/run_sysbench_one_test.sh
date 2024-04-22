@@ -119,8 +119,8 @@ fi
 
     for dimension in small large; do
 		if [ "$HAVEPERF" = "true" ]; then
-            reportName="${dimension}_${testidentifyer}_${filter_subtest}"
-            sudo perf record -a -F 99 -g -p $(pgrep -x mysqld) -o ${reportName}
+            reportName="${perf_output_path}/${dimension}_${testidentifyer}_${filter_subtest}"
+            sudo perf record -a -F 99 -g -p $(pgrep -x mysqld) -o ${reportName} &
         fi
     
     
