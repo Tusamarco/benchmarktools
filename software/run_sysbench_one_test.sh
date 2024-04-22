@@ -5,6 +5,7 @@ PORT="3306"
 TIME="200"
 PMMURL="http://admin:admin@127.0.0.1"
 HAVEPMM="false"
+HAVEPERF="false"
 PMMNODENAME="bench"
 PMMSERVICENAME=""
 LOOPS=1
@@ -12,7 +13,10 @@ filter_subtest=""
 THREADS="1"
 #THREADS="1 2 4 8 16 32 64 128 256 512 1024"
 TYPE="write"
-#TYPE="select write"
+#TYPE="select write select"
+
+bin_path="/opt/tools/benchmarktools/software"
+perf_output_path="/opt/results"
 
 # testidentifyer=${1:-"PS8035"}
 # HOST=${2:-"127.0.0.1"}
@@ -69,7 +73,11 @@ while [[ $# -gt 0 ]]; do
         --HAVEPMM)
             HAVEPMM="true"
             shift 1
-            ;;    
+            ;;
+        --HAVEPERF)
+            HAVEPERF="true"
+            shift 1
+            ;;                    
         --PMMNODENAME)
             PMMNODENAME="$2"
             shift 2
@@ -108,8 +116,14 @@ if [ "$HAVEPMM" = "true" ]; then
 fi
 
 
-bin_path="/opt/tools/benchmarktools/software"
-    for dimension in small; do
+
+    for dimension in small large; do
+		if [ "$HAVEPERF" = "true" ]; then
+            reportName="${dimension}_${testidentifyer}_${filter_subtest}"
+            sudo perf record -a -F 99 -g -p $(pgrep -x mysqld) -o ${reportName}
+        fi
+    
+    
         for type in ${TYPE};do
 			echo "Running dimension: ${dimension}"
 	#        echo "Warmup phase"
@@ -125,4 +139,9 @@ bin_path="/opt/tools/benchmarktools/software"
 				bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${loop} --testname sysbench --command run  --filter_subtest ${filter_subtest}  --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
 			done;
 		done;	
+		if [ "$HAVEPERF" = "true" ]; then
+			sudo kill -SIGINT  $(pgrep -x perf)        
+		fi
+		
+		
     done;
