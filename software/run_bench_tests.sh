@@ -226,14 +226,31 @@ fi
 }
 
 check_flamegraph(){
+local failing=false
+ 
+	if [ ! command -v perf &> /dev/null ];then
+	    echo "[ERROR][FLAME Graph check] The perf command is not present or cannot be found" | tee -a $LOGFILE
+    	failing=true
+      else
+	    echo "[NOTE][FLAME Graph check] The perf command is present" | tee -a $LOGFILE
+	fi
+	
+	
 	if [ "$haveperf" == "true" ]; then
 		if [ -f "${FLAMEGRAPHPATH}/stackcollapse-perf.pl" ]; then
-			echo '[FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} exists.' | tee -a $LOGFILE
+			echo '[NOTE][FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} exists.' | tee -a $LOGFILE
 		else
-			echo '[FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} does not exist. Wrong Path?'| tee -a $LOGFILE
-			exit 1
-		fi	
+			echo '[ERROR][FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} does not exist. Wrong Path?'| tee -a $LOGFILE
+	    	failing=true		
+	    fi	
 	fi
+
+if [ "$failing" == true ]; then
+	exit 1
+fi
+	
+	
+	
 }
 
 
