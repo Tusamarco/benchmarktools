@@ -232,13 +232,13 @@ local failing=false
 	    echo "[ERROR][FLAME Graph check] The perf command is not present or cannot be found" | tee -a $LOGFILE
     	failing=true
       else
-	    echo "[NOTE][FLAME Graph check] The perf command is present" | tee -a $LOGFILE
+	    echo "[INFO][FLAME Graph check] The perf command is present" | tee -a $LOGFILE
 	fi
 	
 	
 	if [ "$haveperf" == "true" ]; then
 		if [ -f "${FLAMEGRAPHPATH}/stackcollapse-perf.pl" ]; then
-			echo '[NOTE][FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} exists.' | tee -a $LOGFILE
+			echo '[INFO][FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} exists.' | tee -a $LOGFILE
 		else
 			echo '[ERROR][FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} does not exist. Wrong Path?'| tee -a $LOGFILE
 	    	failing=true		
@@ -248,8 +248,6 @@ local failing=false
 if [ "$failing" == true ]; then
 	exit 1
 fi
-	
-	
 	
 }
 
