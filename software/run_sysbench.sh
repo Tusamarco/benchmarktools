@@ -5,10 +5,12 @@ PORT="3306"
 TIME="600"
 PMMURL="http://admin:admin@127.0.0.1"
 HAVEPMM="false"
+HAVEPERF="false"
 PMMNODENAME="bench"
 PMMSERVICENAME=""
 LOOPS=1
-
+THREADS="1 2 4 8 16 32 64 128 256 512 1024"
+DRYRUN="false"
 
 # testidentifyer=${1:-"PS8035"}
 # HOST=${2:-"127.0.0.1"}
@@ -37,6 +39,7 @@ Parameters:
 --PMMNODENAME "bench"
 --PMMSERVICENAME "bench-mysql-service"   
 --LOOPS 1		 
+--DRYRUN: if enable will print all commands without executing them
 
 EOF
 exit
@@ -66,6 +69,14 @@ while [[ $# -gt 0 ]]; do
             HAVEPMM="true"
             shift 1
             ;;    
+        --HAVEPERF)
+            HAVEPERF="true"
+            shift 1
+            ;;                                
+        --DRYRUN)
+            DRYRUN="true"
+            shift 1
+            ;;    
         --PMMNODENAME)
             PMMNODENAME="$2"
             shift 2
@@ -82,6 +93,10 @@ while [[ $# -gt 0 ]]; do
             LOOPS="$2"
             shift 2
             ;;
+        --THREADS)
+            THREADS="$2"
+            shift 2
+            ;;	
         *)
             echo "Unknown argument: $1"
 			helptext
@@ -91,29 +106,38 @@ while [[ $# -gt 0 ]]; do
 done;
 
 havePMM=""
+dryRun=""
 
-if [ "$HAVEPMM" = "true" ]; then
+if [ "$HAVEPMM" == "true" ]; then
 	havePMM="--havePMM"
 	if [ ! "$PMMSERVICENAME" == "" ]; then
 	   PMMSERVICENAME="--pmm_service_name $PMMSERVICENAME"  
 	fi
 fi
+if [ "$DRYRUN" == "true" ]; then
+     dryRun="--dryrun"
+fi
+
+if [ "$HAVEPERF" = "true" ]; then
+	 havePerf="--haveperf"
+fi
+
 
 bin_path="/opt/tools/benchmarktools/software"
     for dimension in small large; do
         echo "Running dimension: ${dimension}"
         echo "Warmup phase"
-        echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --THREADS \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+        echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun}  --test ${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --threads \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" 
 
-        bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --THREADS "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+        bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
         
         for type in select write select; do
             echo "Running type: ${type}"
             for loop in `seq 1 $LOOPS` ; do
                 echo "Running round: ${run}"
-                echo "RUNNING: $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${loop}  --testname sysbench --command run  --filter_subtest ${type}  --THREADS \"1 2 4 8 16 32 64 128 256 512 1024\" --TIME $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME"
+                echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop}  --testname sysbench --command run  --filter_subtest ${type}  --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf}"
 
-                bash $bin_path/run_bench_tests.sh --test ${testidentifyer} --type ${type} --run ${loop} --testname sysbench --command run  --filter_subtest ${type}  --THREADS "1 2 4 8 16 32 64 128 256 512 1024" --TIME $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+                bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop} --testname sysbench --command run  --filter_subtest ${type}  --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf}
             done;
         done;
     done;

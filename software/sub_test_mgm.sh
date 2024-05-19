@@ -124,23 +124,9 @@ get_sub_test_txt(){
 		print_subtest_key_txt "$sorted"
     fi
 
-if [ "$debug" == true ]; then 
-    echo "Full map value below (with commands)"
-    echo "=========================================="
-    for key in "${!ingest_tests[@]}"; do
-        echo "Key: $key Value: ${ingest_tests[$key]}"
-    done
-
-
-    for key in "${!sysbench_tests[@]}"; do
-        echo "Key: $key Value: ${sysbench_tests[$key]}"
-    done
-
-    for key in "${!tpcc_tests[@]}"; do
-        echo "Key: $key Value: ${tpcc_tests[$key]}"
-    done
-    echo "=========================================="
-fi
+	if [ "$debug" == true ]; then 
+       get_full_map
+	fi
 
 }
 
@@ -166,22 +152,38 @@ get_sub_test(){
 		print_subtest_key "$sorted"
     fi
 
-if [ "$debug" == true ]; then 
+	if [ "$debug" == true ]; then 
+       get_full_map
+	fi
+
+}
+
+get_full_map(){
+    echo ""
     echo "Full map value below (with commands)"
     echo "=========================================="
-    for key in "${!ingest_tests[@]}"; do
-        echo "Key: $key Value: ${ingest_tests[$key]}"
-    done
+    if [ "$testname" == "ingest" ] || [ "$testname" == "all" ]; then 
+        echo "--------------- ingest -----------------"
+		for key in "${!ingest_tests[@]}"; do
+			echo "Key: $key Value: ${ingest_tests[$key]}"
+		done
+    fi
 
+    if [ "$testname" == "sysbench" ] || [ "$testname" == "all" ]; then 
+        echo ""
+        echo "--------------- sysbench -----------------"
+		for key in "${!sysbench_tests[@]}"; do
+			echo "Key: $key Value: ${sysbench_tests[$key]}"
+		done
+    fi
 
-    for key in "${!sysbench_tests[@]}"; do
-        echo "Key: $key Value: ${sysbench_tests[$key]}"
-    done
-
-    for key in "${!tpcc_tests[@]}"; do
-        echo "Key: $key Value: ${tpcc_tests[$key]}"
-    done
+    if [ "$testname" == "tpcc" ] || [ "$testname" == "all" ]; then 
+        echo ""
+        echo "--------------- tpcc -----------------"
+		for key in "${!tpcc_tests[@]}"; do
+			echo "Key: $key Value: ${tpcc_tests[$key]}"
+		done
+    fi
     echo "=========================================="
-fi
 
 }

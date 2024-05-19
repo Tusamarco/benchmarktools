@@ -2,7 +2,7 @@ helptext(){
 
 cat << EOF
 
-Command line: Usage: $0 --command=run --test <test Identifier> --testname <sysbench|tpcc|ingest> --subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list --dryrun]
+Command line: Usage: $0 --command=run --test <test Identifier> --testname <sysbench|tpcc|ingest> --filter_subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list --dryrun]
 
 script: $0 
 
@@ -16,22 +16,24 @@ Parameters:
         --help: this help                        
         --host: MySQL host
         --port: MySQL port
+        --user: user to use for connection
+        --password: password associated to user
+        --rate: average transactions rate. 0 for unlimited rate [0]
         --reconnect: sysbench will reconnect after the indicated number of events. Default 0 - no reconnect
         --schemaname: Schema name 
         --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)
-        --subtest: The specific subtest you want to run OR all (see output of --subtest_list)
         --sysbench_test_dimension: we have 2 standard dimension small and large. Default is small:
-								SYSNBENCH_ROWS_LARGE=30000000
-								SYSNBENCH_ROWS_SMALL=10000000
-								SYSNBENCH_TABLES_LARGE=5
-								SYSNBENCH_TABLES_SMALL=20
+								SYSNBENCH_ROWS_LARGE=${SYSNBENCH_ROWS_LARGE}
+								SYSNBENCH_ROWS_SMALL=${SYSNBENCH_ROWS_SMALL}
+								SYSNBENCH_TABLES_LARGE=${SYSNBENCH_TABLES_LARGE}
+								SYSNBENCH_TABLES_SMALL=${SYSNBENCH_TABLES_SMALL}
 			So small has smaller tables but more of them, large is more about few tables and more rows.
         --tablename: Table name for sysbench and Ingest 
         --test: The ID for the current test set IE PS8034
         --testname: The testname you want to run [ingest|sysbench|tpcc]
         --testrun: Run the tests with  thread and only for 10 seconds, just to check if they may work
-        --THREADS: the set of threads to use to run the tests use double quote as "2 4 8 16"
-        --TIME: the execution time for the tests in seconds IE 600
+        --threads: the set of threads to use to run the tests use double quote as "2 4 8 16"
+        --time: the execution time for the tests in seconds IE 600
   
         --havePmm: If you have PMM and want to add notation about what test and when it is run, you can enable it here
         --pmm_url: To enable PMM automatic notation, you need to pass the information to connect to the PMM server as "http://user:password@ip:port/"

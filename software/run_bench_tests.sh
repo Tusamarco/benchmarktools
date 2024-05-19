@@ -1,8 +1,6 @@
 #!/bin/bash
 #./run_bench_tests.sh runPS8034 sysbench 127.0.0.1 point_select windmills_large  
 
-. $(dirname "$0")/help.sh
-
 #globals
 declare -A sysbench_tests
 declare -A ingest_tests 
@@ -10,54 +8,57 @@ declare -A tpcc_tests
 declare -a execute_map
 
 #setting defaults
+actionType=""
 command="run"
 debug=false
 dryrun=false
 engine="innodb"
+error_ignore="none"
 filter_subtest="none"
+havePMM=false
+haveperf="false"
 help=false
 host="127.0.0.1"
+pmmservicename=""
+pmmurl=""
 port=3306
+rate=""
+reconnect="0"
+run="1"
 schemaname="windmills_small"
 subtest_list=false
 subtest="all"
+sysbench_rows=""
+sysbench_tables=""
+sysbench_test_dimension="small"
 table_name="mill"
 test="testXYZ"
 testname="sysbench"
-sysbench_test_dimension="small"
-sysbench_tables=""
-sysbench_rows=""
-rate=""
-error_ignore="none"
 testrun=false
-reconnect="0"
-havePMM=false
-pmmurl=""
-pmmservicename=""
 type=""
-actionType=""
-run="1"
 
 #constants
+LOCAL_PATH="`pwd`"
+MYSQL_COMMENT=""
+MYSQL_VERSION=""
 PW="test"
 RESULTS=/opt/results
-SYSNBENCH_ROWS_SMALL=10000000
+SYSBENCH_LUA="/opt/tools/sysbench"
+FLAMEGRAPHPATH="/opt/tools/FlameGraph/"
 SYSNBENCH_ROWS_LARGE=30000000
+SYSNBENCH_ROWS_SMALL=10000000
 SYSNBENCH_TABLES_LARGE=5
 SYSNBENCH_TABLES_SMALL=20
-THREADS="1 2"
 #THREADS="1 2 4 8 16 32 64 128 256 512 1024 2056"
+THREADS="1 2"
 TIME=60
+TPCC_LUA="/opt/tools/sysbench-tpcc"
 TPCc_TABLES=10
 USER="app_test"
 WHAREHOUSES=100
 
-SYSBENCH_LUA="/opt/tools/sysbench"
-TPCC_LUA="/opt/tools/sysbench-tpcc"
-LOCAL_PATH="`pwd`"
-MYSQL_VERSION=""
-MYSQL_COMMENT=""
-
+#Import Help
+. $(dirname "$0")/help.sh
 
 #operative variables
 subtest_execute="";
@@ -66,6 +67,18 @@ subtest_execute="";
 #Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --user)
+           USER="$2"
+           shift 2
+           ;;
+        --password)
+           PW="$2"
+           shift 2
+           ;;
+        --rate)
+           rate="$2"
+           shift 2
+           ;;
         --command)
             command="$2"
             shift 2
@@ -86,19 +99,15 @@ while [[ $# -gt 0 ]]; do
             run="$2"
             shift 2
             ;;    
-        --subtest)
-            subtest="$2"
-            shift 2
-            ;;
        --filter_subtest)
             filter_subtest="$2"
             shift 2
             ;;
-        --TIME)
+        --time)
             TIME="$2"
             shift 2
             ;;
-        --THREADS)
+        --threads)
             THREADS="$2"
             shift 2
             ;;            
@@ -166,6 +175,10 @@ while [[ $# -gt 0 ]]; do
             dryrun=true
             shift 
             ;;
+        --haveperf)
+            haveperf=true
+            shift 
+            ;;
         --testrun)
             testrun=true
             shift
@@ -212,6 +225,32 @@ fi
 
 }
 
+check_flamegraph(){
+local failing=false
+ 
+	if [ ! command -v perf &> /dev/null ];then
+	    echo "[ERROR][FLAME Graph check] The perf command is not present or cannot be found" | tee -a $LOGFILE
+    	failing=true
+      else
+	    echo "[INFO][FLAME Graph check] The perf command is present" | tee -a $LOGFILE
+	fi
+	
+	
+	if [ "$haveperf" == "true" ]; then
+		if [ -f "${FLAMEGRAPHPATH}/stackcollapse-perf.pl" ]; then
+			echo '[INFO][FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} exists.' | tee -a $LOGFILE
+		else
+			echo '[ERROR][FLAME Graph check] The file for FlameGraph ${${FLAMEGRAPHPATH}/stackcollapse-perf.pl} does not exist. Wrong Path?'| tee -a $LOGFILE
+	    	failing=true		
+	    fi	
+	fi
+
+if [ "$failing" == true ]; then
+	exit 1
+fi
+	
+}
+
 
 #========================================
 
@@ -241,7 +280,9 @@ if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
 fi
 
 RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
-LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${subtest}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
+LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
+PERFREPORT=$RESULTS/${testname}/PERF_REPORT_${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_subtest}_${engine}
+
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
 fi
@@ -251,13 +292,14 @@ if [ "$dryrun" == "true" ]; then
 fi
 
 check_pmm
+check_flamegraph
 
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
 echo "Execution time: ${RUNNINGDATE}" | tee -a $LOGFILE
 echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
 echo "Test: $test"  | tee -a $LOGFILE
 echo "Testname: $testname"  | tee -a $LOGFILE
-echo "Sub Test: $subtest"  | tee -a $LOGFILE
+# echo "Sub Test: $subtest"  | tee -a $LOGFILE
 echo "Host: $host"  | tee -a $LOGFILE
 echo "Port: $port"  | tee -a $LOGFILE
 echo "Engine: $engine"  | tee -a $LOGFILE
@@ -269,6 +311,7 @@ echo "Rate set: $rate"  | tee -a $LOGFILE
 echo "Ignore error set: $error_ignore"  | tee -a $LOGFILE
 echo "TESTRUN: $testrun"  | tee -a $LOGFILE
 echo "Have PMM notation: $havePMM"  | tee -a $LOGFILE
+echo "Use FlameGraph (collect perf report): $haveperf"  | tee -a $LOGFILE
 #echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${actionType};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
 if [ $testname == "sysbench" ]; then
 	echo "============= SysBench ============="  | tee -a $LOGFILE
@@ -291,6 +334,11 @@ fi
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
+
+#setting rate
+if [ ! "$rate" == "" ];then
+   rate="--rate=${rate}" 
+fi
 
 
 if [ ! "$subtest_list" == "true" ]; then
@@ -325,6 +373,7 @@ run_tests(){
  label="$1"
  commandtxt="$2"
  max_threads=0
+ local_perf_report=""
  
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
@@ -335,7 +384,7 @@ run_tests(){
         	max_threads=$sysbench_tables
         	echo "NOTE: launcher_threads_override detected, threads set to do not exceed: $max_threads" | tee -a  "${LOGFILE}"
 	fi
-	
+
 	if [ "$testrun" == "true" ];then
         THREADS="1"
         TIME=5
@@ -346,7 +395,7 @@ run_tests(){
         THREADS=$sysbench_tables
 	fi
 	
-	if [ "$havePMM" = "true" ]; then
+	if [ "$havePMM" == "true" ]; then
 		if [ ! "$pmmservicename" == "" ]; then
 		     pmmservicenameTag="--service-name=$pmmservicename"
 		fi
@@ -361,6 +410,11 @@ run_tests(){
 		
 	fi
 	
+	if [ "$haveperf" == "true" ]; then
+	    local_perf_report="${PERFREPORT}_${label}_$(date +'%Y-%m-%d_%H_%M_%S')"
+		sudo perf record -a -F 99 -g -p $(pgrep -x mysqld) -o  ${local_perf_report} &
+	fi
+	
 	for threads in $THREADS;do
 	  if [ $max_threads -gt 0 ] && [ $threads -gt $max_threads ]; then
 		    echo "max_threads hit we are skipping threads: $threads" | tee -a "${LOGFILE}" 
@@ -371,7 +425,7 @@ run_tests(){
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
-			  echo "Command: ${commandtxt} --time=$TIME  --threads=${THREADS} $command "
+			  echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command "
 			else
 				if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
 					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
@@ -386,6 +440,17 @@ run_tests(){
 			echo "======================================" 
 	  fi
 	done;
+
+	if [ "$haveperf" == "true" ]; then
+			sudo kill -SIGINT  $(pgrep -x perf) | tee -a "${LOGFILE}"    
+			sleep 5
+			perf script -i ${local_perf_report} > ${local_perf_report}.script  | tee -a "${LOGFILE}"   
+			${FLAMEGRAPHPATH}/stackcollapse-perf.pl ${local_perf_report}.script | ${FLAMEGRAPHPATH}/flamegraph.pl > ${local_perf_report}.svg 
+			rm -f ${local_perf_report} | tee -a "${LOGFILE}" 
+			rm -f ${local_perf_report}.script | tee -a "${LOGFILE}" 
+			echo "Flame Graph for $label generated: ${local_perf_report}.svg" | tee -a "${LOGFILE}" 
+	fi
+
 
 	if [ "$havePMM" = "true" ]; then
 	    pmm-admin annotate "[END] $test $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
@@ -403,14 +468,14 @@ run_tests(){
 }
 
 #get list of subtests to run (and commands)
-if [ "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
+if [ ! "$testname" == "all" ]; then
      get_sub_test
     # echo "$subtest_execute"
 
- elif [ ! "$subtest" == "all" ] && [ "$testname" == "all" ]; then
+ elif [ ! "$subtest_list" == "true" ] && [ "$testname" == "all" ]; then
       echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
 	  exit;
- elif [ ! "$subtest" == "all" ] && [ ! "$testname" == "all" ]; then
+ elif [ "$subtest_list" == "true" ] && [ "$testname" == "all" ]; then
      get_sub_test
      # echo "$subtest_execute"
  else
