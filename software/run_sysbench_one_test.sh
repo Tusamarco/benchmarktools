@@ -46,6 +46,7 @@ Parameters:
 --PMMSERVICENAME "bench-mysql-service"   
 --LOOPS 1		 
 --filter_subtest "write_run_rw_heavy_trx"
+--THREADS "1 2 4 8 16 32 64 128 256 512 1024 2048"
 
 EOF
 exit
@@ -89,6 +90,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --TIME)
             TIME="$2"
+            shift 2
+            ;;
+        --THREADS)
+            THREADS="$2"
             shift 2
             ;;
         --LOOPS)
