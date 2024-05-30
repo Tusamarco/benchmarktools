@@ -45,6 +45,7 @@ Parameters:
 --PMMNODENAME "bench"
 --PMMSERVICENAME "bench-mysql-service"   
 --LOOPS 1		 
+--filter_subtest "write_run_rw_heavy_trx"
 
 EOF
 exit
