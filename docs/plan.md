@@ -115,9 +115,13 @@ We will have 3 moments for the tests:
 **Pre:**
 
 **oltp_point_select**.lua - Point Select Pre -  Run single select query fetching ONE row by PK (Pre update)
+
 **oltp_read_only**.lua - read-only.rangeX - Param range.size=100 then range.size=1000 - perfroms range select with no write contention, before update (to compare with same test after update)
+
 **oltp_inlist_select**.lua - Random points select with IN Pre - uses the IN condition to retrieve a batch of 100 rows random ID (Pre update)
+
 **oltp_scan**.lua - Scan Pre - Cause a full table scan given a condition that is not null. (Pre Update)		
+
 **oltp_inlist_select**.lua -- Hot Point Pre - Params --random-points=100 --hot-points - Each select statement fetches 100 rows found by exact match on the PK. This is similar to random-points except this fetches the same 100 rows for all queries. The working set for this test is always cached.
 
 **Writes:**
