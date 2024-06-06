@@ -1,12 +1,4 @@
 # Benchmarking high level concepts and MySQL test definition
-
-Created: October 31, 2023 7:18 PM
-Tags: MySQL, benchmark, regression, testing
-Created by: Marco Tusa
-Date: October 31, 2023
-Last edited by: Marco Tusa
-Last edited time: November 14, 2023 9:23 AM
-
 # Principles
 
 Key factors:
