@@ -9,11 +9,11 @@ Last edited time: November 12, 2023 8:57 AM
 # Plan (Work In Progress)
 
 ## MySQL versions TBD:
-
-- 8.0.35 /34
-- 8.2.0
-- PS 8.0.34
-- PS 8.0.35
+MySQL versions
+- 5.7
+- 8.0.37/36/34
+- 8.4.0
+MariaDB
 
 ## Software we will use
 
