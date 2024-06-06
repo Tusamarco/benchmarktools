@@ -114,26 +114,25 @@ We will have 3 moments for the tests:
 
 **Pre:**
 
-**oltp_point_select**.lua - Point Select Pre -  Run single select query fetching ONE row by PK (Pre update)
-
-**oltp_read_only**.lua - read-only.rangeX - Param range.size=100 then range.size=1000 - perfroms range select with no write contention, before update (to compare with same test after update)
-
-**oltp_inlist_select**.lua - Random points select with IN Pre - uses the IN condition to retrieve a batch of 100 rows random ID (Pre update)
-
-**oltp_scan**.lua - Scan Pre - Cause a full table scan given a condition that is not null. (Pre Update)		
-
-**oltp_inlist_select**.lua -- Hot Point Pre - Params --random-points=100 --hot-points - Each select statement fetches 100 rows found by exact match on the PK. This is similar to random-points except this fetches the same 100 rows for all queries. The working set for this test is always cached.
+**oltp_point_select**.lua - Point Select Pre -  Run single select query fetching ONE row by PK (Pre update)\
+**oltp_read_only**.lua - read-only.rangeX - Param range.size=100 then range.size=1000 - perfroms range select with no write contention, before update (to compare with same test after update)\
+**oltp_inlist_select**.lua - Random points select with IN Pre - uses the IN condition to retrieve a batch of 100 rows random ID (Pre update)\
+**oltp_scan**.lua - Scan Pre - Cause a full table scan given a condition that is not null. (Pre Update)	\
+**oltp_inlist_select**.lua -- Hot Point Pre - Params --random-points=100 --hot-points - Each select statement fetches 100 rows found by exact match on the PK. This is similar to random-points except this fetches the same 100 rows for all queries. The working set for this test is always cached.\
 
 **Writes:**
 
-**oltp_inlist_update**.lua - update-inlist - each update statement updates 100 rows selected by exact match on the PK via an in-list		
-**oltp_update_non_index**.lua for update-one test - Param index_updates=1  - One row update, each update statement updates one row. The same row in the database gets all updates
-**oltp_update_index**.lua -  should this use multiple rows - Param index_updates=100   - uses **oltp_update_index**.lua to run an update-only workload and secondary index maintenance is required.
-**oltp_update_non_index**.lua -- Param non_index_updates=100 -- run an update-only workload and secondary index maintenance is not required
-**oltp_update_non_index**.lua -- Param rand-type=special - with special updates are focus on a small set of IDs
-**oltp_delete**.lua - Delete/insert a set of rows
-**oltp_write_only**.lua - All write operation only with no read overload.
-**oltp_read_write**.lua - read-write.rangeX - Param range.size=100 then range.size=1000 - performs range selects while inserting
+**oltp_inlist_update**.lua - update-inlist - each update statement updates 100 rows selected by exact match on the PK via an in-list\		
+**oltp_update_non_index**.lua for update-one test - Param index_updates=1  - One row update, each update statement updates one row. The same row in the database gets all updates\
+**oltp_update_index**.lua -  should this use multiple rows - Param index_updates=100   - uses **oltp_update_index**.lua to run an update-only workload and secondary index maintenance is required.\
+**oltp_update_non_index**.lua -- Param non_index_updates=100 -- run an update-only workload and secondary index maintenance is not required\
+**oltp_update_non_index**.lua -- Param rand-type=special - with special updates are focus on a small set of IDs\
+**oltp_delete**.lua - Delete/insert a set of rows\
+**oltp_write_only**.lua - All write operation only with no read overload.\
+**oltp_read_write**.lua - read-write.rangeX - Param range.size=100 then range.size=1000 - performs range selects while inserting\
+**oltp_read_write with 25% writes** - read/write operations with increasing % of write VS Reads\
+**oltp_read_write with 50% writes** - read/write operations with increasing % of write VS Reads\
+**oltp_read_write with 25% writes** - read/write operations with increasing % of write VS Reads\
 
 **Post:**
 
