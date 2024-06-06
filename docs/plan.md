@@ -14,7 +14,7 @@ MySQL versions
 - 8.0.37/36/34
 - 8.4.0
 MariaDB
-
+- 11.3.x
 ## Software we will use
 
 Sysbench ([https://github.com/Tusamarco/sysbench/tree/percona-testing](https://github.com/Tusamarco/sysbench/tree/percona-testing))
@@ -132,7 +132,7 @@ We will have 3 moments for the tests:
 **oltp_read_write**.lua - read-write.rangeX - Param range.size=100 then range.size=1000 - performs range selects while inserting\
 **oltp_read_write with 25% writes** - read/write operations with increasing % of write VS Reads\
 **oltp_read_write with 50% writes** - read/write operations with increasing % of write VS Reads\
-**oltp_read_write with 25% writes** - read/write operations with increasing % of write VS Reads\
+**oltp_read_write with 75% writes** - read/write operations with increasing % of write VS Reads
 
 **Post:**
 
