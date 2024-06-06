@@ -1,13 +1,4 @@
 # MySQL Plan of action
-
-Created: November 6, 2023 6:18 PM
-Tags: ActionPlan, MySQL, benchmark, testing
-Created by: Marco Tusa
-Last edited by: Marco Tusa
-Last edited time: November 12, 2023 8:57 AM
-
-# Plan (Work In Progress)
-
 ## MySQL versions TBD:
 MySQL versions
 - 5.7
