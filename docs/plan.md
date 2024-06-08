@@ -120,10 +120,10 @@ We will have 3 moments for the tests:
 **oltp_update_non_index**.lua -- Param rand-type=special - with special updates are focus on a small set of IDs\
 **oltp_delete**.lua - Delete/insert a set of rows\
 **oltp_write_only**.lua - All write operation only with no read overload.\
-**oltp_read_write**.lua - read-write.rangeX - Param range.size=100 then range.size=1000 - performs range selects while inserting\
-**oltp_read_write with 25% writes** - read/write operations with increasing % of write VS Reads\
-**oltp_read_write with 50% writes** - read/write operations with increasing % of write VS Reads\
-**oltp_read_write with 75% writes** - read/write operations with increasing % of write VS Reads
+**oltp_read_write**.lua - read-write.rangeX - Param range.size=100 then range.size=1000 - performs range selects while inserting (~2% - 1% write operations)\
+**oltp_read_write with 25% writes** - read/write operations with 25% of write VS Reads\
+**oltp_read_write with 50% writes** - read/write operations with 50% of write VS Reads\
+**oltp_read_write with 75% writes** - read/write operations with 75% of write VS Reads
 
 **Post:**
 
