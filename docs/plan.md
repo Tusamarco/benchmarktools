@@ -3,7 +3,7 @@
 MySQL versions
 - 5.7
 - 8.0.37/36/34
-- 8.4.0
+- 8.4.0\
 MariaDB
 - 11.3.x
 ## Software we will use
