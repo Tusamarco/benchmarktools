@@ -11,6 +11,7 @@ PMMSERVICENAME=""
 LOOPS=1
 THREADS="1 2 4 8 16 32 64 128 256 512 1024"
 DRYRUN="false"
+TESTS_ACTIONS="select write select"
 
 # testidentifyer=${1:-"PS8035"}
 # HOST=${2:-"127.0.0.1"}
@@ -93,6 +94,10 @@ while [[ $# -gt 0 ]]; do
             LOOPS="$2"
             shift 2
             ;;
+        --TESTSACTIONS)
+            TESTS_ACTIONS="$2"
+            shift 2
+            ;;    
         --THREADS)
             THREADS="$2"
             shift 2
@@ -131,7 +136,7 @@ bin_path="/opt/tools/benchmarktools/software"
 
         bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
         
-        for type in select write select; do
+        for type in $TESTS_ACTIONS; do
             echo "Running type: ${type}"
             for loop in `seq 1 $LOOPS` ; do
                 echo "Running round: ${run}"
