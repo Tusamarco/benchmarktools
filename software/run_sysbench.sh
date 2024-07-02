@@ -12,6 +12,7 @@ LOOPS=1
 THREADS="1 2 4 8 16 32 64 128 256 512 1024"
 DRYRUN="false"
 TESTS_ACTIONS="select write select"
+NO_PRELOAD="false"
 
 # testidentifyer=${1:-"PS8035"}
 # HOST=${2:-"127.0.0.1"}
@@ -73,7 +74,11 @@ while [[ $# -gt 0 ]]; do
         --HAVEPERF)
             HAVEPERF="true"
             shift 1
-            ;;                                
+            ;;       
+        --NOPRELOAD)
+            NO_PRELOAD="true"
+            shift 1
+            ;;                             
         --DRYRUN)
             DRYRUN="true"
             shift 1
@@ -124,7 +129,7 @@ if [ "$DRYRUN" == "true" ]; then
      dryRun="--dryrun"
 fi
 
-if [ "$HAVEPERF" = "true" ]; then
+if [ "$HAVEPERF" == "true" ]; then
 	 havePerf="--haveperf"
 fi
 
@@ -132,10 +137,13 @@ fi
 bin_path="/opt/tools/benchmarktools/software"
     for dimension in small large; do
         echo "Running dimension: ${dimension}"
-        echo "Warmup phase"
-        echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun}  --test ${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --threads \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" 
-
-        bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+        
+        if [ "$NO_PRELOAD" == "false" ]; then
+			echo "Warmup phase"
+			echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun}  --test ${testidentifyer} --type warmup --run 1  --testname sysbench --command warmup  --filter_subtest \"warmup_run_select_scan\"  --threads \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" 
+	
+			bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 --testname sysbench --command warmup  --filter_subtest warmup_run_select_scan  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname windmills_${dimension} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME
+        fi
         
         for type in $TESTS_ACTIONS; do
             echo "Running type: ${type}"
