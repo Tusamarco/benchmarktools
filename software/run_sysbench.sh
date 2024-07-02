@@ -11,7 +11,7 @@ PMMSERVICENAME=""
 LOOPS=1
 THREADS="1 2 4 8 16 32 64 128 256 512 1024"
 DRYRUN="false"
-TESTSACTIONS="select write select"
+TESTS_ACTIONS="select write select"
 
 # testidentifyer=${1:-"PS8035"}
 # HOST=${2:-"127.0.0.1"}
