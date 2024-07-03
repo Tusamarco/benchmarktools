@@ -3,7 +3,7 @@
 import os, sys, mmap, datetime
 from argparse import ArgumentParser
 
-parser = argparse.ArgumentParser(description='SSD test simple')
+parser = ArgumentParser(description='SSD test simple')
 parser.add_argument("-l", "--loops", dest="loops",default=1000,
                     help="number of loops to execute")
 args = vars(parser.parse_args())
