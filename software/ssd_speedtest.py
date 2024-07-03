@@ -1,8 +1,14 @@
 #!/usr/bin/python3
  
 import os, sys, mmap, datetime
+from argparse import ArgumentParser
 
+parser = argparse.ArgumentParser(description='SSD test simple')
+parser.add_argument("-l", "--loops", dest="loops",default=1000,
+                    help="number of loops to execute")
+args = vars(parser.parse_args())
 
+loops = args['loops']
 
 a = datetime.datetime.now()
  
@@ -20,7 +26,7 @@ m = mmap.mmap(-1, 16384)
 
 
 #for a defined loop of X  
-for i in range (1,1000):
+for i in range (1,loops):
    os.lseek(fdr,os.SEEK_SET,0)
    os.lseek(fdi,os.SEEK_SET,0)   
    r[1] = 1
