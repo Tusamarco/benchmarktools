@@ -34,4 +34,4 @@ for i in range (1,1000):
 os.close( fdr )
 os.close( fdi )
 b = datetime.datetime.now()
-print("Time taken: " + (b-a))
+print("Time taken: " + str(b-a))
