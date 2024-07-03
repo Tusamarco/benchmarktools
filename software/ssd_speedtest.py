@@ -4,7 +4,7 @@ import os, sys, mmap, datetime
 from argparse import ArgumentParser
 
 parser = ArgumentParser(description='SSD test simple')
-parser.add_argument("-l", "--loops", dest="loops",default=1000,
+parser.add_argument("-l", "--loops", dest="loops",default=1000,type = int,
                     help="number of loops to execute")
 args = vars(parser.parse_args())
 
