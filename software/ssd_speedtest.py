@@ -39,5 +39,7 @@ for i in range (1,loops):
 # Close opened file
 os.close( fdr )
 os.close( fdi )
+os.remove( fdr )
+os.remove( fdi )
 b = datetime.datetime.now()
 print("Time taken: " + str(b-a))
