@@ -1,6 +1,10 @@
 #!/usr/bin/python
  
-import os, sys, mmap
+import os, sys, mmap, datetime
+
+
+
+a = datetime.datetime.now()
  
 # Open a file using O_direct
 fdr = os.open( "testfile_redo", os.O_RDWR|os.O_CREAT|os.O_DIRECT )
@@ -29,3 +33,5 @@ for i in range (1,1000):
 # Close opened file
 os.close( fdr )
 os.close( fdi )
+b = datetime.datetime.now()
+print("Time taken: " + (b-a))
