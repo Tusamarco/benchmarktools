@@ -2,10 +2,11 @@
 ## MySQL versions TBD:
 MySQL versions
 - 5.7
-- 8.0.37/36/34
-- 8.4.0\
+- 8.0.X
+- 8.X.0
+- 9.X.X
 MariaDB
-- 11.3.x
+- 11.X.X (last LST availabel)
 ## Software we will use
 
 Sysbench ([https://github.com/Tusamarco/sysbench/tree/percona-testing](https://github.com/Tusamarco/sysbench/tree/percona-testing))

@@ -45,13 +45,51 @@ export DSS_QUERY=/opt/tools/dbt3/queries/mysql/
 export DSS_CONFIG=/opt/tools/TPC-H/dbgen
 
 Now build the queries:
+    export DSS_PATH=/opt/dbt3/data
 
+ for i in `seq 1 22`;do  ./qgen -s 120 $i > /opt/dbt3/queries/mysql/$i.sql;done
+ for i in `seq 1 22`;do  ./qgen -s 120 -x $i > /opt/dbt3/queries/mysql/${i}_explain_.sql;done
 
+And build the data:
+for chunk in `seq 1 100`;do ./dbgen -vv -C 100 -s 100 -S ${chunk}  -f;done 
 
  
+Run test
+===================
+copy the queries to the DB node to remove any network latency.
+Like 
 
 
-from dbt3 root:  patch -p1 < patches/dbt3-TPC-H_v3.0.1-mysql.diff
+#!/bin/bash
+#SET ENVIRONMENT VARIABLES:
+MYSQL_DBT3_PATH=/opt/dbt3
+DBT3_CNF=${MYSQL_DBT3_PATH}/dbt3.cnf
+TEST_NAME=${1:-"test-dbt3-ps834"}
+MYSQL_PATH=/opt/mysql_instances/${TEST_NAME}
+RESULTS_PATH=${MYSQL_DBT3_PATH}/results/${TEST_NAME}
+#/${test}_${subtest}_${engine}_$(date +'%Y-%m-%d_%H_%M').txt
+if [ ! -d "$RESULTS/${testname}" ]; then
+    mkdir -p $RESULTS/${testname}
+fi
+ 
+
+results=/home/pythian/dbt3_results.csv
+query=make-dbt3-db_${engine}-s5.sql
+echo 'Loading DBT3 data'
+
+for run in run-1 run-2; do
+    /
+	sudo /sbin/sysctl vm.drop_caches=3
+	mysql_start=$(date +%s)
+	sudo service mysqld start
+	start=$(date +%s)
+	mysql -uroot -h127.0.0.1 dbt3_${engine} < /home/pythian/dbt3_load/${query} > /home/pythian/dbt3_results/${query}.result
+	stop=$(date +%s)
+	sudo service mysqld stop
+	mysql_stop=$(date +%s)
+	echo "${start}, ${query}, ${run}, ${engine}, $(( ${stop} - ${start} )), $(( ${mysql_stop} - ${mysql_start} ))"  >> ${results}
+done 
+
 
 
 
