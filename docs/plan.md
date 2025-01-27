@@ -5,6 +5,7 @@ MySQL versions
 - 8.0.X
 - 8.X.0
 - 9.X.X
+  
 MariaDB
 - 11.X.X (last LST availabel)
 ## Software we will use
