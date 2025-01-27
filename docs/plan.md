@@ -51,7 +51,7 @@ Table definition with decently complex structure as:
 
 Expected row dimension:
 
-row 4 + 36 + 2 + 4 + 3 + ~51 + ~51 + 1 + 3 = 115 ~ 155 Bytes
+row 4 + 36 + 2 + 4 + 3 + ~51 + ~51 + 2 + 4 + 3 = 120 ~ 160 Bytes
 
 ```sql
 CREATE TABLE `%s%d` (
@@ -62,7 +62,7 @@ CREATE TABLE `%s%d` (
   `date` date NOT NULL ,
   `location` varchar(50) NOT NULL,
   `continent` varchar(50) NOT NULL,
-  `active` tinyint(2) NOT NULL DEFAULT '1',
+  `active` smallint UNSIGNED NOT NULL DEFAULT '1',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `strrecordtype` char(3) COLLATE utf8_bin NOT NULL %s
   ) %s ROW_FORMAT=DYNAMIC  %s]],
@@ -74,15 +74,15 @@ We will have 2 main data set for sysbench:
 
 20 tables
 10 Million rows
-155 = ~1.4 GB per table
-115 = ~1   GB per table
+160 = ~1.6 GB per table
+120 = ~1.2   GB per table
 
 **2 Set**
 
 5 tables
 30 Million rows
-155 = ~4.2 GB per table
-115 = ~3   GB per table
+160 = ~4.8 GB per table
+120 = ~3.6   GB per table
 
 **Running threads**
 
