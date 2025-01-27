@@ -74,14 +74,14 @@ We will have 2 main data set for sysbench:
 **1 Set**
 
 20 tables\
-10 Million rows\
+10 Million rows
 - 160 = ~1.6 GB per table
 - 120 = ~1.2   GB per table
 
 **2 Set**
 
 5 tables\
-30 Million rows\
+30 Million rows
 - 160 = ~4.8 GB per table
 - 120 = ~3.6   GB per table
 
