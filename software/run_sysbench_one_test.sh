@@ -15,18 +15,10 @@ filter_subtest=""
 THREADS="1 2 4 8 16 32 64 128 256 512 1024"
 TYPE="write"
 #TYPE="select write select"
+SYSBENCH_TEST_DIMENSION="small large"
 
 bin_path="/opt/tools/benchmarktools/software"
 perf_output_path="/opt/results"
-
-# testidentifyer=${1:-"PS8035"}
-# HOST=${2:-"127.0.0.1"}
-# PORT=${3:-"3306"}
-# PMMURL=${4:-"http://admin:admin@127.0.0.1"}
-# HAVEPMM=${5:-"false"}
-# PMMNODENAME=${6:-"bench"}
-# PMMSERVICENAME=${7:-""}
-
 
 helptext(){
 
@@ -101,6 +93,10 @@ while [[ $# -gt 0 ]]; do
             THREADS="$2"
             shift 2
             ;;
+        --SYSBENCH_TEST_DIMENSION)
+            SYSBENCH_TEST_DIMENSION="$2"
+            shift 2
+            ;;
         --LOOPS)
             LOOPS="$2"
             shift 2
@@ -112,7 +108,6 @@ while [[ $# -gt 0 ]]; do
         *)
             echo "Unknown argument: $1"
 			helptext
-            exit 1
             ;;
     esac
 done;
@@ -130,7 +125,7 @@ fi
 
 
 
-    for dimension in small large; do
+    for dimension in $SYSBENCH_TEST_DIMENSION; do
 		if [ "$HAVEPERF" = "true" ]; then
              havePerf="--haveperf"
         fi

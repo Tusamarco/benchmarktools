@@ -13,15 +13,7 @@ THREADS="1 2 4 8 16 32 64 128 256 512 1024"
 DRYRUN="false"
 TESTS_ACTIONS="select write select"
 NO_PRELOAD="false"
-
-# testidentifyer=${1:-"PS8035"}
-# HOST=${2:-"127.0.0.1"}
-# PORT=${3:-"3306"}
-# PMMURL=${4:-"http://admin:admin@127.0.0.1"}
-# HAVEPMM=${5:-"false"}
-# PMMNODENAME=${6:-"bench"}
-# PMMSERVICENAME=${7:-""}
-
+SYSBENCH_TEST_DIMENSION="small large"
 
 helptext(){
 
@@ -103,6 +95,10 @@ while [[ $# -gt 0 ]]; do
             TESTS_ACTIONS="$2"
             shift 2
             ;;
+        --SYSBENCH_TEST_DIMENSION)
+            SYSBENCH_TEST_DIMENSION="$2"
+            shift 2
+            ;;
         --THREADS)
             THREADS="$2"
             shift 2
@@ -110,7 +106,6 @@ while [[ $# -gt 0 ]]; do
         *)
             echo "Unknown argument: $1"
 			helptext
-            exit 1
             ;;
     esac
 done;
@@ -135,7 +130,7 @@ fi
 
 
 bin_path="/opt/tools/benchmarktools/software"
-    for dimension in small large; do
+    for dimension in $SYSBENCH_TEST_DIMENSION; do
         echo "Running dimension: ${dimension}"
         
         if [ "$NO_PRELOAD" == "false" ]; then
