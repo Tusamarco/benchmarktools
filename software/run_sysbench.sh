@@ -91,7 +91,7 @@ while [[ $# -gt 0 ]]; do
             LOOPS="$2"
             shift 2
             ;;
-        --TESTSACTIONS)
+        --TESTS_ACTIONS)
             TESTS_ACTIONS="$2"
             shift 2
             ;;
