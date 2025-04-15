@@ -429,10 +429,10 @@ run_tests(){
 			else
 				if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
 					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
-					 ${commandtxt} --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
+					 ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
 				else
 					 echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
-					 ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
+					 ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
 			    fi
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
