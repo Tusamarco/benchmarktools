@@ -1,9 +1,9 @@
 #!/bin/bash
-MYSQL_HOST=localhost
-MYSQL_USER=""
-MYSQL_PASSWORD=""
-MYSQL_PORT=3306
-DATABASE=mysql
+#MYSQL_HOST=
+#MYSQL_USER=
+#MYSQL_PASSWORD=
+#MYSQL_PORT=3306
+#DATABASE=mysql
 
 # Set MySQL connection variables
 HOST="${MYSQL_HOST:-localhost}"
