@@ -51,21 +51,23 @@ fill_sysbench_map(){
 
 #10% Writes 90% Select writes with Reads with and without transactions
    sysbench_tests["write_run_rw_25%_writes_notrx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --point_selects=180 --range_size=180 --index_updates=20 --non_index_updates=10 --delete_inserts=10"
-
    sysbench_tests["write_run_rw_25%_writes_trx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --point_selects=180 --range_size=180 --index_updates=20 --non_index_updates=10 --delete_inserts=10"
 
 
 #25% Writes 75% Select writes with Reads with and without transactions
    sysbench_tests["write_run_rw_25%_writes_notrx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --point_selects=150 --range_size=150 --index_updates=50 --non_index_updates=25 --delete_inserts=25"
-
    sysbench_tests["write_run_rw_25%_writes_trx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --point_selects=150 --range_size=150 --index_updates=50 --non_index_updates=25 --delete_inserts=25"
-
 
 
 #50% Writes 50% Select writes with Reads with and without transactions
    sysbench_tests["write_run_rw_50%_writes_notrx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
-
    sysbench_tests["write_run_rw_50%_writes_trx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
+
+
+#50% Writes 50% Select writes with Reads with and without transactions
+   sysbench_tests["write_run_rw_50%_writes_notrx_pareto"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=pareto --rand-pareto-h=0.9 --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
+   sysbench_tests["write_run_rw_50%_writes_trx_pareto"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=pareto --rand-pareto-h=0.9 --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
+
 
 
 #75% Writes 25% Select writes with Reads with and without transactions

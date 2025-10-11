@@ -5,13 +5,6 @@
 #MYSQL_PORT=3306
 #DATABASE=mysql
 
-# Set MySQL connection variables
-HOST="${MYSQL_HOST:-localhost}"
-USER="${MYSQL_USER:-root}"
-PW="${MYSQL_PASSWORD:-}"
-PORT="${MYSQL_PORT:-3306}"
-DATABASE="${MYSQL_DATABASE:-mysql}"
-
 # Custom command to execute (modify as needed)
 CUSTOM_COMMAND="${1:-echo 'Starting MySQL connection monitoring'}"
 
@@ -30,6 +23,7 @@ test_mysql_connection() {
     fi
 }
 
+
 # Record start time
 START_TIME=$(date +%s.%N)
 echo "Script started at: $(date)"
@@ -38,6 +32,15 @@ echo "Script started at: $(date)"
 echo "Executing custom command: $CUSTOM_COMMAND"
 eval "$CUSTOM_COMMAND"
 COMMAND_EXIT_CODE=$?
+
+# Set MySQL connection variables
+HOST="${MYSQL_HOST:-localhost}"
+USER="${MYSQL_USER:-root}"
+PW="${MYSQL_PASSWORD:-}"
+PORT="${MYSQL_PORT:-3306}"
+DATABASE="${MYSQL_DATABASE:-mysql}"
+
+
 echo "Custom command completed with exit code: $COMMAND_EXIT_CODE"
 
 # Record command completion time
