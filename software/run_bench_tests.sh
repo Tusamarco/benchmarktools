@@ -251,7 +251,34 @@ if [ "$failing" == true ]; then
 fi
 	
 }
-
+#===========================
+# Check for running process
+#===========================
+get_mysql_process_count() {
+    local db_user="${1:-app_test}"
+    local db_pass="${2:-test}"
+    local db_host="${3:-127.0.0.1}"
+    local db_port="${4:-3306}"
+    local db_name="performance_schema"
+    
+    # Execute query
+    local result=$(mysql -u ${db_user} -p${db_pass} -h $db_host -P $db_port $db_name -e "SELECT COUNT(*) FROM processlist;" --batch --skip-column-names 2>&1)
+    
+    # Check if command succeeded
+    if [ $? -ne 0 ]; then
+        echo "ERROR: $result" >&2
+        return 1
+    fi
+    
+    # Verify we got a numeric result
+    if ! [[ "$result" =~ ^[0-9]+$ ]]; then
+        echo "ERROR: Invalid result received: '$result'" >&2
+        return 1
+    fi
+    
+    echo "$result"
+    return 0
+}
 
 #========================================
 
@@ -365,34 +392,7 @@ if [ ! "$subtest_list" == "true" ]; then
       exit;
 fi
 echo "META: ${MYSQL_COMMENT};${MYSQL_VERSION};testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${actionType};runNumber=${run};host=$host;producer=${testname};execDate=${RUNNINGDATE};engine=${engine}" | tee -a "${LOGFILE}";
-#===========================
-# Check for running process
-#===========================
-get_mysql_process_count() {
-    local db_user="${1:-app_test}"
-    local db_pass="${2:-test}"
-    local db_host="${3:-127.0.0.1}"
-    local db_port="${4:-3306}"
-    local db_name="performance_schema"
-    
-    # Execute query
-    local result=$(mysql --defaults-file=${LOCAL_PATH}/my.cnf  -h "$db_host" -P "$db_port" "$db_name" -e "SELECT COUNT(*) FROM processlist;" --batch --skip-column-names 2>&1)
-    
-    # Check if command succeeded
-    if [ $? -ne 0 ]; then
-        echo "ERROR: $result" >&2
-        return 1
-    fi
-    
-    # Verify we got a numeric result
-    if ! [[ "$result" =~ ^[0-9]+$ ]]; then
-        echo "ERROR: Invalid result received: '$result'" >&2
-        return 1
-    fi
-    
-    echo "$result"
-    return 0
-}
+
 
 #=========================
 # Run Tests 

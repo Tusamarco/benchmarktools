@@ -65,8 +65,8 @@ fill_sysbench_map(){
 
 
 #50% Writes 50% Select writes with Reads with and without transactions
-   sysbench_tests["write_run_rw_50%_writes_notrx_pareto"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=pareto --rand-pareto-h=0.9 --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
-   sysbench_tests["write_run_rw_50%_writes_trx_pareto"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=pareto --rand-pareto-h=0.9 --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
+   sysbench_tests["pareto_write_run_rw_50%_writes_notrx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=on --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=pareto --rand-pareto-h=0.9 --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
+   sysbench_tests["pareto_write_run_rw_50%_writes_trx"]="sysbench /opt/tools/sysbench/src/lua/windmills/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=pareto --rand-pareto-h=0.9 --point_selects=100 --range_size=100 --index_updates=120 --non_index_updates=40 --delete_inserts=40"
 
 
 
