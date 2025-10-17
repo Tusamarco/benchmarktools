@@ -17,9 +17,10 @@ fi
 # Function to test MySQL connection
 test_mysql_connection() {
     if [ -z "$PW" ]; then
-        mysql -h "$HOST" -P "$PORT" -u "$USER" -e "SELECT 1;" "$DATABASE" &> /dev/null
+        mysql -h "$HOST" -P "$PORT" -u "$USER" -e "SELECT 1;" -D "$DATABASE" &> /dev/null
     else
-        mysql -h "$HOST" -P "$PORT" -u "$USER" -p"$PW" -e "SELECT 1;" "$DATABASE" &> /dev/null
+#        mysql -h "$HOST" -P "$PORT" -u "$USER" -p"$PW" -e "SELECT 1;" -D "$DATABASE" 
+        mysql -h "$HOST" -P "$PORT" -u "$USER" -p"$PW" -e "SELECT 1;" -D "$DATABASE" &> /dev/null
     fi
 }
 
