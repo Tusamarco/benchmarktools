@@ -262,7 +262,7 @@ get_mysql_process_count() {
     local db_name="performance_schema"
     
     # Execute query
-    local result=$(mysql -u ${db_user} -p${db_pass} -h $db_host -P $db_port $db_name -e "SELECT COUNT(*) FROM processlist;" --batch --skip-column-names 2>&1)
+    local result=$(MYSQL_PWD="$db_pass" mysql -u ${db_user} -h $db_host -P $db_port $db_name -e "SELECT COUNT(*) FROM processlist;" --batch --skip-column-names 2>&1)
     
     # Check if command succeeded
     if [ $? -ne 0 ]; then
@@ -470,11 +470,13 @@ run_tests(){
             # We check if there are too many process running, in that case we will wait for the resoirces to free up
             sleep 5
             process_count=$(get_mysql_process_count "$USER" "$PW" "$host" "$port")
+#echo "DEBUG!!!!!!!!!!! $process_count"
             while [ "$process_count" -gt 50 ]
             do
                 echo "WARNING ============== TOO MANY Process running {$process_count}" | tee -a "${LOGFILE}"
                 echo "WARNING ============== Check what is using resources we will wait $sleep_wait then retry " | tee -a "${LOGFILE}"
                 sleep $sleep_wait
+                process_count=$(get_mysql_process_count "$USER" "$PW" "$host" "$port")
             done;
             
             echo "INFO ============== ALL good we have {$process_count} process running, continue to test" | tee -a "${LOGFILE}"
