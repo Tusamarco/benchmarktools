@@ -57,6 +57,7 @@ TPCC_LUA="/opt/tools/sysbench-tpcc"
 TPCc_TABLES=10
 USER="app_test"
 WHAREHOUSES=100
+MAX_THREADS_RUNNING_BETWEEN_TESTS=20
 
 #Import Help
 . $(dirname "$0")/help.sh
@@ -471,7 +472,7 @@ run_tests(){
             sleep 5
             process_count=$(get_mysql_process_count "$USER" "$PW" "$host" "$port")
 #echo "DEBUG!!!!!!!!!!! $process_count"
-            while [ "$process_count" -gt 50 ]
+            while [ "$process_count" -gt $MAX_THREADS_RUNNING_BETWEEN_TESTS ]
             do
                 echo "WARNING ============== TOO MANY Process running {$process_count}" | tee -a "${LOGFILE}"
                 echo "WARNING ============== Check what is using resources we will wait $sleep_wait then retry " | tee -a "${LOGFILE}"
