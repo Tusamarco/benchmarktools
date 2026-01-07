@@ -389,7 +389,7 @@ fi
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
-fill_joins``
+fill_joins_map
 
 #setting rate
 if [ ! "$rate" == "" ];then
