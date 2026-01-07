@@ -17,7 +17,7 @@ SYSBENCH_TEST_DIMENSION="small large"
 TESTNAME="sysbench"
 SCHEMANAME=""
 RATE=""
-EVENTS=0
+EVENTS=""
 
 FILTER_SUBTEST="none"
 
@@ -29,7 +29,7 @@ Command line: Usage: $0  --testidentifyer MY8042_iron_ssd2 --HOST 10.0.0.23 --PO
 ./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 --SYSBENCH_TEST_DIMENSION "small"
 
 To run joins tests:
-./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 "small" --TESTNAME "joins" --TESTS_ACTIONS "select" --FILTER_SUBTEST "simple_inner_pk" --RATE 1000 --SCHEMANAME "joins"
+./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 "small" --TESTNAME "joins" --TESTS_ACTIONS "select" --FILTER_SUBTEST "simple_inner_pk" --EVENTS 1000 --SCHEMANAME "joins"
 
 
 script: $0 
