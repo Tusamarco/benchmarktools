@@ -193,7 +193,7 @@ if [ "$SCHEMANAME" == "" ]; then
 fi
 
 if [ ! "$EVENTS" == "0" ];then
-   EVENTS="--events=${EVENTS}" 
+   EVENTS="--events ${EVENTS}" 
    TIME=0
 #    echo "NOTE: Events is active events=${EVENTS}, TIME will be disabled TIME=${TIME}"  
 fi
