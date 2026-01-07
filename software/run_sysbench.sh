@@ -15,7 +15,7 @@ TESTS_ACTIONS="select write select"
 NO_PRELOAD="false"
 SYSBENCH_TEST_DIMENSION="small large"
 TESTNAME="sysbench"
-SCHEMANAME="windmills_"
+SCHEMANAME=""
 RATE=""
 EVENTS=0
 
@@ -29,7 +29,7 @@ Command line: Usage: $0  --testidentifyer MY8042_iron_ssd2 --HOST 10.0.0.23 --PO
 ./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 --SYSBENCH_TEST_DIMENSION "small"
 
 To run joins tests:
-./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 "small" --TESTNAME "joins" --TESTS_ACTIONS "select" --FILTER_SUBTEST "simple_inner_pk" --RATE 1000
+./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 "small" --TESTNAME "joins" --TESTS_ACTIONS "select" --FILTER_SUBTEST "simple_inner_pk" --RATE 1000 --SCHEMANAME "joins"
 
 
 script: $0 
@@ -42,6 +42,7 @@ Connection Settings:
 Test Configuration:
   --testidentifyer <string>     A unique string ID to tag this execution (e.g., for history).
   --TESTNAME <string>           Name of the test suite/scenario being executed.
+  --SCHEMANAME <name>           Database schema (database) name to use. 
   --SYSBENCH_TEST_DIMENSION <N> Defines data scale (e.g., number of rows/tables).
   --THREADS <number>            Number of concurrent threads (workers).
   --TIME <seconds>              Duration for the test to run.
@@ -147,7 +148,11 @@ while [[ $# -gt 0 ]]; do
         --THREADS)
             THREADS="$2"
             shift 2
-            ;;	
+            ;;
+        --SCHEMANAME)
+            SCHEMANAME="$2"
+            shift 2
+            ;;  	
         *)
             echo "Unknown argument: $1"
 			helptext
@@ -177,13 +182,16 @@ if [ "$FILTER_SUBTEST" == "none" ]; then
 	 FILTER_SUBTEST=""
 fi
 
-if [ "$TESTNAME" == "joins" ] ; then
-    SCHEMANAME="joins"
-elif [ "$TESTNAME" == "tpcc" ] ; then
-    SCHEMANAME="tpcc"
-else
-    SCHEMANAME="windmills_${dimension}"
+if [ "$SCHEMANAME" == "" ]; then
+    if [ "$TESTNAME" == "joins" ] ; then
+        SCHEMANAME="joins"
+    elif [ "$TESTNAME" == "tpcc" ] ; then
+        SCHEMANAME="tpcc"
+    else
+        SCHEMANAME="windmills_${dimension}"
+    fi
 fi
+
 if [ ! "$EVENTS" == "0" ];then
    EVENTS="--events=${EVENTS}" 
    TIME=0
