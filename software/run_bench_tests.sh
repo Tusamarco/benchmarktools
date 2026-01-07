@@ -1,10 +1,14 @@
 #!/bin/bash
+
+
+
 #./run_bench_tests.sh runPS8034 sysbench 127.0.0.1 point_select windmills_large  
 
 #globals
 declare -A sysbench_tests
 declare -A ingest_tests 
 declare -A tpcc_tests 
+declare -A join_tests
 declare -a execute_map
 
 #setting defaults
@@ -37,15 +41,21 @@ test="testXYZ"
 testname="sysbench"
 testrun=false
 type=""
+events=0
 
 #constants
+FLAMEGRAPHPATH="/opt/tools/FlameGraph/"
+JOINS_MAIN_TABLES=10
+JOINS_ROWS_PER_TABLE=10000000
+JOINS_ACTIVE_LEVELS=5
 LOCAL_PATH="`pwd`"
+MAX_THREADS_RUNNING_BETWEEN_TESTS=20
 MYSQL_COMMENT=""
 MYSQL_VERSION=""
 PW="test"
 RESULTS=/opt/results
 SYSBENCH_LUA="/opt/tools/sysbench"
-FLAMEGRAPHPATH="/opt/tools/FlameGraph/"
+SYSBENCH_LUA_TPCC="/opt/tools/sysbench-tpcc"
 SYSNBENCH_ROWS_LARGE=30000000
 SYSNBENCH_ROWS_SMALL=10000000
 SYSNBENCH_TABLES_LARGE=5
@@ -57,7 +67,6 @@ TPCC_LUA="/opt/tools/sysbench-tpcc"
 TPCc_TABLES=10
 USER="app_test"
 WHAREHOUSES=100
-MAX_THREADS_RUNNING_BETWEEN_TESTS=20
 
 #Import Help
 . $(dirname "$0")/help.sh
@@ -145,6 +154,10 @@ while [[ $# -gt 0 ]]; do
             error_ignore="$2"
             shift 2
             ;;
+        --events)
+            events="$2"
+            shift 2
+            ;;  
         --havePMM)
             havePMM=true
             shift
@@ -160,7 +173,11 @@ while [[ $# -gt 0 ]]; do
         --pmm_service_name)
             pmmservicename="$2"
             shift 2
-            ;;                                    
+            ;;  
+        --joins_active_levels)
+            JOINS_ACTIVE_LEVELS="$2"
+            shift 2
+            ;;                                              
         --debug)
             debug=true
             shift
@@ -196,6 +213,7 @@ done;
 . $(dirname "$0")/fill_ingest_map.sh
 . $(dirname "$0")/fill_sysbench_map.sh
 . $(dirname "$0")/fill_tpcc_map.sh
+. $(dirname "$0")/fill_joins.sh
 . $(dirname "$0")/sub_test_mgm.sh
 
 
@@ -302,7 +320,7 @@ fi
 
 if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
 	actionType=$type
-  elif [ $testname == "tpcc" ]; then 
+  elif [ $testname == "tpcc" ] || [ $testname == "joins" ]; then 
 	actionType="read/write"
   else 
 	actionType=$type
@@ -359,15 +377,32 @@ if [ $testname == "tpcc" ]; then
 	echo "Tables: $TPCc_TABLES"  | tee -a $LOGFILE
 fi
 
+if [ $testname == "joins" ]; then
+	echo "============= SysBench ============="  | tee -a $LOGFILE
+	echo "Rows for join test: $JOINS_ROWS_PER_TABLE"  | tee -a $LOGFILE
+	echo "Tables Main: $JOINS_MAIN_TABLES"  | tee -a $LOGFILE
+	echo "Max Levels: 5"  | tee -a $LOGFILE
+    echo "Active Levels: ${JOINS_ACTIVE_LEVELS}"  | tee -a $LOGFILE
+fi
+
 
 fill_ingest_map
 fill_sysbench_map 
 fill_tpcc_map 
+fill_joins``
 
 #setting rate
 if [ ! "$rate" == "" ];then
    rate="--rate=${rate}" 
 fi
+
+if [ ! "$events" == "0" ];then
+   events="--events=${events}" 
+   TIME=0
+   echo "NOTE: Events is active events=${events}, TIME will be disabled TIME=${TIME}"  | tee -a $LOGFILE
+fi
+
+
 
 
 if [ ! "$subtest_list" == "true" ]; then
@@ -403,7 +438,17 @@ run_tests(){
  commandtxt="$2"
  max_threads=0
  local_perf_report=""
- 
+
+ # Set join test dimension
+ join_test_dimension=""
+
+  if [ $testname == "joins" ] ; then
+    sysbench_tables=$JOINS_MAIN_TABLES
+    sysbench_rows=$JOINS_ROWS_PER_TABLE
+
+    join_test_dimension="--join_levels=${JOINS_ACTIVE_LEVELS}"
+ fi
+
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
 	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
@@ -454,14 +499,14 @@ run_tests(){
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 		   if [ "$dryrun" == "true" ]; then
-			  echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command "
+			  echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command "
 			else
 				if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
-					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
-					 ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
+					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
+					 ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
 				else
-					 echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command " | tee -a "${LOGFILE}"
-					 ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} $command  | tee -a "${LOGFILE}"
+					 echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
+					 ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
 			    fi
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
@@ -516,13 +561,13 @@ if [ ! "$testname" == "all" ]; then
     # echo "$subtest_execute"
 
  elif [ ! "$subtest_list" == "true" ] && [ "$testname" == "all" ]; then
-      echo "You cannot run all the different test types at once (ingest|sysbench|tpcc)"
+      echo "You cannot run all the different test types at once (ingest|sysbench|tpcc|joins). Please pick one at a time."
 	  exit;
  elif [ "$subtest_list" == "true" ] && [ "$testname" == "all" ]; then
      get_sub_test
      # echo "$subtest_execute"
  else
-      	echo "You need to pick either a set of subtests or a testname  (ingest|sysbench|tpcc)"  
+      	echo "You need to pick either a set of subtests or a testname  (ingest|sysbench|tpcc|joins)"  
       	exit; 
 fi
 
@@ -532,7 +577,9 @@ if [ ! "$dryrun" == "true" ]; then
 	  elif [ $testname == "ingest" ]; then   
 		cd $SYSBENCH_LUA
 	  elif [ $testname == "tpcc" ]; then 
-		cd $TPCC_LUA  
+		cd $TPCC_LUA
+      elif [ $testname == "joins" ]; then
+        cd $SYSBENCH_LUA  
 	  else 
 		cd $LOCAL_PATH  
 	fi

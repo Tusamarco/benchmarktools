@@ -117,6 +117,14 @@ get_sub_test_txt(){
 
     fi 
 
+    if [ "$testname" == "joins" ] || [ "$testname" == "all" ]; then 
+		echo "-- Joins --"
+		echo "SubTests:"
+		sorted=`echo ${!join_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
+		print_subtest_key_txt "$sorted"
+
+    fi 
+
     if [ "$testname" == "tpcc" ] || [ "$testname" == "all" ]; then 
 		echo "-- Tpcc --"
 		echo "SubTests:"
@@ -143,6 +151,12 @@ get_sub_test(){
 
     if [ "$testname" == "sysbench" ] || [ "$testname" == "all" ]; then 
 		sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
+		print_subtest_key "$sorted"
+
+    fi 
+
+    if [ "$testname" == "joins" ] || [ "$testname" == "all" ]; then 
+		sorted=`echo ${!join_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
 		print_subtest_key "$sorted"
 
     fi 
@@ -174,6 +188,14 @@ get_full_map(){
         echo "--------------- sysbench -----------------"
 		for key in "${!sysbench_tests[@]}"; do
 			echo "Key: $key Value: ${sysbench_tests[$key]}"
+		done
+    fi
+
+    if [ "$testname" == "joins" ] || [ "$testname" == "all" ]; then 
+        echo ""
+        echo "--------------- joins -----------------"
+		for key in "${!join_tests[@]}"; do
+			echo "Key: $key Value: ${join_tests[$key]}"
 		done
     fi
 
