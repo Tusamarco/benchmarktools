@@ -118,7 +118,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --RATE)
-            RATE="--rate=$2"
+            RATE="--rate $2"
             shift 2
             ;;
         --EVENTS)
