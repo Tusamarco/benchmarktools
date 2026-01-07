@@ -397,7 +397,7 @@ if [ ! "$rate" == "" ];then
    rate="--rate=${rate}" 
 fi
 
-if [ ! "$events" == "0" ];then
+if [ ! "$events" == "" ];then
    events="--events=${events}" 
    TIME=0
    echo "NOTE: Events is active events=${events}, TIME will be disabled TIME=${TIME}"  | tee -a $LOGFILE
@@ -506,8 +506,8 @@ run_tests(){
 					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
 					 ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
 				else
-					 echo "Executing: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
-					 ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
+					 echo "Executing: ${commandtxt}  --time=$TIME ${events} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
+					 ${commandtxt}  --time=$TIME ${events} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
 			    fi
 		   fi   
 			echo "======================================" | tee -a "${LOGFILE}"
@@ -603,6 +603,12 @@ fi
 if [ $testname == "tpcc" ]; then
 	for subtest_run in $subtest_execute;do	
 		run_tests "$subtest_run" "${tpcc_tests[$subtest_run]}"
+	done;
+fi
+
+if [ $testname == "joins" ]; then
+	for subtest_run in $subtest_execute;do	
+		run_tests "$subtest_run" "${join_tests[$subtest_run]} --tables=${JOINS_MAIN_TABLES} --table_size=${JOINS_ROWS_PER_TABLE}  "
 	done;
 fi
 
