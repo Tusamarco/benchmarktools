@@ -1,4 +1,4 @@
-fill_joins_map(
+fill_joins_map(){
     # Admin commands
     join_tests["joins_prepare"]="sysbench ${SYSBENCH_LUA}/src/lua/joins/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql --table_name=main  --stats_format=csv --tables=${JOINS_MAIN_TABLES} --table_size=${JOINS_ROWS_PER_TABLE} --mysql-ignore-errors=none "
 
@@ -95,5 +95,4 @@ fill_joins_map(
 
     join_tests["update_multi_inner_join_pk"]="sysbench ${SYSBENCH_LUA}/src/lua/joins/oltp_read_write.lua  --mysql-host=${host} --mysql-port=${port} --mysql-user=${USER} --mysql-password=${PW} --mysql-db=${schemaname} --db-driver=mysql  --skip_trx=off --report-interval=1  --histogram --table_name=${table_name}  --stats_format=csv --db-ps-mode=disable   --rand-type=uniform --update_multi_inner_join_pk=1 "
 
-){
-
+}
