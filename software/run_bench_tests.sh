@@ -231,7 +231,7 @@ print_date_time(){
 
 check_pmm(){
 
-pmmOK=`curl  -Is ${pmmurl}/graph |grep HTTP|awk -F " " '{print $2}'`
+pmmOK=`curl  -Isk ${pmmurl}/graph |grep HTTP|awk -F " " '{print $2}'`
 
 if [ ! "$pmmOK" = "200"  ]; then
   havePMM=false

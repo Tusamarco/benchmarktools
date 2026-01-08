@@ -165,6 +165,10 @@ done;
 
 havePMM=""
 dryRun=""
+if [ "$TESTNAME" == "joins" ] ; then
+    TESTS_ACTIONS="joins-select"
+fi
+
 echo "Actions I am going to run: $TESTS_ACTIONS"
 
 if [ "$HAVEPMM" == "true" ]; then
