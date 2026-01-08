@@ -185,8 +185,10 @@ fi
 if [ "$SCHEMANAME" == "" ]; then
     if [ "$TESTNAME" == "joins" ] ; then
         SCHEMANAME="joins"
+        SYSBENCH_TEST_DIMENSION="joins"
     elif [ "$TESTNAME" == "tpcc" ] ; then
         SCHEMANAME="tpcc"
+        SYSBENCH_TEST_DIMENSION="tpcc"
     else
         SCHEMANAME="windmills_${dimension}"
     fi
