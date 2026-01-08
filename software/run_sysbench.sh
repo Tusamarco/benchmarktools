@@ -18,6 +18,7 @@ TESTNAME="sysbench"
 SCHEMANAME=""
 RATE=""
 EVENTS=""
+TABLENAME=""
 
 FILTER_SUBTEST="none"
 
@@ -29,7 +30,7 @@ Command line: Usage: $0  --testidentifyer MY8042_iron_ssd2 --HOST 10.0.0.23 --PO
 ./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 --SYSBENCH_TEST_DIMENSION "small"
 
 To run joins tests:
-./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3307 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 "small" --TESTNAME "joins" --TESTS_ACTIONS "select" --FILTER_SUBTEST "simple_inner_pk" --EVENTS 1000 --SCHEMANAME "joins"
+./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3306 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 --SYSBENCH_TEST_DIMENSION  "joins" --TESTNAME "joins" --TESTS_ACTIONS "select" --FILTER_SUBTEST "simple_inner_pk" --EVENTS 1000 --SCHEMANAME "joins"
 
 
 script: $0 
@@ -180,6 +181,8 @@ fi
 
 if [ "$FILTER_SUBTEST" == "none" ]; then
 	 FILTER_SUBTEST=""
+else
+     FILTER_SUBTEST="--filter_subtest ${FILTER_SUBTEST}"
 fi
 
 if [ "$SCHEMANAME" == "" ]; then
@@ -194,6 +197,10 @@ if [ "$SCHEMANAME" == "" ]; then
     fi
 fi
 
+if [ "$TESTNAME" == "joins" ] ; then
+    TABLENAME="--tablename main"
+fi
+
 if [ ! "$EVENTS" == "0" ];then
    EVENTS="--events ${EVENTS}" 
    TIME=0
@@ -206,18 +213,18 @@ bin_path="/opt/tools/benchmarktools/software"
         
         if [ "$NO_PRELOAD" == "false" ]; then
 			echo "Warmup phase"
-			echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun}  --test ${testidentifyer} --type warmup --run 1  --testname ${TESTNAME} --command warmup  --filter_subtest \"warmup_run_select_scan\"  --threads \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" 
+			echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun}  --test ${testidentifyer} --type warmup --run 1  --testname ${TESTNAME} --command warmup  --filter_subtest \"warmup_run_select_scan\"  --threads \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" 
 	
-			bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 --testname ${TESTNAME} --command warmup  --filter_subtest warmup_run_select_scan  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME 
+			bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 --testname ${TESTNAME} --command warmup  --filter_subtest warmup_run_select_scan  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME 
         fi
         
         for type in $TESTS_ACTIONS; do
             echo "Running type: ${type}"
             for loop in `seq 1 $LOOPS` ; do
                 echo "Running round: ${run}"
-                echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop}  --testname ${TESTNAME} --command run  --filter_subtest ${FILTER_SUBTEST}  --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf}  ${RATE} ${EVENTS}"
+                echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop}  --testname ${TESTNAME} --command run ${FILTER_SUBTEST}  --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf}  ${RATE} ${EVENTS}"
 
-                bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop} --testname ${TESTNAME} --command run  --filter_subtest ${FILTER_SUBTEST}  --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} ${RATE} ${EVENTS}
+                bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop} --testname ${TESTNAME} --command run  "${FILTER_SUBTEST}"  --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} ${RATE} ${EVENTS}
             done;
         done;
     done;
