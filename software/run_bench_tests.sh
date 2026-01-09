@@ -467,7 +467,7 @@ run_tests(){
         havePMM=false	
 	fi
 	
-	if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
+	if [ "$command" == "cleanup" ]; then
         THREADS=$sysbench_tables
 	fi
 	
