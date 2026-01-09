@@ -347,7 +347,7 @@ check_flamegraph
 
 echo "Current path: $LOCAL_PATH" | tee -a $LOGFILE
 echo "Execution time: ${RUNNINGDATE}" | tee -a $LOGFILE
-echo "Dry run: ${dryrun}"  | tee -a $LOGFILE
+echo "Sysbench Command: ${command}"  | tee -a $LOGFILE
 echo "Test: $test"  | tee -a $LOGFILE
 echo "Testname: $testname"  | tee -a $LOGFILE
 # echo "Sub Test: $subtest"  | tee -a $LOGFILE
