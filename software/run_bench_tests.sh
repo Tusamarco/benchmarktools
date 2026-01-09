@@ -407,8 +407,6 @@ if [ ! "$events" == "" ];then
 fi
 
 
-
-
 if [ ! "$subtest_list" == "true" ]; then
 	nc -w 1 -z $host $port
 	
