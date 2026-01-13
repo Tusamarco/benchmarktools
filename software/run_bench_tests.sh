@@ -500,6 +500,13 @@ run_tests(){
 			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
+
+            if [ $testname == "joins" ] ; then
+                echo "RUNNING Joins test; set EVENTS=THREADS events=$threads" | tee -a  "${LOGFILE}"    
+                events="--events=${threads}"
+                TIME=0
+            fi
+
 		   if [ "$dryrun" == "true" ]; then
 			  echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command "
 			else

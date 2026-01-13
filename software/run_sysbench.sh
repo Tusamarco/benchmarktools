@@ -20,7 +20,7 @@ RATE=""
 EVENTS="0"
 TABLENAME=""
 FILTER_SUBTEST="none"
-COMMAND="run"
+command="run"
 
 helptext(){
 
