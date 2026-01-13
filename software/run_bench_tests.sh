@@ -503,6 +503,7 @@ run_tests(){
 
             if [ $testname == "joins" ] ; then
                 echo "RUNNING Joins test; set EVENTS=THREADS events=$threads" | tee -a  "${LOGFILE}"    
+			    echo "======================================" | tee -a  "${LOGFILE}"                
                 events="--events=${threads}"
                 TIME=0
             fi

@@ -200,7 +200,7 @@ fi
 if [ "$SCHEMANAME" == "" ]; then
     if [ "$TESTNAME" == "joins" ] ; then
         SCHEMANAME="joins"
-        SYSBENCH_TEST_DIMENSION="joins"
+        SYSBENCH_TEST_DIMENSION="small"
     elif [ "$TESTNAME" == "tpcc" ] ; then
         SCHEMANAME="tpcc"
         SYSBENCH_TEST_DIMENSION="tpcc"
