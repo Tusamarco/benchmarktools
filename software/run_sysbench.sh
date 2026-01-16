@@ -210,7 +210,7 @@ if [ "$SCHEMANAME" == "" ]; then
         SCHEMANAME="tpcc"
         SYSBENCH_TEST_DIMENSION="tpcc"
     else
-        SCHEMANAME="windmills_${dimension}"
+        SCHEMANAME=""
     fi
 fi
 
@@ -229,6 +229,9 @@ fi
 bin_path="/opt/tools/benchmarktools/software"
     for dimension in $SYSBENCH_TEST_DIMENSION; do
         echo "Running dimension: ${dimension}"
+        if [ "$TESTNAME" == "sysbench" ] && [ "$SCHEMANAME" == "" ]; then
+            SCHEMANAME="windmills_${dimension}"
+        fi
         
         if [ "$NO_PRELOAD" == "false" ] && [ "$command" == "run" ]; then
 			echo "Warmup phase"
