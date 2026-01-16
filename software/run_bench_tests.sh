@@ -406,6 +406,7 @@ if [ ! "$events" == "" ] && [ ! "$events" == "0" ];then
     echo "NOTE: Events is active events=${events}, TIME will be disabled TIME=${TIME}"  | tee -a $LOGFILE
 else
     echo "NOTE: Events is NOT active events=${events}, Using TIME,  TIME=${TIME}"  | tee -a $LOGFILE
+    events=""
 fi
 
 

@@ -54,7 +54,7 @@ Test Configuration:
   --COMMAND <action>            The action to perform: prepare, run, cleanup.
 
 Execution Control:
-  --TESTS_ACTIONS <actions>     Stages to perform (e.g., prepare, run, cleanup).
+  --TESTS_ACTIONS <actions>     Stages to perform (e.g., select, write).
   --FILTER_SUBTEST <pattern>    Filter to run only specific sub-tests (e.g., specific join types).
   --NOPRELOAD                   Skip data preparation/loading (assumes data exists).
   --DRYRUN                      Simulate execution (print commands without running).
