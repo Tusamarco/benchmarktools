@@ -7,40 +7,52 @@ Command line: Usage: $0 --command=run --test <test Identifier> --testname <sysbe
 script: $0 
 
 Parameters:
-        --command: The action to perform cleanup|prepare|run
-        --debug: extended output to standard out
-        --dryrun: Printout the commands that will run without executing them
-        --engine: Engine to use default Innodb [innodb|myrocks]
-        --error_ignore: Set the level for the option --mysql-ignore-errors. Default none
-        --filter_subtest: Text to filter the subtest list. IE: "select" for sysbench will only return the select tests
-        --help: this help                        
-        --host: MySQL host
-        --port: MySQL port
-        --user: user to use for connection
-        --password: password associated to user
-        --rate: average transactions rate. 0 for unlimited rate [0]
-        --reconnect: sysbench will reconnect after the indicated number of events. Default 0 - no reconnect
-        --schemaname: Schema name 
-        --subtest_list: List of all sub test to see all (--subtest_list --command all --testname all)
-        --sysbench_test_dimension: we have 2 standard dimension small and large. Default is small:
+
+Database Connection:
+  --host <address>              Database hostname or IP address.
+  --port <number>               Database port number.
+  --user <username>             Database user.
+  --password <password>         Database password.
+  --schemaname <name>           Database schema (database) name to use.
+
+Sysbench Configuration:
+  --threads <number>            Number of concurrent threads (workers).
+  --time <seconds>              Duration of the test in seconds.
+  --rate <number>               Transaction rate limit (0 for unlimited).
+  --events <number>             Number of events to run (transactions). It will disable TIME.
+  --sysbench_test_dimension: we have 2 standard dimension small and large. Default is small:
 								SYSNBENCH_ROWS_LARGE=${SYSNBENCH_ROWS_LARGE}
 								SYSNBENCH_ROWS_SMALL=${SYSNBENCH_ROWS_SMALL}
 								SYSNBENCH_TABLES_LARGE=${SYSNBENCH_TABLES_LARGE}
 								SYSNBENCH_TABLES_SMALL=${SYSNBENCH_TABLES_SMALL}
-			So small has smaller tables but more of them, large is more about few tables and more rows.
-        --tablename: Table name for sysbench and Ingest 
-        --test: The ID for the current test set IE PS8034
-        --testname: The testname you want to run [ingest|sysbench|tpcc]
-        --testrun: Run the tests with  thread and only for 10 seconds, just to check if they may work
-        --threads: the set of threads to use to run the tests use double quote as "2 4 8 16"
-        --time: the execution time for the tests in seconds IE 600
-  
-        --havePmm: If you have PMM and want to add notation about what test and when it is run, you can enable it here
-        --pmm_url: To enable PMM automatic notation, you need to pass the information to connect to the PMM server as "http://user:password@ip:port/"
-                   It is advisable you create a special user for such operations with limited privileges  
-        --pmm_node_name: The node name where you are running the benchmarking. The value of the name is the NODE name as reported in the PMM inventory.
-        --pmm_service_name: The service name in case the node name and service name are different. The value of the name is the SERVICE name as reported in the PMM inventory.
+			        So small has smaller tables but more of them, large is more about few tables and more rows.
+  --tablename <name>            Base name for the test tables.
+  --engine <name>               Storage engine to use (e.g., InnoDB, MyRocks).
+  --reconnect <val>             Reconnect frequency or flag (sysbench specific).
+  --error_ignore <val>          Ignore specific database errors (sysbench specific).
 
+Test Control & Logic:
+  --command <action>            Action to perform: prepare, run, cleanup.
+  --test <script>               The specific sysbench lua script/path to run.
+  --testname <string>           Label/Tag for the test suite.
+  --type <string>               Test type classification.
+  --run <id/string>             Run identifier.
+  --filter_subtest <pattern>    Filter to execute only specific sub-tests (e.g., join types).
+  --joins_active_levels <N>     Depth of join hierarchy to activate.
+  --subtest_list                Flag: List available subtests and exit.
+  --testrun                     Flag: Execute a test run validation.
+
+Monitoring & Profiling:
+  --havePMM                     Enable Percona Monitoring and Management (PMM) markers.
+  --pmm_url <url>               PMM Server URL.
+  --pmm_node_name <name>        Node name registration for PMM.
+  --pmm_service_name            The service name in case the node name and service name are different. The value of the name is the SERVICE name as reported in the PMM inventory.
+  --haveperf                    Enable Linux 'perf' tool profiling.
+
+Debug & Utility:
+  --dryrun                      Simulate execution (print commands without running).
+  --debug                       Enable verbose debug output.
+  --help                        Show this help message.
 
 
 Sub Tests
