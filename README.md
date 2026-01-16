@@ -61,7 +61,7 @@ BenchmarkTools is a comprehensive toolkit designed to simplify and streamline da
 Feel free to submit issues or pull requests. Follow the repository's contribution guidelines to ensure smooth collaboration.
 
 ## License
-[MIT](LICENSE)
+AGPL-3.0 license
 
 ## Acknowledgments
 Powered and maintained by Tusamarco.
