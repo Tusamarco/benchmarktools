@@ -400,10 +400,12 @@ if [ ! "$rate" == "" ];then
    rate="--rate=${rate}" 
 fi
 
-if [ ! "$events" == "" ];then
-   events="--events=${events}" 
-   TIME=0
-   echo "NOTE: Events is active events=${events}, TIME will be disabled TIME=${TIME}"  | tee -a $LOGFILE
+if [ ! "$events" == "" ] && [ ! "$events" == "0" ];then
+    events="--events=${events}"
+    TIME=0
+    echo "NOTE: Events is active events=${events}, TIME will be disabled TIME=${TIME}"  | tee -a $LOGFILE
+else
+    echo "NOTE: Events is NOT active events=${events}, Using TIME,  TIME=${TIME}"  | tee -a $LOGFILE
 fi
 
 
@@ -508,34 +510,38 @@ run_tests(){
                 TIME=0
             fi
 
-		   if [ "$dryrun" == "true" ]; then
-			  echo "Command: ${commandtxt}  --time=$TIME  --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command "
-			else
-				if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
-					 echo "Executing: ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
-					 ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
-				else
-					 echo "Executing: ${commandtxt}  --time=$TIME ${events} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
-					 ${commandtxt}  --time=$TIME ${events} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
-			    fi
-		   fi   
+            if [ "$command" == "warmup" ] || [ "$command" == "cleanup" ]; then
+                    echo "Executing: ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
+
+                    if [ ! "$dryrun" == "true" ]; then
+                    ${commandtxt} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
+                fi
+            else
+                    echo "Executing: ${commandtxt}  --time=$TIME ${events} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command " | tee -a "${LOGFILE}"
+
+                    if [ ! "$dryrun" == "true" ]; then
+                        ${commandtxt}  --time=$TIME ${events} --threads=${threads} --mysql-ssl=PREFERRED --mysql-ignore-errors=${error_ignore} ${rate} --reconnect=${reconnect} ${join_test_dimension} $command  | tee -a "${LOGFILE}"
+                    fi
+            fi
 			echo "======================================" | tee -a "${LOGFILE}"
 			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
 			echo "======================================" 
 
             # We check if there are too many process running, in that case we will wait for the resoirces to free up
-            sleep 5
-            process_count=$(get_mysql_process_count "$USER" "$PW" "$host" "$port")
-#echo "DEBUG!!!!!!!!!!! $process_count"
-            while [ "$process_count" -gt $MAX_THREADS_RUNNING_BETWEEN_TESTS ]
-            do
-                echo "WARNING ============== TOO MANY Process running {$process_count}" | tee -a "${LOGFILE}"
-                echo "WARNING ============== Check what is using resources we will wait $sleep_wait then retry " | tee -a "${LOGFILE}"
-                sleep $sleep_wait
+            if [ ! "$dryrun" == "true" ]; then
+                sleep 5
                 process_count=$(get_mysql_process_count "$USER" "$PW" "$host" "$port")
-            done;
-            
-            echo "INFO ============== ALL good we have {$process_count} process running, continue to test" | tee -a "${LOGFILE}"
+    #echo "DEBUG!!!!!!!!!!! $process_count"
+                while [ "$process_count" -gt $MAX_THREADS_RUNNING_BETWEEN_TESTS ]
+                do
+                    echo "WARNING ============== TOO MANY Process running {$process_count}" | tee -a "${LOGFILE}"
+                    echo "WARNING ============== Check what is using resources we will wait $sleep_wait then retry " | tee -a "${LOGFILE}"
+                    sleep $sleep_wait
+                    process_count=$(get_mysql_process_count "$USER" "$PW" "$host" "$port")
+                done;
+                
+                echo "INFO ============== ALL good we have {$process_count} process running, continue to test" | tee -a "${LOGFILE}"
+            fi
 	  fi
 	done;
 

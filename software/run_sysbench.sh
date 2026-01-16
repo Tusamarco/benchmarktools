@@ -221,9 +221,10 @@ fi
 if [ ! "$EVENTS" == "0" ];then
    EVENTS="--events ${EVENTS}" 
    TIME=0
+#    echo "NOTE: Events is active events=${EVENTS}, TIME will be disabled TIME=${TIME}" 
  else
     EVENTS=""
-#    echo "NOTE: Events is active events=${EVENTS}, TIME will be disabled TIME=${TIME}"  
+#     
 fi
 
 bin_path="/opt/tools/benchmarktools/software"
