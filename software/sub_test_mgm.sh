@@ -1,9 +1,9 @@
 print_subtest_key(){
 sorted="$1"
 subtest_execute=""
-	if [ "$command" == "cleanup" ] || [ "$command" == "prepare" ] || [ "$command" == "all" ]; then
+	if [ "$command" == "cleanup" ] || [ "$command" == "all" ]; then
 		for key in ${sorted}; do
-			if [[ "$key" =~ "clean" ]] || [[ "$key" =~ "prepare" ]];then
+			if [[ "$key" =~ "clean" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						subtest_execute+="$key "
@@ -14,9 +14,22 @@ subtest_execute=""
 			fi
 		done
 	fi
+	if [ "$command" == "prepare" ] || [ "$command" == "all" ]; then
+		for key in ${sorted}; do
+			if [[ "$key" =~ "prepare" ]];then
+			    if [[ ! "$filter_subtest" == "none" ]];then
+					if [[ "$key" =~ "$filter_subtest" ]];then
+						subtest_execute+="$key "
+					fi
+					else
+					 subtest_execute+="$key "	
+				fi
+			fi
+		done
+	fi	
 	if [ "$command" == "run" ] || [ "$command" == "all" ]; then	
 		for key in ${sorted}; do
-			if ! [[ "$key" =~ "clean" ]];then
+			if [[ ! "$key" =~ "clean" ]] && [[ ! "$key" =~ "prepare" ]] && [[ ! "$key" =~ "warmup" ]]; then
 			    if [[ ! "$filter_subtest" == "none" ]];then
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						subtest_execute+="$key "
@@ -45,10 +58,10 @@ subtest_execute=""
 print_subtest_key_txt(){
 sorted="$1"
 
-	if [ "$command" == "cleanup" ] || [ "$command" == "prepare" ] || [ "$command" == "all" ]; then
+	if [ "$command" == "cleanup" ] || [ "$command" == "all" ]; then
 		echo "-- cleanup prepare --"
 		for key in ${sorted}; do
-			if [[ "$key" =~ "clean" ]] || [[ "$key" =~ "prepare" ]];then
+			if [[ "$key" =~ "clean" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						echo "   $key "
@@ -59,6 +72,22 @@ sorted="$1"
 			fi
 		done
 	fi
+
+	if [ "$command" == "prepare" ] || [ "$command" == "all" ]; then
+		echo "-- cleanup prepare --"
+		for key in ${sorted}; do
+			if [[ "$key" =~ "prepare" ]];then
+			    if [[ ! "$filter_subtest" == "none" ]];then
+					if [[ "$key" =~ "$filter_subtest" ]];then
+						echo "   $key "
+					fi
+					else
+						echo "   $key "
+				fi
+			fi
+		done
+	fi
+
 	if [ "$command" == "run" ] || [ "$command" == "all" ]; then	
 		echo "-- run --"
 		for key in ${sorted}; do
