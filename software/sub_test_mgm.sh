@@ -9,6 +9,12 @@ subtest_execute=""
 						subtest_execute+="$key "
 					fi
 					else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
 					 subtest_execute+="$key "	
 				fi
 			fi
@@ -22,6 +28,12 @@ subtest_execute=""
 						subtest_execute+="$key "
 					fi
 					else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
 					 subtest_execute+="$key "	
 				fi
 			fi
@@ -35,6 +47,12 @@ subtest_execute=""
 						subtest_execute+="$key "
 					fi
 					else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
 					 subtest_execute+="$key "	
 				fi
 			fi
@@ -48,6 +66,12 @@ subtest_execute=""
 						subtest_execute+="$key "
 					fi
 					else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
 					 subtest_execute+="$key "	
 				fi
 			fi
@@ -66,8 +90,14 @@ sorted="$1"
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						echo "   $key "
 					fi
-					else
-						echo "   $key "
+				else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
+					echo "   $key "
 				fi
 			fi
 		done
@@ -81,8 +111,14 @@ sorted="$1"
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						echo "   $key "
 					fi
-					else
-						echo "   $key "
+				else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
+					echo "   $key "
 				fi
 			fi
 		done
@@ -96,8 +132,14 @@ sorted="$1"
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						echo "   $key "
 					fi
-					else
-						echo "   $key "
+				else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
+					echo "   $key "
 				fi
 			fi
 		done
@@ -110,8 +152,14 @@ sorted="$1"
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						echo "   $key "
 					fi
-					else
-						echo "   $key "
+				else
+				# echo "Debug: $exclude_subtest"
+					if [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ "$exclude_subtest" ]];then
+							continue
+					   fi
+					fi
+					echo "   $key "
 				fi
 			fi
 		done

@@ -38,6 +38,7 @@ Test Control & Logic:
   --type <string>               Test type classification.
   --run <id/string>             Run identifier.
   --filter_subtest <pattern>    Filter to execute only specific sub-tests (e.g., join types).
+  --exclude_subtest <pattern>   Exclude specific sub-tests matching the pattern. (e.g., update).
   --joins_active_levels <N>     Depth of join hierarchy to activate.
   --subtest_list                Flag: List available subtests and exit.
   --testrun                     Flag: Execute a test run validation.

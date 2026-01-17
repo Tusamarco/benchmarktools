@@ -19,6 +19,7 @@ dryrun=false
 engine="innodb"
 error_ignore="none"
 filter_subtest="none"
+exclude_subtest="none"
 havePMM=false
 haveperf="false"
 help=false
@@ -118,6 +119,10 @@ while [[ $# -gt 0 ]]; do
             filter_subtest="$2"
             shift 2
             ;;
+        --exclude_subtest)
+            exclude_subtest="$2"
+            shift 2
+            ;;    
         --time)
             TIME="$2"
             shift 2
@@ -331,8 +336,17 @@ if [ $testname == "sysbench" ] || [ $testname == "ingest" ] ; then
 fi
 
 RUNNINGDATE="$(date +'%Y-%m-%d_%H_%M')"
-LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_subtest}_${engine}_${RUNNINGDATE}.txt
-PERFREPORT=$RESULTS/${testname}/PERF_REPORT_${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_subtest}_${engine}
+filter_teext=""
+if [ ! "$filter_subtest" == "none" ]; then
+    filter_text="${filter_subtest}_"
+fi
+if [ ! "$exclude_subtest" == "none" ]; then
+    filter_text="${filter_text}${exclude_subtest}_"
+fi
+
+
+LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_text}${engine}_${RUNNINGDATE}.txt
+PERFREPORT=$RESULTS/${testname}/PERF_REPORT_${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_text}${engine}
 
 if [ ! -d "$RESULTS/${testname}" ]; then
     mkdir -p $RESULTS/${testname}
@@ -456,7 +470,7 @@ run_tests(){
 
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "SUBTEST: $label" | tee -a "${LOGFILE}";
-	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
+	echo "BLOCK: [START] $label Test $test $testname  (filter: ${filter_subtest}; exclude: ${exclude_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a "${LOGFILE}";
 	echo "META: testIdentifyer=${test};dimension=${sysbench_test_dimension};actionType=${actionType};runNumber=${run};execCommand=$command;subtest=${label};execDate=$(date +'%Y-%m-%d_%H_%M_%S');engine=${engine};${MYSQL_COMMENT};${MYSQL_VERSION}" | tee -a "${LOGFILE}";
 	if [[ $commandtxt =~ "--launcher_threads_override" ]]; then
         	commandtxt=$(echo $commandtxt| sed -e 's/--launcher_threads_override//gi') 
@@ -482,7 +496,7 @@ run_tests(){
 	    pmm-admin annotate "[START] Test: ${test} $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[START] $label Test: $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[START] $label Test: $test $testname  (filter: ${filter_subtest}; exclude: ${exclude_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
@@ -501,7 +515,7 @@ run_tests(){
 	   else 
 			echo "======================================"  | tee -a  "${LOGFILE}"
 			echo "THREADS=$threads" | tee -a  "${LOGFILE}"
-			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
+			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}; exclude: ${exclude_subtest}) Thread=$threads [START] $(print_date_time) " | tee -a "${LOGFILE}"
 			echo "======================================" | tee -a  "${LOGFILE}"
 
             if [ $testname == "joins" ] ; then
@@ -525,7 +539,7 @@ run_tests(){
                     fi
             fi
 			echo "======================================" | tee -a "${LOGFILE}"
-			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
+			echo "RUNNING Test $test $testname $label (filter: ${filter_subtest}; exclude: ${exclude_subtest}) Thread=$threads [END] $(print_date_time) " |tee -a "${LOGFILE}"
 			echo "======================================" 
 
             # We check if there are too many process running, in that case we will wait for the resoirces to free up
@@ -561,13 +575,13 @@ run_tests(){
 	    pmm-admin annotate "[END] $test $label $(date +'%Y-%m-%d_%H_%M_%S')" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags "$testname"
 	   	if [ $? -ne 0 ]; then
 			 echo "[WARNING] PMM annotatione failed, check syntax" | tee -a $LOGFILE
- 			 echo "   Command used: pmm-admin annotate \"[END] $test $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
+ 			 echo "   Command used: pmm-admin annotate \"[END] $test $label Test $test $testname  (filter: ${filter_subtest}; exclude: ${exclude_subtest}) $(date +'%Y-%m-%d_%H_%M_%S')\" --node --node-name=${pmmnodename} ${pmmservicenameTag} --server-url=${pmmurl}  --tags \"$testname\" " | tee -a $LOGFILE
  			 havePMM=false
              echo "PMM notation disabled" | tee -a $LOGFILE 
 		fi
 	fi
 
-	echo "BLOCK: [END] $label Test $test $testname  (filter: ${filter_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a  "${LOGFILE}";
+	echo "BLOCK: [END] $label Test $test $testname  (filter: ${filter_subtest}; exclude: ${exclude_subtest}) $(date +'%Y-%m-%d_%H_%M_%S') " | tee -a  "${LOGFILE}";
 	echo "*****************************************" | tee -a  "${LOGFILE}";
 	echo "" | tee -a  "${LOGFILE}";
 }
