@@ -481,7 +481,13 @@ run_tests(){
 	if [ "$testrun" == "true" ];then
         THREADS="1"
         TIME=5
-        havePMM=false	
+        havePMM=false
+        echo "NOTE: TEStRUN active, overriding THREADS to 1 and TIME to 5 seconds, PMM notation disabled" | tee -a  "${LOGFILE}"
+        if [ ! "$events" == "" ]; then
+            events="--events=1"
+            TIME=0
+            echo "NOTE: TEStRUN active, Events is active events=${events}, TIME will be disabled TIME=${TIME}"  | tee -a $LOGFILE
+        fi	
 	fi
 	
 	if [ "$command" == "cleanup" ]; then

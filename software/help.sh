@@ -4,6 +4,11 @@ cat << EOF
 
 Command line: Usage: $0 --command=run --test <test Identifier> --testname <sysbench|tpcc|ingest> --filter_subtest <see command_list> --schemaname <string> --engine <innodb> --tablename <mills> --host <127.0.0.1> --port <3306> [--debug --subtest_list --dryrun]
 
+
+e.g : /opt/tools/benchmarktools/software/run_bench_tests.sh  --test mariadb-11-8-5-joins-test --type joins-select --run 1  --testname joins --command run --filter_subtest simple_inner_forcing_order_GB --threads "1 2 4 8 16" --time 0 --sysbench_test_dimension small  --host 127.0.0.1 --port 3306 --tablename main --error_ignore none --schemaname joins --havePMM --pmm_url http://user:pw@<ip> --pmm_node_name blade3    --events 20
+
+ /opt/tools/benchmarktools/software/run_bench_tests.sh  --test mariadb-11-8-5-joins-test --type joins-select --run 1  --testname joins --command run --exclude_subtest "update" --threads "1 2 4 8 16" --time 0 --sysbench_test_dimension small  --host 127.0.0.1 --port 3306 --tablename main --error_ignore none --schemaname joins --havePMM --pmm_url http://user:pw@<ip> --pmm_node_name blade3    --events 20
+
 script: $0 
 
 Parameters:
