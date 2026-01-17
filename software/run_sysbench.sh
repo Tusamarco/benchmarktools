@@ -34,6 +34,11 @@ To run joins tests:
 ./run_sysbench.sh --testidentifyer mysql-8.4.7 --HOST 127.0.0.1 --PORT 3306 --TIME 200 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@ip" --PMMNODENAME blade3 --SYSBENCH_TEST_DIMENSION  "joins" --TESTNAME "joins" --TESTS_ACTIONS "select" --FILTER_SUBTEST "simple_inner_pk" --EVENTS 1000 --SCHEMANAME "joins"
 
 
+More complex run:
+./run_sysbench.sh --testidentifyer mariadb-11-8-5-test-rw --HOST 127.0.0.1 --PORT 3307 --TIME 20  --LOOPS 1 --HAVEPMM --PMMURL "http://admin:@x.y.z.a" --PMMNODENAME blade3 --TESTNAME sysbench --COMMAND run --NOPRELOAD --THREADS "1"  --ERROR_IGNORE "all" --FILTER_SUBTEST "%_writes"  --TESTS_ACTIONS "select" --SYSBENCH_TEST_DIMENSION "small" --EVENTS 0
+
+
+
 script: $0 
 
 Parameters:

@@ -62,7 +62,7 @@ sorted="$1"
 	if [ "$command" == "run" ] || [ "$command" == "all" ]; then	
 		echo "-- run --"
 		for key in ${sorted}; do
-			if ! [[ "$key" =~ "clean" ]];then
+			if [[ ! "$key" =~ "clean" ]] && [[ ! "$key" =~ "prepare" ]] && [[ ! "$key" =~ "warmup" ]]; then
 			    if [[ ! "$filter_subtest" == "none" ]];then
 					if [[ "$key" =~ "$filter_subtest" ]];then
 						echo "   $key "
