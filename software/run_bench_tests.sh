@@ -549,7 +549,7 @@ run_tests(){
 			echo "======================================" 
 
             # We check if there are too many process running, in that case we will wait for the resoirces to free up
-            if [ ! "$dryrun" == "true" ]; then
+            if [ ! "$dryrun" == "true" ] && [ ! "$testrun" == "true" ]; then
                 sleep 5
                 process_count=$(get_mysql_process_count "$USER" "$PW" "$host" "$port")
     #echo "DEBUG!!!!!!!!!!! $process_count"
