@@ -38,9 +38,9 @@ Sysbench Configuration:
 
 Test Control & Logic:
   --command <action>            Action to perform: prepare, run, cleanup.
-  --test <script>               The specific sysbench lua script/path to run.
-  --testname <string>           Label/Tag for the test suite.
-  --type <string>               Test type classification.
+  --test                        Name of the test, an identifier (e.g. mysql-8.4-write).
+  --testname <string>           Name of the test suite/scenario being executed (e.g., sysbench, tpcc, ingest, joins).
+  --type <string>               Test type classification (select,write, read/write).
   --run <id/string>             Run identifier.
   --filter_subtest <pattern>    Filter to execute only specific sub-tests (e.g., join types).
   --exclude_subtest <pattern>   Exclude specific sub-tests matching the pattern. (e.g., update).
