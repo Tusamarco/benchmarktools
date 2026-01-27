@@ -43,7 +43,7 @@ To run joins tests:
 
 
 More complex run:
-./run_sysbench.sh --testidentifyer mariadb-11-8-5-test-rw --HOST 127.0.0.1 --PORT 3307 --TIME 20  --LOOPS 1 --HAVEPMM --PMMURL "http://admin:@x.y.z.a" --PMMNODENAME blade3 --TESTNAME sysbench --COMMAND run --NOPRELOAD --THREADS "1"  --ERROR_IGNORE "all" --FILTER_SUBTEST "%_writes"  --TESTS_TYPES "select" --SYSBENCH_TEST_DIMENSION "small" --EVENTS 0
+./run_sysbench.sh --testidentifyer mariadb-11-8-5-joins-test --HOST 127.0.0.1 --PORT 3307 --TIME 0 --EVENTS 1 --LOOPS 1 --HAVEPMM --PMMURL "http://<user>:<pw>@<ip>" --PMMNODENAME mypmm --TESTNAME joins --COMMAND run --NOPRELOAD --THREADS "1 2 4 8 16"  --ERROR_IGNORE "all" --SYSBENCH_TEST_DIMENSION small --TESTS_TYPES selects
 
 
 script: $0 
