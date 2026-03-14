@@ -348,11 +348,11 @@ fi
 LOGFILE=$RESULTS/${testname}/${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_text}${engine}_${RUNNINGDATE}.txt
 PERFREPORT=$RESULTS/${testname}/PERF_REPORT_${test}_${sysbench_test_dimension}_${type}_runNumber${run}_${command}_${filter_text}${engine}
 
-if [ ! -d "$RESULTS/${testname}" ]; then
+if [ ! -d "$RESULTS/${testname}" ] && [ ! "$subtest_list" == "true" ]; then
     mkdir -p $RESULTS/${testname}
 fi
 
-if [ "$dryrun" == "true" ]; then
+if [ "$dryrun" == "true" ]  || [ "$subtest_list" == "true" ]; then
    LOGFILE=/dev/null 
 fi
 
@@ -627,7 +627,8 @@ fi
 #get the final execute_map
 if [ $testname == "sysbench" ]; then
     
-	for subtest_run in $subtest_execute;do	
+	for subtest_run in $subtest_execute;do
+
         run_tests "${subtest_run}" "${sysbench_tests[$subtest_run]} --tables=${sysbench_tables} --table_size=${sysbench_rows} "
 	done;
 fi

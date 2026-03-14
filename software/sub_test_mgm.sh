@@ -14,8 +14,9 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						subtest_execute+="$key "
 					fi
-					 subtest_execute+="$key "	
 				fi
 			fi
 		done
@@ -33,8 +34,9 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						subtest_execute+="$key "					   
 					fi
-					 subtest_execute+="$key "	
 				fi
 			fi
 		done
@@ -52,8 +54,9 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						subtest_execute+="$key "
 					fi
-					 subtest_execute+="$key "	
 				fi
 			fi
 		done
@@ -71,8 +74,9 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						subtest_execute+="$key "
 					fi
-					 subtest_execute+="$key "	
 				fi
 			fi
 		done
@@ -96,8 +100,10 @@ sorted="$1"
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						echo "   $key "
 					fi
-					echo "   $key "
+
 				fi
 			fi
 		done
@@ -117,8 +123,9 @@ sorted="$1"
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						echo "   $key "
 					fi
-					echo "   $key "
 				fi
 			fi
 		done
@@ -138,8 +145,9 @@ sorted="$1"
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						echo "   $key "
 					fi
-					echo "   $key "
 				fi
 			fi
 		done
@@ -158,8 +166,9 @@ sorted="$1"
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
+					else
+						echo "   $key "
 					fi
-					echo "   $key "
 				fi
 			fi
 		done
@@ -190,7 +199,15 @@ get_sub_test_txt(){
 		echo "-- Sysbench --"
 		echo "SubTests:"
 		sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
-		print_subtest_key_txt "$sorted"
+		for key in ${sorted}; do
+			if [[ ! "$type" == "" ]];then
+				if [[ "$key" =~ "$type" ]];then
+					newsorted+="$key "
+				fi
+			fi
+		done
+		print_subtest_key_txt "$newsorted"
+
 
     fi 
 
@@ -228,7 +245,16 @@ get_sub_test(){
 
     if [ "$testname" == "sysbench" ] || [ "$testname" == "all" ]; then 
 		sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
-		print_subtest_key "$sorted"
+		for key in ${sorted}; do
+			if [[ ! "$type" == "" ]];then
+				if [[ "$key" =~ "$type" ]];then
+					newsorted+="$key "
+				fi
+			fi
+		done
+		print_subtest_key "$newsorted"
+
+		# print_subtest_key "$sorted"
 
     fi 
 
