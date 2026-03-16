@@ -14,7 +14,6 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
-					else
 						subtest_execute+="$key "
 					fi
 				fi
@@ -34,7 +33,6 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
-					else
 						subtest_execute+="$key "					   
 					fi
 				fi
@@ -54,7 +52,6 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
-					else
 						subtest_execute+="$key "
 					fi
 				fi
@@ -74,7 +71,6 @@ subtest_execute=""
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
-					else
 						subtest_execute+="$key "
 					fi
 				fi
@@ -100,7 +96,6 @@ sorted="$1"
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
-					else
 						echo "   $key "
 					fi
 
@@ -123,7 +118,6 @@ sorted="$1"
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
-					else
 						echo "   $key "
 					fi
 				fi
@@ -140,13 +134,13 @@ sorted="$1"
 						echo "   $key "
 					fi
 				else
-				# echo "Debug: $exclude_subtest"
+				#  echo "Debug: $exclude_subtest"
 					if [[ ! "$exclude_subtest" == "none" ]];then
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
+				#  echo "Debug: Exclude subtest $key matched with $exclude_subtest, skipping it"
 							continue
 					   fi
-					else
-						echo "   $key "
+					   echo "   $key "
 					fi
 				fi
 			fi
@@ -166,7 +160,6 @@ sorted="$1"
 		               if [[ "$key" =~ "$exclude_subtest" ]];then
 							continue
 					   fi
-					else
 						echo "   $key "
 					fi
 				fi
