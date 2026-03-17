@@ -5,17 +5,16 @@ subtest_execute=""
 		for key in ${sorted}; do
 			if [[ "$key" =~ "clean" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						subtest_execute+="$key "
 					fi
-					else
-				# echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ $exclude_subtest ]];then
 							continue
 					   fi
 						subtest_execute+="$key "
-					fi
+				else
+						subtest_execute+="$key "
 				fi
 			fi
 		done
@@ -24,17 +23,16 @@ subtest_execute=""
 		for key in ${sorted}; do
 			if [[ "$key" =~ "prepare" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						subtest_execute+="$key "
 					fi
-					else
-				# echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ $exclude_subtest ]];then
 							continue
 					   fi
 						subtest_execute+="$key "					   
-					fi
+				else
+						subtest_execute+="$key "
 				fi
 			fi
 		done
@@ -43,17 +41,16 @@ subtest_execute=""
 		for key in ${sorted}; do
 			if [[ ! "$key" =~ "clean" ]] && [[ ! "$key" =~ "prepare" ]] && [[ ! "$key" =~ "warmup" ]]; then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						subtest_execute+="$key "
 					fi
-					else
-				# echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+		            if [[ "$key" =~ $exclude_subtest ]];then
 							continue
-					   fi
-						subtest_execute+="$key "
 					fi
+					subtest_execute+="$key "
+				else
+					subtest_execute+="$key "	
 				fi
 			fi
 		done
@@ -62,17 +59,16 @@ subtest_execute=""
 		for key in ${sorted}; do
 			if [[ "$key" =~ "warmup" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						subtest_execute+="$key "
 					fi
-					else
-				# echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+		               if [[ "$key" =~ $exclude_subtest ]];then
 							continue
 					   fi
 						subtest_execute+="$key "
-					fi
+				else
+						subtest_execute+="$key "
 				fi
 			fi
 		done
@@ -87,18 +83,16 @@ sorted="$1"
 		for key in ${sorted}; do
 			if [[ "$key" =~ "clean" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						echo "   $key "
 					fi
-				else
-				# echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+					if [[ "$key" =~ $exclude_subtest ]];then
 							continue
-					   fi
-						echo "   $key "
 					fi
-
+						echo "   $key "
+				else
+						echo "   $key "
 				fi
 			fi
 		done
@@ -109,17 +103,16 @@ sorted="$1"
 		for key in ${sorted}; do
 			if [[ "$key" =~ "prepare" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						echo "   $key "
 					fi
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+					if [[ "$key" =~ $exclude_subtest ]];then
+						continue
+					fi
+					echo "   $key "
 				else
-				# echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
-							continue
-					   fi
-						echo "   $key "
-					fi
+					echo "   $key "	
 				fi
 			fi
 		done
@@ -130,18 +123,17 @@ sorted="$1"
 		for key in ${sorted}; do
 			if [[ ! "$key" =~ "clean" ]] && [[ ! "$key" =~ "prepare" ]] && [[ ! "$key" =~ "warmup" ]]; then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						echo "   $key "
 					fi
-				else
-				#  echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
-				#  echo "Debug: Exclude subtest $key matched with $exclude_subtest, skipping it"
-							continue
-					   fi
-					   echo "   $key "
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+					if [[ "$key" =~ $exclude_subtest ]];then
+			
+						continue
 					fi
+					echo "   $key "
+				else
+					echo "   $key "
 				fi
 			fi
 		done
@@ -151,17 +143,16 @@ sorted="$1"
 		for key in ${sorted}; do
 			if [[ "$key" =~ "warmup" ]];then
 			    if [[ ! "$filter_subtest" == "none" ]];then
-					if [[ "$key" =~ "$filter_subtest" ]];then
+					if [[ "$key" =~ $filter_subtest ]];then
 						echo "   $key "
 					fi
+				elif [[ ! "$exclude_subtest" == "none" ]];then
+					if [[ "$key" =~ "$exclude_subtest" ]];then
+						continue
+					fi
+					echo "   $key "
 				else
-				# echo "Debug: $exclude_subtest"
-					if [[ ! "$exclude_subtest" == "none" ]];then
-		               if [[ "$key" =~ "$exclude_subtest" ]];then
-							continue
-					   fi
-						echo "   $key "
-					fi
+					echo "   $key "
 				fi
 			fi
 		done
@@ -193,11 +184,17 @@ get_sub_test_txt(){
 		echo "SubTests:"
 		sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
 		for key in ${sorted}; do
-			if [[ ! "$type" == "" ]];then
-				if [[ "$key" =~ "$type" ]];then
+		# echo "| $type |"
+			if [[ ! "$type" == "" ]] && [[ ! "$testname" == "all" ]];then
+			
+				if [[ "$key" =~ $type ]];then
+					# echo "Debug: Filter subtest $key matched with $type"
 					newsorted+="$key "
 				fi
+			else
+				newsorted=$sorted
 			fi
+			
 		done
 		print_subtest_key_txt "$newsorted"
 
@@ -240,7 +237,7 @@ get_sub_test(){
 		sorted=`echo ${!sysbench_tests[@]}|tr ' ' '\012' | sort | tr '\012' ' '`
 		for key in ${sorted}; do
 			if [[ ! "$type" == "" ]];then
-				if [[ "$key" =~ "$type" ]];then
+				if [[ "$key" =~ $type ]];then
 					newsorted+="$key "
 				fi
 			fi
