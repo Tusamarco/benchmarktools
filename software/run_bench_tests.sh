@@ -657,5 +657,3 @@ echo "METACOLLECTION: enddate=$(date +'%Y-%m-%d_%H_%M_%S')" | tee -a $LOGFILE
 cd $LOCAL_PATH
 exit
 
-
-

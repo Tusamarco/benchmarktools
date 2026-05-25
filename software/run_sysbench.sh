@@ -176,7 +176,7 @@ while [[ $# -gt 0 ]]; do
             command="$2"
             shift 2
             ;;
-        --ERROR_IGNORE)
+        --ERRORIGNORE)
             ERROR_IGNORE="$2"
             shift 2
             ;;
