@@ -25,20 +25,26 @@ if [ ! -f "$INPUT_FILE" ]; then
     exit 1
 fi
 
-awk '
+# Explicitly use Tab (\t) to ensure timestamps with spaces stay as a single column
+awk -F '\t' '
 BEGIN {
     OFS="," 
 }
 
 # 1. Detect header line to trigger a new block
-/^MEMBER_ROLE/ {
+/^log_timestamp/ {
     block_num++
     
     # Reset the per-block role counters
     for (r in role_count) role_count[r] = 0
     
-    # Dynamically find the column indexes including MEMBER_HOST
+    # Dynamically find the column indexes including the new additions
     for (i = 1; i <= NF; i++) {
+        # Clean up any potential carriage returns
+        gsub(/\r$/, "", $i)
+        
+        if ($i == "log_timestamp") ts_idx = i
+        if ($i == "super_read_only") sro_idx = i
         if ($i == "MEMBER_ROLE") role_idx = i
         if ($i == "MEMBER_HOST") host_idx = i
         if ($i == "certifier_queue") cert_idx = i
@@ -47,8 +53,14 @@ BEGIN {
     next
 }
 
+# Ignore warnings or empty lines
+/^mysql:/ || NF < 5 { next }
+
 # 2. Process actual data rows
-NF >= 5 && role_idx > 0 {
+role_idx > 0 && $role_idx != "" {
+    # Strip carriage returns from the final field just in case
+    gsub(/\r$/, "", $NF)
+    
     role = $role_idx
     role_count[role]++
     
@@ -61,7 +73,13 @@ NF >= 5 && role_idx > 0 {
         ordered_cols[++col_idx] = col_prefix
     }
     
+    # Capture the timestamp once per block (since it is the same for all rows in a block)
+    if (data[block_num, "ts"] == "") {
+        data[block_num, "ts"] = $ts_idx
+    }
+    
     # Buffer the data in a 2D array
+    data[block_num, col_prefix, "sro"] = $sro_idx
     data[block_num, col_prefix, "host"] = $host_idx
     data[block_num, col_prefix, "cert"] = $cert_idx
     data[block_num, col_prefix, "app"] = $app_idx
@@ -72,12 +90,13 @@ END {
     if (block_num == 0) exit
     
     # --- Print Header Row ---
+    printf "\"log_timestamp\","
     for (i = 1; i <= col_idx; i++) {
         prefix = ordered_cols[i]
         
-        # Only add the MEMBER_HOST header for PRIMARY nodes
+        # Only add the MEMBER_HOST and super_read_only headers for PRIMARY nodes
         if (prefix ~ /^PRIMARY/) {
-            printf "\"%s_MEMBER_HOST\",\"%s_certifier_queue\",\"%s_applier_queue\"%s", prefix, prefix, prefix, (i == col_idx ? ORS : ",")
+            printf "\"%s_MEMBER_HOST\",\"%s_super_read_only\",\"%s_certifier_queue\",\"%s_applier_queue\"%s", prefix, prefix, prefix, prefix, (i == col_idx ? ORS : ",")
         } else {
             printf "\"%s_certifier_queue\",\"%s_applier_queue\"%s", prefix, prefix, (i == col_idx ? ORS : ",")
         }
@@ -85,6 +104,7 @@ END {
     
     # --- Print Data Rows ---
     for (b = 1; b <= block_num; b++) {
+        printf "\"%s\",", data[b, "ts"]
         for (i = 1; i <= col_idx; i++) {
             prefix = ordered_cols[i]
             
@@ -92,10 +112,11 @@ END {
             c_val = (data[b, prefix, "cert"] != "") ? data[b, prefix, "cert"] : "0"
             a_val = (data[b, prefix, "app"] != "") ? data[b, prefix, "app"] : "0"
             
-            # Only print the host data for PRIMARY nodes
+            # Only print the host and read-only data for PRIMARY nodes
             if (prefix ~ /^PRIMARY/) {
                 h_val = (data[b, prefix, "host"] != "") ? data[b, prefix, "host"] : "N/A"
-                printf "\"%s\",\"%s\",\"%s\"%s", h_val, c_val, a_val, (i == col_idx ? ORS : ",")
+                sro_val = (data[b, prefix, "sro"] != "") ? data[b, prefix, "sro"] : "N/A"
+                printf "\"%s\",\"%s\",\"%s\",\"%s\"%s", h_val, sro_val, c_val, a_val, (i == col_idx ? ORS : ",")
             } else {
                 printf "\"%s\",\"%s\"%s", c_val, a_val, (i == col_idx ? ORS : ",")
             }
