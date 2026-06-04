@@ -11,7 +11,6 @@
 
 
 
-
 if [ "$#" -ne 2 ]; then
     echo "Usage: $0 <input_file> <output_file>"
     echo "Example: $0 queues_log.txt output.csv"
@@ -38,9 +37,10 @@ BEGIN {
     # Reset the per-block role counters
     for (r in role_count) role_count[r] = 0
     
-    # Dynamically find the column indexes
+    # Dynamically find the column indexes including MEMBER_HOST
     for (i = 1; i <= NF; i++) {
         if ($i == "MEMBER_ROLE") role_idx = i
+        if ($i == "MEMBER_HOST") host_idx = i
         if ($i == "certifier_queue") cert_idx = i
         if ($i == "applier_queue") app_idx = i
     }
@@ -52,7 +52,7 @@ NF >= 5 && role_idx > 0 {
     role = $role_idx
     role_count[role]++
     
-    # Create a unique column prefix for this node (e.g., PRIMARY_1, SECONDARY_1, SECONDARY_2)
+    # Create a unique column prefix for this node (e.g., PRIMARY_1, SECONDARY_1)
     col_prefix = role "_" role_count[role]
     
     # If we discover a new Nth node for this role, register it for the header
@@ -61,7 +61,8 @@ NF >= 5 && role_idx > 0 {
         ordered_cols[++col_idx] = col_prefix
     }
     
-    # Buffer the data in a 2D array: data[block_number, column_prefix, metric]
+    # Buffer the data in a 2D array
+    data[block_num, col_prefix, "host"] = $host_idx
     data[block_num, col_prefix, "cert"] = $cert_idx
     data[block_num, col_prefix, "app"] = $app_idx
 }
@@ -73,7 +74,13 @@ END {
     # --- Print Header Row ---
     for (i = 1; i <= col_idx; i++) {
         prefix = ordered_cols[i]
-        printf "\"%s_certifier_queue\",\"%s_applier_queue\"%s", prefix, prefix, (i == col_idx ? ORS : ",")
+        
+        # Only add the MEMBER_HOST header for PRIMARY nodes
+        if (prefix ~ /^PRIMARY/) {
+            printf "\"%s_MEMBER_HOST\",\"%s_certifier_queue\",\"%s_applier_queue\"%s", prefix, prefix, prefix, (i == col_idx ? ORS : ",")
+        } else {
+            printf "\"%s_certifier_queue\",\"%s_applier_queue\"%s", prefix, prefix, (i == col_idx ? ORS : ",")
+        }
     }
     
     # --- Print Data Rows ---
@@ -81,11 +88,17 @@ END {
         for (i = 1; i <= col_idx; i++) {
             prefix = ordered_cols[i]
             
-            # Fetch values (default to 0 if a node was temporarily missing in this block)
+            # Fetch queue values (fallback to 0 if a node was temporarily missing)
             c_val = (data[b, prefix, "cert"] != "") ? data[b, prefix, "cert"] : "0"
             a_val = (data[b, prefix, "app"] != "") ? data[b, prefix, "app"] : "0"
             
-            printf "\"%s\",\"%s\"%s", c_val, a_val, (i == col_idx ? ORS : ",")
+            # Only print the host data for PRIMARY nodes
+            if (prefix ~ /^PRIMARY/) {
+                h_val = (data[b, prefix, "host"] != "") ? data[b, prefix, "host"] : "N/A"
+                printf "\"%s\",\"%s\",\"%s\"%s", h_val, c_val, a_val, (i == col_idx ? ORS : ",")
+            } else {
+                printf "\"%s\",\"%s\"%s", c_val, a_val, (i == col_idx ? ORS : ",")
+            }
         }
     }
 }
