@@ -290,7 +290,7 @@ get_mysql_process_count() {
     local db_name="performance_schema"
     
     # Execute query
-    local result=$(MYSQL_PWD="$db_pass" mysql -u ${db_user} -h $db_host -P $db_port $db_name -e "SELECT COUNT(*) FROM processlist;" --batch --skip-column-names 2>&1)
+    local result=$(MYSQL_PWD="$db_pass" mysql -u ${db_user} -h $db_host -P $db_port $db_name -e "SELECT COUNT(*) FROM performance_schema.processlist where user not like 'system user';" --batch --skip-column-names 2>&1)
     
     # Check if command succeeded
     if [ $? -ne 0 ]; then
