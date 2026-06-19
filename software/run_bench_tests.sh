@@ -441,7 +441,11 @@ if [ ! "$subtest_list" == "true" ]; then
 	         IFS=';'
 	         read -ra mysql_var <<< "$mysql_version_comment"
 	         MYSQL_VERSION="mysqlversion=${mysql_var[1]}"
-	         MYSQL_COMMENT="mysqlproducer=${mysql_var[0]}${PROVIDER_APPEND}"
+	         if [[ "${mysql_var[0]}" == *,* ]]; then
+                MYSQL_COMMENT="mysqlproducer=${mysql_var[0]%%,*}${PROVIDER_APPEND},${mysql_var[0]#*,}"
+            else
+                MYSQL_COMMENT="mysqlproducer=${mysql_var[0]}${PROVIDER_APPEND}"
+            fi
              IFS=' ' 
 	         echo "MySQL Provider ${MYSQL_COMMENT} Version: ${MYSQL_VERSION}" | tee -a $LOGFILE
 	     fi
