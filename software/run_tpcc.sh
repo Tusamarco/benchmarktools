@@ -11,6 +11,8 @@ PMMSERVICENAME=""
 LOOPS="1"
 THREADS="1 2 4 8 16 32 64 128 256 512 1024"
 ERRORIGNORE="none"
+PROVIDER_APPEND=""
+
 
 # testidentifyer=${1:-"PS8035"}
 # HOST=${2:-"127.0.0.1"}
@@ -101,6 +103,10 @@ while [[ $# -gt 0 ]]; do
             THREADS="$2"
             shift 2
             ;;	
+        --provider_append)
+            PROVIDER_APPEND="$2"
+            shift 2
+            ;;               
         *)
             echo "Unknown argument: $1"
 			helptext
@@ -126,6 +132,9 @@ if [ "$HAVEPERF" = "true" ]; then
 	 havePerf="--haveperf"
 fi
 
+if [ ! "$PROVIDER_APPEND" == "" ]; then
+    PROVIDER_APPEND="--provider_append=$PROVIDER_APPEND" 
+fi
 
 
 bin_path="/opt/tools/benchmarktools/software"
@@ -134,8 +143,8 @@ for type in run_tpcc_RepeatableRead run_tpcc_ReadCommitted ; do
 	echo "Running type: ${type}"
         for loop in `seq 1 $LOOPS` ; do
 		echo "Running round: ${run}"
-		echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --threads \"${THREADS}\" --time $TIME  --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} --error_ignore $ERRORIGNORE"
+		echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer}_${type}  --type ${type} --run ${loop} ${PROVIDER_APPEND} --testname tpcc --command run  --filter_subtest ${type}  --threads \"${THREADS}\" --time $TIME  --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} --error_ignore $ERRORIGNORE"
 
-		bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer}_${type}  --type ${type} --run ${loop}  --testname tpcc --command run  --filter_subtest ${type}  --threads "${THREADS}" --time $TIME --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} --error_ignore $ERRORIGNORE
+		bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer}_${type}  --type ${type} --run ${loop} ${PROVIDER_APPEND} --testname tpcc --command run  --filter_subtest ${type}  --threads "${THREADS}" --time $TIME --host ${HOST} --port $PORT --schemaname tpcc $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} --error_ignore $ERRORIGNORE
 	done;
 done;

@@ -69,6 +69,7 @@ TPCC_LUA="/opt/tools/sysbench-tpcc"
 TPCc_TABLES=10
 USER="app_test"
 WHAREHOUSES=100
+PROVIDER_APPEND=""
 
 #Import Help
 . $(dirname "$0")/help.sh
@@ -186,7 +187,11 @@ while [[ $# -gt 0 ]]; do
         --joins_active_levels)
             JOINS_ACTIVE_LEVELS="$2"
             shift 2
-            ;;                                              
+            ;;           
+        --provider_append)
+            PROVIDER_APPEND="$2"
+            shift 2
+            ;;                                                  
         --debug)
             debug=true
             shift
@@ -436,7 +441,7 @@ if [ ! "$subtest_list" == "true" ]; then
 	         IFS=';'
 	         read -ra mysql_var <<< "$mysql_version_comment"
 	         MYSQL_VERSION="mysqlversion=${mysql_var[1]}"
-	         MYSQL_COMMENT="mysqlproducer=${mysql_var[0]}"
+	         MYSQL_COMMENT="mysqlproducer=${mysql_var[0]}${PROVIDER_APPEND}"
              IFS=' ' 
 	         echo "MySQL Provider ${MYSQL_COMMENT} Version: ${MYSQL_VERSION}" | tee -a $LOGFILE
 	     fi

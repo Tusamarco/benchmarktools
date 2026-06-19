@@ -23,6 +23,7 @@ FILTER_SUBTEST="none"
 EXCLUDE_SUBTEST="none"
 ERROR_IGNORE="none"
 command="run"
+PROVIDER_APPEND=""
 
 bin_path= SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
@@ -184,6 +185,10 @@ while [[ $# -gt 0 ]]; do
             SCHEMANAME="$2"
             shift 2
             ;;  	
+        --provider_append)
+            PROVIDER_APPEND="$2"
+            shift 2
+            ;;              
         *)
             echo "Unknown argument: $1"
 			helptext
@@ -241,6 +246,11 @@ if [ "$TESTNAME" == "joins" ] ; then
     TABLENAME="--tablename main"
 fi
 
+if [ ! "$PROVIDER_APPEND" == "" ]
+    PROVIDER_APPEND="--provider_append=$PROVIDER_APPEND" 
+fi
+
+
 if [ ! "$EVENTS" == "0" ];then
    EVENTS="--events ${EVENTS}" 
    TIME=0
@@ -258,18 +268,18 @@ for dimension in $SYSBENCH_TEST_DIMENSION; do
     
     if [ "$NO_PRELOAD" == "false" ] && [ "$command" == "run" ]; then
         echo "Warmup phase"
-        echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun}  --test ${testidentifyer} --type warmup --run 1  --testname ${TESTNAME} --command warmup  --filter_subtest \"warmup\"  --threads \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" 
+        echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun}  --test ${testidentifyer} --type warmup --run 1 ${PROVIDER_APPEND} --testname ${TESTNAME} --command warmup  --filter_subtest \"warmup\"  --threads \"1\" --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME" 
 
-        bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 --testname ${TESTNAME} --command warmup  --filter_subtest warmup  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME 
+        bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type "warmup" --run 1 ${PROVIDER_APPEND} --testname ${TESTNAME} --command warmup  --filter_subtest warmup  --threads "1" --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} ${TABLENAME} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME 
     fi
     
     for type in $TESTS_TYPES; do
         echo "Running type: ${type}"
         for loop in `seq 1 $LOOPS` ; do
             echo "Running round: ${run}"
-            echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop}  --testname ${TESTNAME} --command ${command} ${EXCLUDE_SUBTEST} ${FILTER_SUBTEST} --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} ${TABLENAME} --error_ignore ${ERROR_IGNORE} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} ${RATE} ${EVENTS}"
+            echo "RUNNING: $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop} ${PROVIDER_APPEND} --testname ${TESTNAME} --command ${command} ${EXCLUDE_SUBTEST} ${FILTER_SUBTEST} --threads \"${THREADS}\" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST} --port ${PORT} ${TABLENAME} --error_ignore ${ERROR_IGNORE} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} ${RATE} ${EVENTS}"
 
-            bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop} --testname ${TESTNAME} --command ${command} ${EXCLUDE_SUBTEST} ${FILTER_SUBTEST} --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} ${TABLENAME} --error_ignore ${ERROR_IGNORE} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} ${RATE} ${EVENTS}
+            bash $bin_path/run_bench_tests.sh ${dryRun} --test ${testidentifyer} --type ${type} --run ${loop} ${PROVIDER_APPEND} --testname ${TESTNAME} --command ${command} ${EXCLUDE_SUBTEST} ${FILTER_SUBTEST} --threads "${THREADS}" --time $TIME --sysbench_test_dimension ${dimension}  --host ${HOST}  --port ${PORT} ${TABLENAME} --error_ignore ${ERROR_IGNORE} --schemaname ${SCHEMANAME} $havePMM --pmm_url $PMMURL --pmm_node_name $PMMNODENAME $PMMSERVICENAME ${havePerf} ${RATE} ${EVENTS}
         done;
     done;
 done;
