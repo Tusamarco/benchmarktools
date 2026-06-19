@@ -246,7 +246,7 @@ if [ "$TESTNAME" == "joins" ] ; then
     TABLENAME="--tablename main"
 fi
 
-if [ ! "$PROVIDER_APPEND" == "" ]
+if [ ! "$PROVIDER_APPEND" == "" ]; then
     PROVIDER_APPEND="--provider_append=$PROVIDER_APPEND" 
 fi
 
