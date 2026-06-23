@@ -133,7 +133,7 @@ if [ "$HAVEPERF" = "true" ]; then
 fi
 
 if [ ! "$PROVIDER_APPEND" == "" ]; then
-    PROVIDER_APPEND="--provider_append=$PROVIDER_APPEND" 
+    PROVIDER_APPEND="--provider_append $PROVIDER_APPEND" 
 fi
 
 
